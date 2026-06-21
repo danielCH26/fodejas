@@ -1,0 +1,29 @@
+# Default owner for everything
+* @fodejas/team
+
+# OpenSpec changes and architecture
+/openspec/ @fodejas/architecture
+
+# Apps - technical ownership
+/apps/accounts/ @fodejas/tech-team
+/apps/convocatories/ @fodejas/tech-team
+/apps/applications/ @fodejas/tech-team
+/apps/scoring/ @fodejas/tech-team
+/apps/claims/ @fodejas/tech-team
+/apps/legalization/ @fodejas/tech-team
+/apps/treasury/ @fodejas/tech-team
+/apps/academic_tracking/ @fodejas/tech-team
+/apps/psychosocial/ @fodejas/tech-team
+/apps/condonation/ @fodejas/tech-team
+/apps/governance/ @fodejas/tech-team
+/apps/reporting/ @fodejas/tech-team
+/apps/audit/ @fodejas/tech-team
+/apps/core/ @fodejas/tech-team
+
+# Configuration and infrastructure
+/config/ @fodejas/tech-team
+/docker/ @fodejas/devops
+/.github/ @fodejas/devops
+
+# Documentation
+*.md @fodejas/docs-team

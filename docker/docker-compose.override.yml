@@ -1,0 +1,65 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: fodejas_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ..:/app
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgres://fodejas_user:fodejas_password@db:5432/fodejas_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - AWS_STORAGE_BUCKET_NAME=fodejas-media
+      - AWS_S3_ENDPOINT_URL=http://minio:9000
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    command: python manage.py runserver 0.0.0.0:8000
+
+  celery:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: fodejas_celery
+    volumes:
+      - ..:/app
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgres://fodejas_user:fodejas_password@db:5432/fodejas_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A config worker -l INFO
+
+  celery-beat:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: fodejas_celery_beat
+    volumes:
+      - ..:/app
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgres://fodejas_user:fodejas_password@db:5432/fodejas_db
+      - REDIS_URL=redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A config beat -l INFO
