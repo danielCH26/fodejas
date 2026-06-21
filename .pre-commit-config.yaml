@@ -24,12 +24,6 @@ repos:
       - id: ruff-format
         args: [--config=pyproject.toml]
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        args: [--config=pyproject.toml]
-
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.4.0
     hooks:
