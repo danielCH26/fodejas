@@ -10,6 +10,27 @@
 
 ## Setup del Entorno de Desarrollo
 
+### Setup Automatizado (Recomendado)
+
+1. **Clonar el repositorio**
+   ```bash
+   git clone <repository-url>
+   cd fodejas
+   ```
+
+2. **Crear entorno virtual e instalar dependencias**
+   ```bash
+   ./scripts/create_venv.sh
+   ```
+
+3. **Iniciar entorno de desarrollo completo**
+   ```bash
+   make dev
+   ```
+   Esto levanta los servicios Docker (PostgreSQL, Redis, MinIO) y el servidor Django con hot reload.
+
+### Setup Manual
+
 1. **Clonar el repositorio**
    ```bash
    git clone <repository-url>
@@ -29,26 +50,60 @@
    pip install -e ".[dev]"
    ```
 
-4. **Configurar variables de entorno**
+4. **Configurar variables de entorno para desarrollo**
    ```bash
-   cp .env.example .env
-   # Editar .env con la configuración local
+   cp .env.development .env
    ```
 
-5. **Instalar pre-commit hooks**
+5. **Levantar servicios con Docker**
    ```bash
-   ./scripts/setup.sh
+   make dev.up
+   # o manualmente:
+   # docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml up -d
    ```
 
-6. **Levantar servicios con Docker**
+6. **Esperar a que los servicios estén listos**
    ```bash
-   docker compose -f docker/docker-compose.yml up -d
+   ./scripts/wait_for_services.sh
    ```
 
-7. **Ejecutar migraciones**
+7. **Ejecutar migraciones y levantar servidor**
    ```bash
    python manage.py migrate
+   make dev.run
    ```
+
+## Comandos de Desarrollo
+
+| Comando | Descripción |
+|---------|-------------|
+| `make dev` | Inicia entorno completo (Docker + Django) |
+| `make dev.up` | Solo servicios Docker |
+| `make dev.run` | Solo servidor Django |
+| `make test` | Ejecutar pruebas |
+| `make lint` | Validar código (ruff, black, isort) |
+| `make clean` | Limpiar archivos temporales |
+
+## Troubleshooting
+
+### Puerto ya en uso
+Si el puerto 8000 está ocupado:
+```bash
+lsof -i :8000
+kill <PID>
+```
+
+### Servicios Docker no levantan
+```bash
+docker compose -f docker/docker-compose.yml logs db
+docker compose -f docker/docker-compose.yml logs redis
+```
+
+### Problemas con el entorno virtual
+```bash
+rm -rf .venv
+./scripts/create_venv.sh
+```
 
 ## Workflow de Desarrollo
 
