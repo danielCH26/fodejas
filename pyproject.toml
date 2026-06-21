@@ -66,11 +66,6 @@ ignore = [
     "E501",  # line too long (handled by black)
 ]
 
-[tool.isort]
-profile = "black"
-line_length = 100
-known_first_party = ["apps"]
-
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py", "*_test.py"]
