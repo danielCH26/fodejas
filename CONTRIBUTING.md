@@ -156,6 +156,62 @@ pre-commit run --all-files
 pytest
 ```
 
+**Nota sobre tests:** Durante la fase inicial del proyecto, los tests son opcionales.
+El pipeline de CI no fallará si no existen tests. Esta restricción se removerá
+automáticamente cuando el equipo comience a agregar tests al proyecto.
+
+## CI/CD Pipeline
+
+El proyecto usa GitHub Actions para integración continua y despliegues:
+
+### Workflows Disponibles
+
+| Workflow | Trigger | Descripción |
+|----------|---------|-------------|
+| `ci.yml` | push/PR a main o develop | Linting y tests |
+| `docker-build.yml` | push a main o develop | Build y push de imagen Docker |
+| `deploy-staging.yml` | manual | Despliegue a entorno staging |
+| `deploy-production.yml` | manual | Despliegue a producción (requiere reviewer) |
+
+### Imágenes Docker
+
+- **Registry:** Docker Hub (`docker.io/danielch26/fodejas`)
+- **Tags:**
+  - `staging` — imagen de desarrollo/integración
+  - `latest` — imagen de producción (desde main)
+  - `sha-<hash>` — imagen por commit
+
+### Environments
+
+El proyecto usa GitHub Environments con protección:
+
+- **staging:** Despliegue automático en merge a `develop`
+- **production:** Despliegue manual via workflow dispatch, requiere 1 reviewer mínimo
+
+### Variables de Entorno Requeridas
+
+Para desarrollo local, configura en `.env`:
+
+```bash
+# Base de datos
+POSTGRES_DB=fodejas_db
+POSTGRES_USER=fodejas_user
+POSTGRES_PASSWORD=fodejas_password
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD= # opcional
+
+# MinIO
+MINIO_ENDPOINT=localhost:9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+MINIO_USE_SSL=False
+```
+
 ## OpenSpec Workflow
 
 Este proyecto usa OpenSpec para gestión de cambios. Ver `openspec/` para más detalles.

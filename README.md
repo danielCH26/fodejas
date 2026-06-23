@@ -1,7 +1,9 @@
 # FODEJAS
 
 ![CI](https://github.com/fodejas/fodejas/actions/workflows/ci.yml/badge.svg)
-![Code Quality](https://github.com/fodejas/fodejas/actions/workflows/code-quality.yml/badge.svg)
+![Docker Build](https://github.com/fodejas/fodejas/actions/workflows/docker-build.yml/badge.svg)
+![Deploy Staging](https://github.com/fodejas/fodejas/actions/workflows/deploy-staging.yml/badge.svg)
+![Deploy Production](https://github.com/fodejas/fodejas/actions/workflows/deploy-production.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.12-blue.svg)
 ![Django](https://img.shields.io/badge/django-5.2-green.svg)
 

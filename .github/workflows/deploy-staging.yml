@@ -1,0 +1,31 @@
+name: Deploy Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Image tag to deploy'
+        required: true
+        default: 'staging'
+
+env:
+  DOCKER_REGISTRY: docker.io
+  DOCKER_REPOSITORY: danielch26/fodejas
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy staging (placeholder)
+        run: |
+          echo "Deploying ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{ github.event.inputs.image_tag || 'staging' }} to staging"
+          echo "NOTE: Actual deployment requires infrastructure configuration"
+          echo "This workflow serves as a placeholder for deployment orchestration"
+      - name: Echo deployment details
+        run: |
+          echo "Environment: staging"
+          echo "Registry: ${{ env.DOCKER_REGISTRY }}"
+          echo "Repository: ${{ env.DOCKER_REPOSITORY }}"
+          echo "Image: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{ github.event.inputs.image_tag || 'staging' }}"

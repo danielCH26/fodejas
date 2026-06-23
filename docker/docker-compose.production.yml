@@ -1,0 +1,25 @@
+services:
+  app:
+    image: docker.io/danielch26/fodejas:${IMAGE_TAG:-latest}
+    container_name: fodejas_app_production
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://${REDIS_HOST}:6379/0
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_USE_SSL=${MINIO_USE_SSL:-False}
+      - DEBUG=False
+      - DJANGO_SETTINGS_MODULE=config.settings
+    restart: always
+    command: python manage.py runserver 0.0.0.0:8000
+
+  db:
+    restart: always
+
+  redis:
+    restart: always
+
+  minio:
+    restart: always

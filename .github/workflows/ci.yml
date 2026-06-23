@@ -75,4 +75,9 @@ jobs:
         env:
           DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
           REDIS_URL: redis://localhost:6379/0
-        run: pytest --tb=short
+        run: |
+          if [ -d "tests" ] || find . -name "test_*.py" -o -name "*_test.py" | grep -q .; then
+            pytest --tb=short
+          else
+            echo "No tests found, skipping..."
+          fi
