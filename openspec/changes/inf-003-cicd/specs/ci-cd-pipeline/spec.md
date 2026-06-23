@@ -15,6 +15,11 @@ The system SHALL provide a GitHub Actions workflow that runs pytest on every pus
 - **THEN** the system SHALL skip tests with a message "No tests found, skipping..."
 - **AND** the job SHALL report success
 
+#### Scenario: CI runs sequentially
+- **WHEN** a push or PR triggers CI
+- **THEN** the lint job SHALL run first
+- **AND** the test job SHALL run only after lint passes (using `needs: lint`)
+
 ### Requirement: Docker image build
 
 The system SHALL provide a GitHub Actions workflow that builds a multi-stage Docker image and pushes it to Docker Hub (`docker.io/danielch26/fodejas`) on merge to `develop` (staging) and `main` (production).
@@ -23,6 +28,12 @@ The system SHALL provide a GitHub Actions workflow that builds a multi-stage Doc
 - **WHEN** the Docker image is built
 - **THEN** the system SHALL use a multi-stage Dockerfile
 - **AND** production image SHALL NOT include development dependencies
+
+#### Scenario: Docker Hub authentication
+- **WHEN** pushing images to Docker Hub
+- **THEN** the system SHALL authenticate using tokens from GitHub Environment Secrets
+- **AND** staging environment SHALL use `DOCKER_TOKEN_STAGING`
+- **AND** production environment SHALL use `DOCKER_TOKEN_PRODUCTION`
 
 ### Requirement: Docker registry authentication
 
@@ -62,23 +73,29 @@ The system SHALL provide Docker Compose configuration with health checks for Pos
 - **AND** Redis healthcheck SHALL use `redis-cli ping`
 - **AND** app service SHALL use `depends_on` with `condition: service_healthy`
 
-### Requirement: Staging deployment
+### Requirement: Staging deployment workflow
 
-The system SHALL provide a GitHub Actions workflow that deploys to staging environment automatically when changes are merged to `develop` branch.
+The system SHALL provide a GitHub Actions workflow for staging deployment that serves as orchestration placeholder.
 
-#### Scenario: Automatic deploy to staging on develop merge
-- **WHEN** a pull request is merged to `develop` branch
-- **THEN** the system SHALL trigger a deployment to staging environment
-- **AND** the Docker image tag SHALL be `staging`
+#### Scenario: Staging deployment orchestration
+- **WHEN** user triggers workflow dispatch on staging workflow
+- **THEN** the workflow SHALL display deployment information
+- **AND** SHALL require the `staging` GitHub Environment
+- **AND** actual server deployment requires external infrastructure configuration
 
-### Requirement: Production deployment
+**Note:** This workflow is a deployment orchestration placeholder. Actual deployment to staging server requires additional infrastructure (server, Docker Compose configuration, etc.) that is outside the scope of this change.
 
-The system SHALL provide a GitHub Actions workflow that deploys to production environment via manual workflow dispatch, requiring explicit user action.
+### Requirement: Production deployment workflow
+
+The system SHALL provide a GitHub Actions workflow for production deployment via manual workflow dispatch.
 
 #### Scenario: Manual deploy to production
 - **WHEN** user triggers workflow dispatch on production workflow
 - **AND** selects a valid image tag
-- **THEN** the system SHALL deploy the selected image to production environment
+- **THEN** the workflow SHALL display deployment information
+- **AND** SHALL require the `production` GitHub Environment with at least 1 reviewer
+
+**Note:** This workflow is a deployment orchestration placeholder. Actual deployment to production server requires additional infrastructure that is outside the scope of this change.
 
 ### Requirement: Branch protection
 

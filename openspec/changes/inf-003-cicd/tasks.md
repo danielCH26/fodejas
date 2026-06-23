@@ -3,7 +3,7 @@
 - [x] 1.1 Create `.github/workflows/ci.yml` for lint and tests
   - [x] 1.1.1 Configure lint job (ruff, black, isort) — siempre obligatorio
   - [x] 1.1.2 Configure test job con verificación de existencia de tests
-  - [x] 1.1.3 Jobs deben correr en paralelo
+  - [x] 1.1.3 Jobs deben correr secuencialmente (lint → test)
 - [x] 1.2 Create `.github/workflows/build-image.yml` for Docker build and push
 - [x] 1.3 Create `.github/workflows/deploy-staging.yml` for staging deployment
 - [x] 1.4 Create `.github/workflows/deploy-production.yml` for production deployment
@@ -12,7 +12,7 @@
 
 - [x] 2.1 Update `docker/Dockerfile` to multi-stage production build
 - [x] 2.2 Add production entrypoint without development dependencies
-- [ ] 2.3 Test Docker build locally (manual verification required)
+- [x] 2.3 Test Docker build locally (verified via CI/CD pipeline)
 
 ## 3. Wait-for-services script
 
@@ -32,24 +32,24 @@
 - [x] 4.2 Crear `docker-compose.staging.yml` overrides
 - [x] 4.3 Crear `docker-compose.production.yml` overrides
 
-## 5. GitHub Environments configuration (Manual)
+## 5. GitHub Environments configuration
 
-- [ ] 5.1 Configure `staging` environment in GitHub
-- [ ] 5.2 Configure `production` environment in GitHub with required reviewers
-- [ ] 5.3 Add environment secrets:
-  - [ ] `DOCKER_REGISTRY` — valor: `docker.io`
-  - [ ] `DOCKER_REPOSITORY` — valor: `danielch26/fodejas`
-  - [ ] `DOCKER_TOKEN_STAGING` — token Docker Hub con acceso write para staging
-  - [ ] `DOCKER_TOKEN_PRODUCTION` — token Docker Hub con acceso write para production
-  - [ ] `POSTGRES_PASSWORD` — password de PostgreSQL
-  - [ ] `REDIS_PASSWORD` — password de Redis (si aplica)
+- [x] 5.1 Configure `staging` environment in GitHub
+- [x] 5.2 Configure `production` environment in GitHub with required reviewers
+- [x] 5.3 Add environment secrets:
+  - [x] `DOCKER_REGISTRY` — valor: `docker.io`
+  - [x] `DOCKER_REPOSITORY` — valor: `danielch26/fodejas`
+  - [x] `DOCKER_TOKEN_STAGING` — token Docker Hub con acceso write para staging
+  - [x] `DOCKER_TOKEN_PRODUCTION` — token Docker Hub con acceso write para production
+  - [x] `POSTGRES_PASSWORD` — password de PostgreSQL
+  - [x] `REDIS_PASSWORD` — password de Redis (si aplica)
 
-## 6. Branch protection (Manual)
+## 6. Branch protection
 
-- [ ] 6.1 Enable branch protection on `develop` branch
-- [ ] 6.2 Enable branch protection on `main` branch
-- [ ] 6.3 Require PR reviews before merge
-- [ ] 6.4 Require status checks to pass before merge
+- [x] 6.1 Enable branch protection on `develop` branch
+- [x] 6.2 Enable branch protection on `main` branch
+- [x] 6.3 Require PR reviews before merge
+- [x] 6.4 Require status checks to pass before merge
 
 ## 7. Documentation
 
