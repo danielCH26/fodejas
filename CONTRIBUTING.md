@@ -52,7 +52,7 @@
 
 4. **Configurar variables de entorno para desarrollo**
    ```bash
-   cp .env.development .env
+   cp .env.development.example .env
    ```
 
 5. **Levantar servicios con Docker**
@@ -188,28 +188,62 @@ El proyecto usa GitHub Environments con protección:
 - **staging:** Despliegue automático en merge a `develop`
 - **production:** Despliegue manual via workflow dispatch, requiere 1 reviewer mínimo
 
-### Variables de Entorno Requeridas
+### Variables de Entorno
 
-Para desarrollo local, configura en `.env`:
+El proyecto usa `django-environ` para configuración via variables de entorno (12-factor app).
+
+#### Archivos .env
+
+| Archivo | Entorno | Uso |
+|---------|---------|-----|
+| `.env.development.example` | development | Desarrollo local con valores por defecto |
+| `.env.staging.example` | staging | Pre-producción, requiere configuración |
+| `.env.production.example` | production | Producción, requiere secretos |
+
+#### Variables comunes
 
 ```bash
-# Base de datos
-POSTGRES_DB=fodejas_db
-POSTGRES_USER=fodejas_user
-POSTGRES_PASSWORD=fodejas_password
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
+# Entorno
+DJANGO_ENV=development|staging|production
+
+# Django
+DEBUG=True|False
+SECRET_KEY=your-secret-key
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Database (PostgreSQL)
+DATABASE_URL=postgres://user:password@host:5432/dbname
 
 # Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD= # opcional
+REDIS_URL=redis://localhost:6379/0
+REDIS_PASSWORD=  # opcional
 
-# MinIO
-MINIO_ENDPOINT=localhost:9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
-MINIO_USE_SSL=False
+# S3/MinIO
+AWS_S3_ENDPOINT_URL=http://localhost:9000
+```
+
+#### Desarrollo local
+
+El archivo `.env.development.example` contiene valores seguros para desarrollo local.
+Copia y usa:
+
+```bash
+cp .env.development.example .env
+```
+
+#### Staging/Production
+
+Los archivos `.env.staging.example` y `.env.production.example` marcan con
+`# REQUIRED:` las variables que debes configurar antes de desplegar.
+
+```bash
+# Staging
+cp .env.staging.example .env
+# Editar y completar las variables # REQUIRED
+
+# Production
+cp .env.production.example .env
+# Editar y completar las variables # REQUIRED
 ```
 
 ## OpenSpec Workflow

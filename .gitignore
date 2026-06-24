@@ -18,8 +18,14 @@ eggs/
 venv/
 ENV/
 env/
+
+# Environment files (secrets)
 .env
-.env.development
+.env.*
+!.env.example
+!.env.development.example
+!.env.staging.example
+!.env.production.example
 
 # Django
 *.log

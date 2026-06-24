@@ -42,8 +42,8 @@ Plataforma web Django para digitalizar el ciclo completo de las convocatorias de
 git clone <url>
 cd fodejas
 
-# Copiar configuración
-cp .env.example .env
+# Copiar configuración de desarrollo
+cp .env.development.example .env
 
 # Levantar servicios
 docker compose -f docker/docker-compose.yml up -d
@@ -60,6 +60,41 @@ python manage.py migrate
 # Servidor de desarrollo
 python manage.py runserver
 ```
+
+## Configuración por Entorno
+
+El proyecto soporta tres entornos configurables via variable `DJANGO_ENV`:
+
+| Entorno | Uso | DEBUG |
+|---------|-----|-------|
+| `development` | Desarrollo local | `True` |
+| `staging` | Pruebas pre-producción | `False` |
+| `production` | Producción | `False` |
+
+### Archivos de configuración
+
+- `.env.development.example` — Desarrollo local (valores por defecto)
+- `.env.staging.example` — Staging (requiere configuración)
+- `.env.production.example` — Producción (requiere secretos)
+
+Para crear tu archivo `.env` local:
+
+```bash
+# Desarrollo
+cp .env.development.example .env
+
+# Staging
+cp .env.staging.example .env
+```
+
+### Variables requeridas (staging/production)
+
+Las variables marked con `# REQUIRED:` deben configurarse antes de desplegar:
+
+- `SECRET_KEY` — Generar con `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
+- `DATABASE_URL` — URL de PostgreSQL de producción
+- `REDIS_URL` y `REDIS_PASSWORD` — Redis configurado
+- `AWS_S3_ENDPOINT_URL` — Endpoint de S3/MinIO
 
 ## Estructura del Proyecto
 

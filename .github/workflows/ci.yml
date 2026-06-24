@@ -31,10 +31,32 @@ jobs:
       - name: Run isort
         run: isort --check .
 
+  validate-env:
+    name: Validate Environment Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check staging env file has DEBUG=False
+        run: |
+          if grep -q "^DEBUG=True" .env.staging.example 2>/dev/null; then
+            echo "ERROR: .env.staging.example has DEBUG=True"
+            exit 1
+          fi
+          echo "Staging .env.example is valid (DEBUG=False)"
+
+      - name: Check production env file has DEBUG=False
+        run: |
+          if grep -q "^DEBUG=True" .env.production.example 2>/dev/null; then
+            echo "ERROR: .env.production.example has DEBUG=True"
+            exit 1
+          fi
+          echo "Production .env.example is valid (DEBUG=False)"
+
   test:
     name: Test
     runs-on: ubuntu-latest
-    needs: lint  # Espera a que lint termine
+    needs: lint
     services:
       postgres:
         image: postgres:16

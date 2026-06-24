@@ -10,29 +10,55 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import os
 from pathlib import Path
+
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "django-insecure-%nf#4u(kml510s^+ljb+vlat$2v(j_g_)ol#0)j73!_&xm43@r"
+# Initialize django-environ
+env = environ.Env(
+    DJANGO_ENV=(
+        str,
+        "development",
+    ),
 )
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "True").lower() in ("true", "1", "yes")
+# Read .env file if exists (only for development)
+env_file = BASE_DIR / ".env"
+if env_file.exists():
+    env.read_env(env_file)
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+# Environment
+DJANGO_ENV = env("DJANGO_ENV", default="development")
+PRODUCTION_ENVS = ("staging", "production")
+IS_PRODUCTION = DJANGO_ENV in PRODUCTION_ENVS
 
+# Security settings
+if IS_PRODUCTION:
+    SECRET_KEY = env("SECRET_KEY")
+else:
+    SECRET_KEY = env(
+        "SECRET_KEY",
+        default="django-insecure-dev-only-not-for-production",
+    )
+
+DEBUG = env.bool("DEBUG", default=False)
+
+# Validate DEBUG and environment consistency
+if IS_PRODUCTION and DEBUG:
+    raise ValueError(
+        "DEBUG=True is not allowed when DJANGO_ENV=production. "
+        "Set DEBUG=False or change DJANGO_ENV."
+    )
+
+ALLOWED_HOSTS = env.list(
+    "ALLOWED_HOSTS",
+    default=["localhost", "127.0.0.1"] if not IS_PRODUCTION else [],
+)
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -85,21 +111,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": env.db(
+        "DATABASE_URL",
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+    ),
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -115,29 +135,41 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
+LANGUAGE_CODE = "es-CO"
 
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
+TIME_ZONE = "America/Bogota"
 
 USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = "static/"
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Redis and Celery
+REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
+REDIS_PASSWORD = env("REDIS_PASSWORD", default="")
+
+if REDIS_PASSWORD:
+    CELERY_BROKER_URL = f"redis://:{REDIS_PASSWORD}@{REDIS_URL.split('://')[1]}"
+else:
+    CELERY_BROKER_URL = REDIS_URL
+
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+# S3/MinIO Storage
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="minioadmin")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="minioadmin")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="fodejas-media")
+AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL", default="http://localhost:9000")
+AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default="us-east-1")
+AWS_S3_SIGNATURE_VERSION = env("AWS_S3_SIGNATURE_VERSION", default="s3v4")
+AWS_DEFAULT_ACL = env("AWS_DEFAULT_ACL", default=None)
+AWS_S3_FILE_OVERWRITE = env.bool("AWS_S3_FILE_OVERWRITE", default=False)
 
 # Development settings
 INTERNAL_IPS = [
@@ -145,8 +177,9 @@ INTERNAL_IPS = [
     "localhost",
 ]
 
-
 # Logging configuration
+LOG_LEVEL = env("LOG_LEVEL", default="DEBUG" if not IS_PRODUCTION else "INFO")
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -168,12 +201,12 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console"],
-        "level": "DEBUG" if DEBUG else "INFO",
+        "level": LOG_LEVEL,
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "DEBUG" if DEBUG else "INFO",
+            "level": LOG_LEVEL,
             "propagate": False,
         },
     },

@@ -19,6 +19,7 @@ dependencies = [
     "django-storages>=1.14",
     "weasyprint>=60.0",
     "django-htmx>=1.17",
+    "django-environ>=0.11",
 ]
 
 [project.optional-dependencies]
