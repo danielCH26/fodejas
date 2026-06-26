@@ -1,0 +1,107 @@
+# Prometheus alerting rules for FODEJAS PostgreSQL
+
+groups:
+  - name: postgres_alerts
+    interval: 30s
+    rules:
+      # Connection alerts
+      - alert: PostgresTooManyConnections
+        expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL connection count high"
+          description: "PostgreSQL {{ $labels.instance }} has {{ $value | humanizePercentage }} of max connections in use."
+
+      - alert: PostgresConnectionNearLimit
+        expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.9
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL approaching connection limit"
+          description: "PostgreSQL {{ $labels.instance }} has {{ $value | humanizePercentage }} of max connections."
+
+      # Cache hit ratio alerts
+      - alert: PostgresLowCacheHitRatio
+        expr: pg_stat_database_blks_hit / (pg_stat_database_blks_hit + pg_stat_database_blks_read) < 0.90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL cache hit ratio low"
+          description: "PostgreSQL {{ $labels.instance }} cache hit ratio is {{ $value | humanizePercentage }}."
+
+      # Query performance alerts
+      - alert: PostgresSlowQueries
+        expr: rate(pg_stat_statements_mean_exec_time_ms[5m]) > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL slow queries detected"
+          description: "PostgreSQL {{ $labels.instance }} has slow queries with mean execution time > 1s."
+
+      # Database availability
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL {{ $labels.instance }} is not responding."
+
+  - name: pgbouncer_alerts
+    interval: 30s
+    rules:
+      # PgBouncer connection pool alerts
+      - alert: PgBouncerPoolExhausted
+        expr: pgbouncer_pools_server_active == pgbouncer_pools_server_idle + pgbouncer_pools_server_active
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PgBouncer pool nearly exhausted"
+          description: "PgBouncer {{ $labels.instance }} pool utilization is high."
+
+      - alert: PgBouncerWaitingClients
+        expr: pgbouncer_pools_cl_waiting > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PgBouncer clients waiting"
+          description: "{{ $value }} clients waiting for connection in PgBouncer {{ $labels.instance }}."
+
+      - alert: PgBouncerDown
+        expr: pgbouncer_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PgBouncer is down"
+          description: "PgBouncer {{ $labels.instance }} is not responding."
+
+  - name: backup_alerts
+    interval: 60s
+    rules:
+      # Backup job alerts
+      - alert: BackupJobFailed
+        expr: backup_job_last_run_status == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backup job failed"
+          description: "Backup job {{ $labels.job }} failed on {{ $labels.instance }}."
+
+      - alert: BackupNotRunning
+        expr: time() - backup_job_last_success_timestamp > 86400 * 2
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "No successful backup in 2 days"
+          description: "No successful backup run for {{ $labels.job }} in the last 48 hours."

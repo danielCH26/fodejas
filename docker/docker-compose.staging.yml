@@ -3,7 +3,7 @@ services:
     image: docker.io/danielch26/fodejas:staging
     container_name: fodejas_app_staging
     environment:
-      - DATABASE_URL=postgres://${POSTGRES_USER:-fodejas_user}:${POSTGRES_PASSWORD:-fodejas_password}@db:5432/${POSTGRES_DB:-fodejas_db}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-fodejas_user}:${POSTGRES_PASSWORD:-fodejas_password}@pgbouncer:6432/${POSTGRES_DB:-fodejas_db}
       - REDIS_URL=redis://redis:6379/0
       - MINIO_ENDPOINT=minio:9000
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
@@ -12,12 +12,28 @@ services:
       - DEBUG=False
       - DJANGO_SETTINGS_MODULE=config.settings
     restart: unless-stopped
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
 
   db:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-fodejas_db}
       POSTGRES_USER: ${POSTGRES_USER:-fodejas_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fodejas_password}
+    restart: unless-stopped
+
+  pgbouncer:
+    image: pgbouncer/pgbouncer:latest
+    container_name: fodejas_pgbouncer_staging
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-fodejas_user}:${POSTGRES_PASSWORD:-fodejas_password}@db:5432/${POSTGRES_DB:-fodejas_db}
+    volumes:
+      - ./pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./pgbouncer_userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    depends_on:
+      db:
+        condition: service_healthy
     restart: unless-stopped
 
   redis:

@@ -1,0 +1,42 @@
+# Prometheus configuration for FODEJAS
+# Scrapes metrics from PostgreSQL and PgBouncer exporters
+
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  # PostgreSQL metrics (via postgres_exporter)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'fodejas-db'
+
+  # PgBouncer metrics (via pgbouncer_exporter)
+  - job_name: 'pgbouncer'
+    static_configs:
+      - targets: ['pgbouncer-exporter:9631']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'fodejas-pgbouncer'
+
+  # Backup job metrics (via node-exporter text collector)
+  - job_name: 'backup-jobs'
+    static_configs:
+      - targets: ['backup-exporter:9100']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'fodejas-backup'

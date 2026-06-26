@@ -1,0 +1,14 @@
+# Backup job schedule for FODEJAS
+# Edit with: docker exec fodejas_backup_scheduler crontab -e
+
+# Base backup - daily at 2:00 AM
+0 2 * * * /scripts/backup/base_backup.sh >> /var/log/backup.log 2>&1
+
+# WAL archive - every 15 minutes
+*/15 * * * * /scripts/backup/wal_archive.sh >> /var/log/wal_archive.log 2>&1
+
+# Backup verification - daily at 3:00 AM
+0 3 * * * /scripts/backup/backup_verify.sh >> /var/log/backup_verify.log 2>&1
+
+# Update metrics - every 5 minutes
+*/5 * * * * /scripts/backup-metrics/backup-metrics.sh >> /var/log/backup_metrics.log 2>&1

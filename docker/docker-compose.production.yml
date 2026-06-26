@@ -3,7 +3,7 @@ services:
     image: docker.io/danielch26/fodejas:${IMAGE_TAG:-latest}
     container_name: fodejas_app_production
     environment:
-      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pgbouncer:6432/${POSTGRES_DB}
       - REDIS_URL=redis://${REDIS_HOST}:6379/0
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
@@ -14,8 +14,24 @@ services:
       - DJANGO_SETTINGS_MODULE=config.settings
     restart: always
     command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
 
   db:
+    restart: always
+
+  pgbouncer:
+    image: pgbouncer/pgbouncer:latest
+    container_name: fodejas_pgbouncer_production
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    volumes:
+      - ./pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./pgbouncer_userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    depends_on:
+      db:
+        condition: service_healthy
     restart: always
 
   redis:

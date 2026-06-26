@@ -131,12 +131,25 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
-DATABASES = {
-    "default": env.db(
+if IS_PRODUCTION:
+    _db_url = env(
+        "DATABASE_URL",
+        default="postgresql://fodejas_user:fodejas_password@pgbouncer:6432/fodejas_db",
+    )
+else:
+    _db_url = env.db(
         "DATABASE_URL",
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-    ),
-}
+    )
+
+if IS_PRODUCTION:
+    DATABASES = {
+        "default": env.db(url=_db_url),
+    }
+else:
+    DATABASES = {
+        "default": _db_url,
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

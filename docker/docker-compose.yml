@@ -37,11 +37,32 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./postgres.conf:/etc/postgresql/postgresql.conf
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U fodejas_user -d fodejas_db"]
       interval: 5s
       timeout: 5s
       retries: 10
+
+  pgbouncer:
+    image: pgbouncer/pgbouncer:latest
+    container_name: fodejas_pgbouncer
+    ports:
+      - "6432:6432"
+    volumes:
+      - ./pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./pgbouncer_userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    environment:
+      DATABASE_URL: postgres://fodejas_user:fodejas_password@db:5432/fodejas_db
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgbouncer -V"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   redis:
     image: redis:7-alpine
@@ -74,7 +95,96 @@ services:
       timeout: 20s
       retries: 3
 
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: fodejas_postgres_exporter
+    environment:
+      PG_EXPORTER_AUTO_DISCOVER_DATABASES: "1"
+      PG_EXPORTER_EXTEND_QUERY_PATH: /etc/prometheus/queries.yaml
+      DATA_SOURCE_NAME: postgresql://fodejas_user:fodejas_password@db:5432/fodejas_db?sslmode=disable
+    volumes:
+      - ./queries.yaml:/etc/prometheus/queries.yaml:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "9187:9187"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9187/metrics || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  pgbouncer-exporter:
+    image: prometheuscommunity/pgbouncer-exporter:latest
+    container_name: fodejas_pgbouncer_exporter
+    environment:
+      DATA_SOURCE_NAME: postgresql://postgres:postgres_password@pgbouncer:6432/pgbouncer?sslmode=disable
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
+    ports:
+      - "9631:9631"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9631/metrics || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: fodejas_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - postgres-exporter
+      - pgbouncer-exporter
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9090/-/healthy || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  backup-scheduler:
+    image: alpine:3.19
+    container_name: fodejas_backup_scheduler
+    volumes:
+      - ../scripts/backup:/scripts/backup:ro
+      - ./backup-metrics/backup-metrics.sh:/scripts/backup-metrics/backup-metrics.sh:ro
+      - ./backup-metrics/crontab:/etc/crontabs/root:ro
+      - backup_metrics:/var/lib/node_exporter/textfile_collector
+      - /var/log:/var/log
+    environment:
+      - S3_BUCKET=fodejas-backups
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY=minioadmin
+      - S3_SECRET_KEY=minioadmin
+      - PGHOST=db
+      - PGUSER=fodejas_user
+    depends_on:
+      - db
+      - minio
+    command: |
+      sh -c '
+        apk add --no-cache dcron mc bash &&
+        crontab /etc/crontabs/root &&
+        mkdir -p /var/lib/node_exporter/textfile_collector &&
+        touch /var/lib/node_exporter/textfile_collector/backup_metrics.prom &&
+        crond -f -l 2
+      '
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
   minio_data:
+  prometheus_data:
+  backup_metrics:

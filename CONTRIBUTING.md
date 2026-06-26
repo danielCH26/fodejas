@@ -334,6 +334,85 @@ git commit -m "chore: allowlist development secret"
 - Usa el workflow de rotación para cambiar secretos comprometidos
 - Si es un falso positivo, actualiza el baseline con `detect-secrets audit`
 
+## PostgreSQL Production Setup
+
+El proyecto usa PostgreSQL 16 con PgBouncer como connection pooler.
+
+### Arquitectura
+
+```
+Django App → PgBouncer (port 6432) → PostgreSQL (port 5432)
+```
+
+### Configuración de Producción
+
+| Componente | Archivo | Descripción |
+|------------|---------|-------------|
+| PostgreSQL tuning | `docker/postgres.conf` | Parámetros optimizados para producción |
+| PgBouncer | `docker/pgbouncer.ini` | Connection pooling en modo transaction |
+
+### Variables de Entorno para Producción
+
+```bash
+# Connection string (apunta a PgBouncer)
+DATABASE_URL=postgresql://fodejas_user:fodejas_password@pgbouncer:6432/fodejas_db
+```
+
+### Backups
+
+Los backups se ejecutan automáticamente:
+
+| Tipo | Frecuencia | Retención | Ubicación |
+|------|------------|-----------|----------|
+| Base backup | Diario | 7 días | S3 (MinIO bucket `fodejas-backups`) |
+| WAL archives | Continuo | 30 días | S3 (MinIO bucket `fodejas-backups`) |
+
+**Scripts de backup:**
+- `scripts/backup/base_backup.sh` — Base backup completo
+- `scripts/backup/wal_archive.sh` — Archive de WAL
+- `scripts/backup/backup_verify.sh` — Verificación de integridad
+
+### Monitoreo
+
+El dashboard de Grafana incluye métricas de PostgreSQL:
+- Conexiones activas
+- Cache hit ratio
+- Latencia de queries
+- Uso de disco
+
+### Restauración de Backup
+
+```bash
+# 1. Descargar backup
+mc cp s3://fodejas-backups/base/<backup_date>/ /tmp/restore/
+
+# 2. Extraer
+tar -xzf /tmp/restore/base.tar.gz -C /tmp/restore/
+
+# 3. Restaurar
+pg_restore -h db -U fodejas_user -d fodejas_db /tmp/restore/*.tar.gz
+```
+
+### Troubleshooting PgBouncer
+
+**Error: "maximum connections exceeded"**
+- El pool de PgBouncer está saturado
+- Verificar `default_pool_size` en `pgbouncer.ini`
+- Revisar queries lentas que mantienen conexiones
+
+**Error: "connection timeout"**
+- PostgreSQL no responde
+- Verificar salud del servicio PostgreSQL
+- Revisar logs de PostgreSQL
+
+**Verificar estado de PgBouncer:**
+```bash
+# Conectar al admin interface
+psql -h pgbouncer -p 6432 -U postgres -d pgbouncer
+SHOW POOLS;
+SHOW CLIENTS;
+```
+
 ## OpenSpec Workflow
 
 Este proyecto usa OpenSpec para gestión de cambios. Ver `openspec/` para más detalles.
