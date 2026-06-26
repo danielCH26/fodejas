@@ -246,6 +246,94 @@ cp .env.production.example .env
 # Editar y completar las variables # REQUIRED
 ```
 
+## Gestión de Secretos
+
+El proyecto usa un servicio centralizado de gestión de secretos (`apps/core/secrets.py`) que proporciona una interfaz abstracta para recuperar secretos de cualquier almacenamiento.
+
+### Servicio de Secretos
+
+El módulo `apps.core.secrets` proporciona:
+
+- `SecretStore`: Clase abstracta base
+- `EnvSecretStore`: Implementación para desarrollo local (lee de variables de entorno)
+- `MissingSecretError`: Excepción cuando un secreto requerido no está configurado
+
+### Uso en Código
+
+```python
+from apps.core.secrets import secrets
+
+# Obtener secreto opcional (retorna None si no existe)
+value = secrets.get("SECRET_KEY")
+
+# Obtener secreto requerido (lanza MissingSecretError si no existe)
+value = secrets.get_required("SECRET_KEY")
+```
+
+### Detección de Secretos en Commits
+
+El proyecto usa `detect-secrets` (pre-commit hook + CI) para prevenir que secretos sean comprometidos.
+
+**Pre-commit hook:**
+- Se ejecuta automáticamente en cada `git commit`
+- Bloquea el commit si detecta un secreto no permitido
+- Usa `.secrets.baseline` como lista de secretos permitidos
+
+**CI scan:**
+- El job `secrets-scan` en CI verifica que no haya secretos nuevos
+- Fallará si se comprometen secretos no listados en el baseline
+
+### Agregar un Secreto al Baseline
+
+Si detect-secrets bloquea un commit por un "falso positivo" (ej: una cadena que parece un secreto pero no lo es), puedes agregarla al baseline:
+
+```bash
+# Usar el audit tool de detect-secrets
+detect-secrets audit .secrets.baseline
+```
+
+Para permitir un secreto conocido de desarrollo:
+
+```bash
+# Marcar como "allowed" en el baseline
+detect-secrets scan --baseline .secrets.baseline .
+git add .secrets.baseline
+git commit -m "chore: allowlist development secret"
+```
+
+### Políticas de Rotación
+
+| Secreto | Período de Rotación | Proceso |
+|---------|---------------------|---------|
+| `SECRET_KEY` | 90 días | Generar nueva key, coordinar deploy |
+| Credenciales DB | 180 días | Rotación DBA, actualizar Vault |
+| Redis password | 90 días | Actualizar via Vault |
+| AWS keys | 180 días | Rotación IAM en AWS |
+| SMTP password | 30 días | Solicitar via IT |
+
+### Troubleshooting
+
+**Error: "Required secret 'X' is not set"**
+- Verifica que la variable de entorno está configurada
+- En desarrollo: copia `.env.development.example` a `.env` y completa los `# REQUIRED`
+- En staging/production: configura las variables en el sistema de despliegue
+
+**Error: "Missing required secrets for production environment"**
+- Este error aparece al iniciar Django con `DJANGO_ENV=production`
+- Verifica que todas las variables requeridas están configuradas:
+  - `SECRET_KEY`
+  - `REDIS_PASSWORD`
+  - `AWS_SECRET_ACCESS_KEY`
+
+**detect-secrets bloquea un commit válido**
+- Si el "secreto" es solo un string que parece secreto (ej: `password123` en un test), puedes agregarlo al baseline
+- Si es un secreto real, nunca lo commitees - usa variables de entorno o un secrets manager
+
+**CI fails en secrets-scan**
+- No hagas commit de secretos reales
+- Usa el workflow de rotación para cambiar secretos comprometidos
+- Si es un falso positivo, actualiza el baseline con `detect-secrets audit`
+
 ## OpenSpec Workflow
 
 Este proyecto usa OpenSpec para gestión de cambios. Ver `openspec/` para más detalles.

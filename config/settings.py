@@ -14,6 +14,8 @@ from pathlib import Path
 
 import environ
 
+from apps.core.secrets import secrets
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,7 +39,7 @@ IS_PRODUCTION = DJANGO_ENV in PRODUCTION_ENVS
 
 # Security settings
 if IS_PRODUCTION:
-    SECRET_KEY = env("SECRET_KEY")
+    SECRET_KEY = secrets.get_required("SECRET_KEY")
 else:
     SECRET_KEY = env(
         "SECRET_KEY",
@@ -53,6 +55,21 @@ if IS_PRODUCTION and DEBUG:
         "Set DEBUG=False or change DJANGO_ENV."
     )
 
+
+def _validate_required_secrets() -> None:
+    if DJANGO_ENV not in ("staging", "production"):
+        return
+    required_secrets = ["SECRET_KEY", "REDIS_PASSWORD", "AWS_SECRET_ACCESS_KEY"]
+    missing = [key for key in required_secrets if secrets.get(key) is None]
+    if missing:
+        raise RuntimeError(
+            f"Missing required secrets for {DJANGO_ENV} environment: "
+            f"{', '.join(missing)}. Set these environment variables before starting."
+        )
+
+
+_validate_required_secrets()
+
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
     default=["localhost", "127.0.0.1"] if not IS_PRODUCTION else [],
@@ -66,6 +83,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_prometheus",
     "apps.accounts",
     "apps.convocatories",
     "apps.applications",
@@ -84,6 +102,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "apps.core.middleware.RequestIDMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -152,7 +171,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Redis and Celery
 REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
-REDIS_PASSWORD = env("REDIS_PASSWORD", default="")
+if IS_PRODUCTION:
+    REDIS_PASSWORD = secrets.get_required("REDIS_PASSWORD")
+else:
+    REDIS_PASSWORD = env("REDIS_PASSWORD", default="")
 
 if REDIS_PASSWORD:
     CELERY_BROKER_URL = f"redis://:{REDIS_PASSWORD}@{REDIS_URL.split('://')[1]}"
@@ -163,7 +185,10 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
 # S3/MinIO Storage
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="minioadmin")
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="minioadmin")
+if IS_PRODUCTION:
+    AWS_SECRET_ACCESS_KEY = secrets.get_required("AWS_SECRET_ACCESS_KEY")
+else:
+    AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="minioadmin")
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="fodejas-media")
 AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL", default="http://localhost:9000")
 AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default="us-east-1")
@@ -180,34 +205,50 @@ INTERNAL_IPS = [
 # Logging configuration
 LOG_LEVEL = env("LOG_LEVEL", default="DEBUG" if not IS_PRODUCTION else "INFO")
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
+if IS_PRODUCTION:
+    from apps.core.logging_config import setup_async_logging
+
+    setup_async_logging(is_production=True)
+
+    import sentry_sdk
+    from sentry_sdk.integrations.celery import CeleryIntegration
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=env("SENTRY_DSN", default=""),
+        integrations=[
+            DjangoIntegration(),
+            CeleryIntegration(),
+        ],
+        traces_sampler=None,
+        send_default_pii=False,
+    )
+    sentry_sdk.set_tag("django.env", DJANGO_ENV)
+else:
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s",
+                "style": "%",
+            },
         },
-        "simple": {
-            "format": "{levelname} {message}",
-            "style": "{",
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "verbose",
+            },
         },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose" if DEBUG else "simple",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": LOG_LEVEL,
-    },
-    "loggers": {
-        "django": {
+        "root": {
             "handlers": ["console"],
             "level": LOG_LEVEL,
-            "propagate": False,
         },
-    },
-}
+        "loggers": {
+            "django": {
+                "handlers": ["console"],
+                "level": LOG_LEVEL,
+                "propagate": False,
+            },
+        },
+    }

@@ -16,8 +16,13 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+
+from apps.core.health import liveness, readiness
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("healthz", liveness, name="healthz"),
+    path("readyz", readiness, name="readyz"),
+    path("", include("django_prometheus.urls")),
 ]

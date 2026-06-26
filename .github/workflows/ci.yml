@@ -53,6 +53,23 @@ jobs:
           fi
           echo "Production .env.example is valid (DEBUG=False)"
 
+  secrets-scan:
+    name: Detect Secrets Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Run detect-secrets via pre-commit
+        run: pre-commit run detect-secrets --all-files
+
   test:
     name: Test
     runs-on: ubuntu-latest
