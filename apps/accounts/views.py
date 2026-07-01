@@ -13,6 +13,8 @@ from django.contrib.auth.views import (
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
+from rest_framework import permissions, status
+from rest_framework.views import APIView
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
@@ -248,8 +250,10 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class CurrentUserAPIView(LoginRequiredMixin, View):
+class CurrentUserAPIView(APIView):
     """API view to get current user info."""
+
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         """Return current user info as JSON."""

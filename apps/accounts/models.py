@@ -1,12 +1,44 @@
 """Models for accounts app."""
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+class CustomUserManager(BaseUserManager):
+    """Custom manager for CustomUser using email as username."""
+
+    def create_user(self, email, documento, password=None, **extra_fields):
+        """Create and save a user with the given email and documento."""
+        if not email:
+            raise ValueError("El correo electrónico es requerido")
+        if not documento:
+            raise ValueError("El documento es requerido")
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, documento=documento, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, documento, password=None, **extra_fields):
+        """Create and save a superuser with the given email and documento."""
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(email, documento, password, **extra_fields)
+
+
 class CustomUser(AbstractUser):
     """Custom user model for FODEJAS platform."""
+
+    # Use custom manager
+    objects = CustomUserManager()
 
     # Remove username field since we're using email as username
     username = None
