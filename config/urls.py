@@ -26,4 +26,5 @@ urlpatterns = [
     path("readyz", readiness, name="readyz"),
     path("", include("django_prometheus.urls")),
     path("api/auth/", include("apps.accounts.urls")),  # JWT endpoints
+    path("api/audit/", include("apps.audit.urls")),  # Audit endpoints
 ]
