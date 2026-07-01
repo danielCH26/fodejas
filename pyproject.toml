@@ -7,10 +7,11 @@ name = "fodejas"
 version = "0.1.0"
 description = "FODEJAS - Fondo para el Desarrollo Educativo de los Jóvenes del Archipiélago"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "Django>=5.2",
     "djangorestframework>=3.14",
+    "djangorestframework-simplejwt[crypto]>=5.3",
     "psycopg2-binary>=2.9",
     "redis>=5.0",
     "celery>=5.3",
