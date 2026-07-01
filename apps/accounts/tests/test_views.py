@@ -43,7 +43,8 @@ class LoginViewTests(TestCase):
             {"username": "login@test.com", "password": "wrongpassword"},
         )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "error")
+        # Django shows "alert alert-danger" for errors
+        self.assertContains(response, "alert")
 
     def test_authenticated_user_redirected_from_login(self):
         """Test that authenticated user is redirected from login page."""
@@ -87,13 +88,14 @@ class RegisterViewTests(TestCase):
             {
                 "email": "aspirante@example.com",
                 "documento": "88888888",
-                "first_name": "Aspirante",
-                "last_name": "New",
-                "password1": "Aspirante123!",
-                "password2": "Aspirante123!",
+                "first_name": "John",
+                "last_name": "Doe",
+                "password1": "NewUser123!",
+                "password2": "NewUser123!",
             },
-            follow=True,
         )
+        # Should redirect to login after successful registration
+        self.assertEqual(response.status_code, 302)
         user = User.objects.get(email="aspirante@example.com")
         user_roles = UserRole.objects.filter(user=user)
         self.assertTrue(user_roles.exists())
@@ -147,12 +149,12 @@ class DashboardViewTests(TestCase):
             first_name="Dashboard",
             last_name="Test",
         )
-        self.role = Role.objects.create(
+        # Use get_or_create because roles are seeded
+        self.role, _ = Role.objects.get_or_create(
             code="R-COORD",
-            name="Coordinador",
-            type="interno",
+            defaults={"name": "Coordinador", "type": "interno"},
         )
-        UserRole.objects.create(
+        UserRole.objects.get_or_create(
             user=self.user,
             role=self.role,
             convocation_scope=None,
