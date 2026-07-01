@@ -1,0 +1,7 @@
+<div class="alert alert-success" role="alert">
+    <i class="bi bi-check-circle me-2"></i>
+    Bienvenido, {{ user.first_name }}. Redirigiendo al panel...
+</div>
+<script>
+    window.location.href = "{% url 'dashboard' %}";
+</script>

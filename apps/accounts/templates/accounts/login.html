@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Iniciar Sesión - FODEJAS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-fodejas text-white text-center py-3">
+                <h4 class="mb-0">
+                    <i class="bi bi-mortarboard-fill me-2"></i>
+                    FODEJAS
+                </h4>
+                <small class="text-white-50">Fondo para el Desarrollo Educativo</small>
+            </div>
+            <div class="card-body p-4">
+                <h5 class="card-title text-center mb-4">Iniciar Sesión</h5>
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+
+                    {{ form|crispy }}
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-fodejas btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            Ingresar
+                        </button>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <p class="mb-2">¿Olvidó su contraseña?</p>
+                    <a href="{% url 'password_reset' %}" class="btn btn-outline-secondary btn-sm">
+                        Recuperar contraseña
+                    </a>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <p class="mb-2">¿No tiene cuenta?</p>
+                    <a href="{% url 'register' %}" class="btn btn-fodejas-accent">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Registrarse como Aspirante
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
