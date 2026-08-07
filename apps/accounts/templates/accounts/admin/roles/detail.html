@@ -1,0 +1,90 @@
+{% extends "accounts/admin/admin_base.html" %}
+
+{% block title %}Detalle de Rol - FODEJAS{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-shield-check me-2"></i>{{ view_role.name }}</h2>
+    <div>
+        <a href="{% url 'accounts_admin:role_update' view_role.pk %}" class="btn btn-outline-secondary">
+            <i class="bi bi-pencil me-2"></i>Editar
+        </a>
+        <a href="{% url 'accounts_admin:role_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Volver
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Role Info -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>Información del Rol
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th class="text-muted">Código:</th>
+                        <td>
+                            <span class="badge bg-{% if view_role.type == 'interno' %}primary{% else %}success{% endif %}">
+                                {{ view_role.code }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Nombre:</th>
+                        <td>{{ view_role.name }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Tipo:</th>
+                        <td>
+                            {% if view_role.type == 'interno' %}
+                            <span class="badge bg-info">Interno</span>
+                            <small class="text-muted">Personal de la Secretaría</small>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">Externo</span>
+                            <small class="text-muted">Beneficiarios/Aspirantes</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Descripción:</th>
+                        <td>{{ view_role.description|default:"—" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Users with this role -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-people me-2"></i>Usuarios con este Rol ({{ user_count }})
+            </div>
+            <div class="card-body">
+                {% if user_roles %}
+                <ul class="list-group list-group-flush">
+                    {% for ur in user_roles %}
+                    <li class="list-group-item">
+                        <a href="{% url 'accounts_admin:user_detail' ur.user.pk %}">
+                            {{ ur.user.email }}
+                        </a>
+                        <small class="text-muted">
+                            - {{ ur.user.first_name }} {{ ur.user.last_name }}
+                            {% if ur.convocation_scope_id %}
+                            ({{ ur.convocation_scope_id }})
+                            {% endif %}
+                        </small>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted text-center py-3">No hay usuarios con este rol</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

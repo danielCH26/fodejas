@@ -1,0 +1,89 @@
+{% extends "accounts/admin/admin_base.html" %}
+
+{% block admin_title %}Historial de Roles - {{ view_user.get_full_name|default:view_user.email }}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-clock-history me-2"></i>Historial de Roles</h2>
+    <a href="{% url 'accounts_admin:user_detail' pk=view_user.pk %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Volver al usuario
+    </a>
+</div>
+
+<!-- User Info -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-person me-2"></i>Usuario
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Nombre:</strong> {{ view_user.get_full_name|default:"—" }}</p>
+                <p><strong>Email:</strong> {{ view_user.email }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Documento:</strong> {{ view_user.documento|default:"—" }}</p>
+                <p><strong>Estado:</strong> 
+                    {% if view_user.is_active %}
+                        <span class="badge bg-success">Activo</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inactivo</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Role History -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-list-check me-2"></i>Cambios de Roles
+    </div>
+    <div class="card-body">
+        {% if role_events %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Acción</th>
+                        <th>Usuario</th>
+                        <th>Detalles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in role_events %}
+                    <tr>
+                        <td>{{ event.timestamp|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if event.action == "ASSIGN_ROLE" %}
+                                <span class="badge bg-success">Asignado</span>
+                            {% elif event.action == "REVOKE_ROLE" %}
+                                <span class="badge bg-danger">Revocado</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ event.action }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ event.actor.email }}</td>
+                        <td>
+                            {% if event.details.role_name %}
+                                <strong>{{ event.details.role_name }}</strong>
+                                {% if event.details.convocation_scope %}
+                                    ({{ event.details.convocation_scope }})
+                                {% endif %}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-4">No hay historial de cambios de roles.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Resultados Definitivos - FODEJAS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1><i class="bi bi-trophy text-warning me-2"></i>Resultados Definitivos</h1>
+        <p class="lead text-muted">Listados definitivos de beneficiarios publicados</p>
+    </div>
+
+    {% if listados %}
+    <div class="row">
+        {% for lst in listados %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ lst.convocatoria }}</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Fecha de publicación:</dt>
+                        <dd class="col-sm-7">{{ lst.fecha_publicacion|date:"d/m/Y" }}</dd>
+
+                        <dt class="col-sm-5">Acto administrativo:</dt>
+                        <dd class="col-sm-7"><code>{{ lst.acto_numero }}</code></dd>
+
+                        <dt class="col-sm-5">Total beneficiarios:</dt>
+                        <dd class="col-sm-7">{{ lst.total_beneficiarios }}</dd>
+                    </dl>
+                </div>
+                <div class="card-footer text-center">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Ranking completo disponible en la Coordinación Técnica
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        <i class="bi bi-info-circle me-2"></i>
+        No hay resultados publicados actualmente.
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-5">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+            <i class="bi bi-house me-2"></i>Volver al inicio
+        </a>
+    </div>
+</div>
+{% endblock %}

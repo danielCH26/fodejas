@@ -7,7 +7,7 @@ from django.views import View
 
 @contextmanager
 def _timeout(seconds: int):
-    old_timeout = socket.socket.getdefaulttimeout()
+    old_timeout = socket.getdefaulttimeout()
     socket.setdefaulttimeout(seconds)
     try:
         yield

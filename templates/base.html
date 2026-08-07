@@ -93,6 +93,7 @@
             </a>
 
             {% if user.is_authenticated %}
+            {% with user_roles=user.user_roles.all %}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNav" aria-controls="navbarNav"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -100,6 +101,86 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if user.is_authenticated and user_roles %}
+                    <!-- Convocatorias - visible para todos los usuarios con rol -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'convocatories:list' %}">
+                            <i class="bi bi-calendar-event me-1"></i>Convocatorias
+                        </a>
+                    </li>
+
+                    <!-- Scoring/Ranking - visible para roles internos (R-ADMIN, R-COORDINADOR, R-REVISOR, R-COMITE, R-TESORERO) -->
+                    {% if user.is_staff or user_roles.0.role.type == 'interno' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'scoring:list' %}">
+                            <i class="bi bi-graph-up me-1"></i>Scoring
+                        </a>
+                    </li>
+
+                    <!-- Governance/Actos Admin - visible para R-JUNTA -->
+                    {% for ur in user_roles %}{% if ur.role.code == 'R-JUNTA' or ur.role.code == 'R-ADMIN' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'governance:acto_list' %}">
+                            <i class="bi bi-file-earmark-text me-1"></i>Actos Admin
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'governance:listado_create' %}">
+                            <i class="bi bi-list-check me-1"></i>Listado Definitivo
+                        </a>
+                    </li>
+                    {% endif %}{% endfor %}
+                    {% endif %}
+
+                    <!-- Claims/Reclamaciones - visible para todos con rol -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'claims:list' %}">
+                            <i class="bi bi-chat-square-text me-1"></i>Reclamaciones
+                        </a>
+                    </li>
+
+                    <!-- Administración Junta (Reclamaciones) - solo R-JUNTA -->
+                    {% for ur in user_roles %}{% if ur.role.code == 'R-JUNTA' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'claims:admin_list' %}">
+                            <i class="bi bi-gavel me-1"></i>Gestionar Reclamaciones
+                        </a>
+                    </li>
+                    {% endif %}{% endfor %}
+
+                    <!-- Administración OFIJUR (Apelaciones) - solo R-OFIJUR -->
+                    {% for ur in user_roles %}{% if ur.role.code == 'R-OFIJUR' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'claims:apelacion_admin_list' %}">
+                            <i class="bi bi-balance-scale me-1"></i>Gestionar Apelaciones
+                        </a>
+                    </li>
+                    {% endif %}{% endfor %}
+
+                    <!-- Administración - solo R-ADMIN -->
+                    {% for ur in user_roles %}{% if ur.role.code == 'R-ADMIN' %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear me-1"></i>Administración
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'accounts_admin:user_list' %}">
+                                <i class="bi bi-people me-2"></i>Usuarios
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts_admin:role_list' %}">
+                                <i class="bi bi-shield me-2"></i>Roles
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'audit_dashboard' %}">
+                                <i class="bi bi-journal-text me-2"></i>Auditoría
+                            </a></li>
+                        </ul>
+                    </li>
+                    {% endif %}{% endfor %}
+                    {% endif %}
+                </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button"
@@ -124,6 +205,7 @@
                     </li>
                 </ul>
             </div>
+            {% endwith %}
             {% endif %}
         </div>
     </nav>

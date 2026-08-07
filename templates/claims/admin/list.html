@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Reclamaciones - FODEJAS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-exclamation-triangle me-2"></i>Panel de Reclamaciones</h2>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            {% if reclamaciones %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Aspirante</th>
+                            <th>Convocatoria</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rec in reclamaciones %}
+                        <tr>
+                            <td>{{ rec.created_at|date:"d/m/Y" }}</td>
+                            <td>{{ rec.solicitud.aspirante.get_full_name|default:rec.solicitud.aspirante.email }}</td>
+                            <td>{{ rec.solicitud.convocatoria.nombre }}</td>
+                            <td>{{ rec.get_tipo_display }}</td>
+                            <td>
+                                <span class="badge bg-{% if rec.estado == 'presentada' %}secondary{% elif rec.estado == 'en_revision' %}warning{% elif rec.estado == 'resuelta' %}success{% else %}danger{% endif %}">
+                                    {{ rec.get_estado_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'claims:detail' rec.uuid %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center py-4">
+                No hay reclamaciones pendientes.
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

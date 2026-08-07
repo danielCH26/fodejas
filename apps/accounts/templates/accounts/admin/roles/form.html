@@ -1,0 +1,62 @@
+{% extends "accounts/admin/admin_base.html" %}
+
+{% block title %}{% if action == 'crear' %}Crear{% else %}Editar{% endif %} Rol - FODEJAS{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-shield{% if action == 'crear' %}-plus{% else %}-exclamation{% endif %} me-2"></i>{% if action == 'crear' %}Crear{% else %}Editar{% endif %} Rol</h2>
+    <a href="{% url 'accounts_admin:role_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Volver
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="code" class="form-label">Código del Rol *</label>
+                    <input type="text" class="form-control" id="code" name="code" 
+                           value="{{ view_role.code|default:''|upper }}" 
+                           {% if action == 'editar' %}readonly{% endif %}
+                           placeholder="Ej: R-ADMIN, R-COORD" required>
+                    <small class="text-muted">Código único. Use el prefijo R-</small>
+                </div>
+                <div class="col-md-6">
+                    <label for="type" class="form-label">Tipo de Rol *</label>
+                    <select class="form-select" id="type" name="type" required>
+                        <option value="interno" {% if view_role.type == 'interno' %}selected{% endif %}>
+                            Interno (Personal de la Secretaría)
+                        </option>
+                        <option value="externo" {% if view_role.type == 'externo' %}selected{% endif %}>
+                            Externo (Beneficiarios/Aspirantes)
+                        </option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="name" class="form-label">Nombre del Rol *</label>
+                <input type="text" class="form-control" id="name" name="name" 
+                       value="{{ view_role.name|default:'' }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="description" class="form-label">Descripción</label>
+                <textarea class="form-control" id="description" name="description" rows="3">{{ view_role.description|default:'' }}</textarea>
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-2"></i>{% if action == 'crear' %}Crear{% else %}Guardar Cambios{% endif %}
+                </button>
+                <a href="{% url 'accounts_admin:role_list' %}" class="btn btn-outline-secondary ms-2">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

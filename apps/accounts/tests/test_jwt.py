@@ -136,7 +136,7 @@ class JWTUserRolesTests(TestCase):
         UserRole.objects.get_or_create(
             user=self.user,
             role=self.role,
-            convocation_scope=None,
+            convocation_scope_id=None,
         )
 
     def test_user_info_includes_roles(self):

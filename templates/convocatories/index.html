@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Convocatorias{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-calendar-event me-2"></i>Convocatorias</h2>
+        {% if can_manage %}
+        <a href="{% url 'convocatories:create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Nueva Convocatoria
+        </a>
+        {% endif %}
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Buscar por nombre o código..." value="{{ search }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="estado" class="form-select">
+                        <option value="">Todos los estados</option>
+                        {% for value, label in estados %}
+                        <option value="{{ value }}" {% if estado_filter == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="tipo" class="form-select">
+                        <option value="">Todos los tipos</option>
+                        {% for value, label in tipos %}
+                        <option value="{{ value }}" {% if tipo_filter == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-search me-1"></i>Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- List -->
+    <div class="card">
+        <div class="card-body">
+            {% if convocatories %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Código</th>
+                            <th>Tipo</th>
+                            <th>Período</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for conv in convocatories %}
+                        <tr>
+                            <td>{{ conv.nombre }}</td>
+                            <td><code>{{ conv.codigo }}</code></td>
+                            <td>{{ conv.get_tipo_display }}</td>
+                            <td>{{ conv.periodo }}</td>
+                            <td>
+                                <span class="badge bg-{% if conv.estado == 'borrador' %}secondary{% elif conv.estado == 'publicada' or conv.estado == 'definitiva' %}success{% elif conv.estado == 'en_inscripcion' %}primary{% elif conv.estado == 'cerrada' %}dark{% else %}warning{% endif %}">
+                                    {{ conv.get_estado_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'convocatories:detail' conv.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center py-4">No hay convocatorias registradas.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

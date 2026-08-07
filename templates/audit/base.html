@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}{% block audit_title %}Auditoría{% endblock %} - FODEJAS{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-journal-text me-2"></i>Auditoría
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{% url 'audit_dashboard' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'audit_dashboard' %}active{% endif %}">
+                    <i class="bi bi-list-ul me-2"></i>Eventos
+                </a>
+                <a href="{% url 'audit_verify' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'audit_verify' %}active{% endif %}">
+                    <i class="bi bi-shield-check me-2"></i>Verificar Cadena
+                </a>
+            </div>
+        </div>
+        
+        <!-- Stats -->
+        {% if stats %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="bi bi-graph-up me-2"></i>Estadísticas
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><strong>Total:</strong> {{ stats.total }}</p>
+                <hr>
+                <small class="text-muted">Por acción:</small>
+                {% for action, count in stats.by_action.items %}
+                <div><span class="badge bg-secondary">{{ action }}</span> {{ count }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Main Content -->
+    <div class="col-md-9">
+        {% block audit_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

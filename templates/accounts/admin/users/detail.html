@@ -1,0 +1,131 @@
+{% extends "accounts/admin/admin_base.html" %}
+
+{% block admin_title %}Usuario - {{ view_user.get_full_name|default:view_user.email }}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-person me-2"></i>Usuario: {{ view_user.get_full_name|default:view_user.email }}</h2>
+    <a href="{% url 'accounts_admin:user_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Volver a la lista
+    </a>
+</div>
+
+<!-- User Info -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-person me-2"></i>Información del Usuario</span>
+        <div>
+            <a href="{% url 'accounts_admin:user_edit' pk=view_user.pk %}" class="btn btn-sm btn-primary">
+                <i class="bi bi-pencil me-1"></i>Editar
+            </a>
+            <form method="post" action="{% url 'accounts_admin:user_toggle' pk=view_user.pk %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm {% if view_user.is_active %}btn-outline-danger{% else %}btn-success{% endif %}">
+                    {% if view_user.is_active %}<i class="bi bi-person-dash me-1"></i>Desactivar{% else %}<i class="bi bi-person-check me-1"></i>Activar{% endif %}
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Email:</strong> {{ view_user.email }}</p>
+                <p><strong>Nombre:</strong> {{ view_user.get_full_name|default:"—" }}</p>
+                <p><strong>Documento:</strong> {{ view_user.documento|default:"—" }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Estado:</strong> 
+                    {% if view_user.is_active %}
+                        <span class="badge bg-success">Activo</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inactivo</span>
+                    {% endif %}
+                </p>
+                <p><strong>Fecha de registro:</strong> {{ view_user.date_joined|date:"d/m/Y" }}</p>
+                <p><strong>Último acceso:</strong> {{ view_user.last_login|date:"d/m/Y H:i"|default:"—" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Roles -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-shield me-2"></i>Roles Asignados</span>
+        <div>
+            <a href="{% url 'accounts_admin:user_roles' pk=view_user.pk %}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>Asignar Rol
+            </a>
+            <a href="{% url 'accounts_admin:user_role_history' pk=view_user.pk %}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-clock-history me-1"></i>Historial
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if user_roles %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Rol</th>
+                        <th>Tipo</th>
+                        <th>Scope de Convocatoria</th>
+                        <th>Fecha de Asignación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ur in user_roles %}
+                    <tr>
+                        <td><strong>{{ ur.role.name }}</strong> <span class="text-muted">({{ ur.role.code }})</span></td>
+                        <td>
+                            {% if ur.role.type == 'interno' %}
+                                <span class="badge bg-primary">Interno</span>
+                            {% else %}
+                                <span class="badge bg-info">Externo</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ ur.convocation_scope_id|default:"Global" }}</td>
+                        <td>{{ ur.created_at|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <form method="post" action="{% url 'accounts_admin:user_role_revoke' pk=view_user.pk role_id=ur.role.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de revocar este rol?')">
+                                    <i class="bi bi-x-circle"></i> Revocar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-3">Este usuario no tiene roles asignados.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Effective Permissions -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-key me-2"></i>Permisos Efectivos
+    </div>
+    <div class="card-body">
+        {% with effective_perms=view_user.get_all_permissions %}
+        {% if effective_perms %}
+            <div class="d-flex flex-wrap gap-1">
+                {% for perm in effective_perms|slice:":20" %}
+                <span class="badge bg-secondary">{{ perm }}</span>
+                {% endfor %}
+                {% if effective_perms|length > 20 %}
+                <span class="badge bg-light text-dark">+{{ effective_perms|length|add:"-20" }} más</span>
+                {% endif %}
+            </div>
+        {% else %}
+            <p class="text-muted">Este usuario no tiene permisos asignados.</p>
+        {% endif %}
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}

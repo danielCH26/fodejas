@@ -47,7 +47,7 @@ else:
         default="django-insecure-dev-only-not-for-production",
     )
 
-DEBUG = env.bool("DEBUG", default=False)
+DEBUG = env.bool("DEBUG", default=True)
 
 # Validate DEBUG and environment consistency
 if IS_PRODUCTION and DEBUG:
@@ -73,7 +73,7 @@ _validate_required_secrets()
 
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
-    default=["localhost", "127.0.0.1"] if not IS_PRODUCTION else [],
+    default=["localhost", "127.0.0.1", "0.0.0.0", "*"] if not IS_PRODUCTION else [],
 )
 
 # Application definition
@@ -174,6 +174,10 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
+    # Use JSON renderer only (no browsable API)
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
 }
 
 # Simple JWT Configuration
@@ -257,6 +261,11 @@ AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default="us-east-1")
 AWS_S3_SIGNATURE_VERSION = env("AWS_S3_SIGNATURE_VERSION", default="s3v4")
 AWS_DEFAULT_ACL = env("AWS_DEFAULT_ACL", default=None)
 AWS_S3_FILE_OVERWRITE = env.bool("AWS_S3_FILE_OVERWRITE", default=False)
+
+# Electronic Signature Service (CHG-301)
+ELECTRONIC_SIGNATURE_PROVIDER = env(
+    "ELECTRONIC_SIGNATURE_PROVIDER", default="mock"
+)
 
 # Development settings
 INTERNAL_IPS = [

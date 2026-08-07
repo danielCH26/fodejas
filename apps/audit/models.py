@@ -15,6 +15,7 @@ class AuditEvent(models.Model):
         ("LOGIN", "Login"),
         ("LOGOUT", "Logout"),
         ("ACCESS", "Access"),
+        ("ELECTRONIC_SIGNATURE", "Electronic Signature"),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

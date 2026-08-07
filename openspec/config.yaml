@@ -1,20 +1,47 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  FODEJAS — plataforma Django 5 + DRF + PostgreSQL 16 para gestión de convocatorias
+  del Fondo para el Desarrollo Educativo de los Jóvenes del Archipiélago.
+  Stack: Django 5, DRF, PostgreSQL 16, Redis+Celery, HTMX, WeasyPrint, Docker.
+  Tests: pytest + pytest-django + factory_boy. Lint: Ruff+Black+isort.
+  Estilo: PEP 8, Black (100), docstrings Google. Código en inglés, UI/docs en español.
+  Git: main/develop, feat/fix/chore/docs/<slug>, squash merge, Conventional Commits.
+  PII: nunca en código/fixtures/commits. Lógica de negocio en services/domain/selectors.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+strict_tdd: true
+
+testing:
+  runner: pytest
+  command: pytest
+  framework: pytest-django
+  testpaths:
+    - apps/
+  layers:
+    unit: true
+    integration: true
+    e2e: false
+  coverage:
+    available: false
+    reason: pytest-cov not in dependencies
+
+quality:
+  linter: ruff
+  linter_command: ruff check .
+  formatter: black
+  formatter_command: black --check .
+  sorter: isort
+  sorter_command: isort --check .
+  pre_commit: detect-secrets
+
+rules:
+  proposal:
+    - Citar siempre normativa real (Ordenanza 007/2025, Decreto 0372/2025, etc.)
+    - No inventar plazos — usar los del Art. 16 Decreto 0372/2025
+    - No proponer integraciones externas (SNIES, SISBÉN, OCCRE, bancos)
+  tasks:
+    - No mover lógica de negocio a vistas/templates
+    - Scoring, transiciones de estado y actos administrativos requieren tests
+  spec:
+    - Usar bloques ADDED/MODIFIED/REMOVED/RENAMED
+    - Declaraciones SHALL neutrales a implementación

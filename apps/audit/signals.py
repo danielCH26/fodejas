@@ -32,6 +32,23 @@ AUDIT_MODELS = [
     (CustomUser, "accounts"),
     (Role, "accounts"),
     (Permission, "accounts"),
+    # Core domain catalogs
+    ("apps.core.models.Estrato", "core"),
+    ("apps.core.models.GrupoSisben", "core"),
+    ("apps.core.models.Etnia", "core"),
+    ("apps.core.models.MunicipioIsla", "core"),
+    ("apps.core.models.NivelFormacion", "core"),
+    ("apps.core.models.ModalidadApoyo", "core"),
+    ("apps.core.models.TipoIes", "core"),
+    ("apps.core.models.TipoDocumento", "core"),
+    ("apps.core.models.EstadoDocumento", "core"),
+    ("apps.core.models.CausalTerminacionConvenio", "core"),
+    # Convocatories (CHG-104)
+    ("apps.convocatories.models.Convocatory", "convocatories"),
+    ("apps.convocatories.models.ConfiguracionConvocatoria", "convocatories"),
+    ("apps.convocatories.models.Hito", "convocatories"),
+    ("apps.convocatories.models.Cupo", "convocatories"),
+    ("apps.convocatories.models.ConvocatoriaVersion", "convocatories"),
 ]
 
 

@@ -1,0 +1,148 @@
+{% extends "accounts/admin/admin_base.html" %}
+
+{% block title %}Detalle de Usuario - FODEJAS{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-person me-2"></i>{{ view_user.email }}</h2>
+    <div>
+        <a href="{% url 'accounts_admin:user_update' view_user.pk %}" class="btn btn-outline-secondary">
+            <i class="bi bi-pencil me-2"></i>Editar
+        </a>
+        <form method="post" action="{% url 'accounts_admin:user_toggle' view_user.pk %}" style="display: inline;">
+            {% csrf_token %}
+            {% if view_user.is_active %}
+            <button type="submit" class="btn btn-outline-danger">
+                <i class="bi bi-person-dash me-2"></i>Desactivar
+            </button>
+            {% else %}
+            <button type="submit" class="btn btn-outline-success">
+                <i class="bi bi-person-check me-2"></i>Activar
+            </button>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <!-- User Info -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-person-badge me-2"></i>Información del Usuario
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th class="text-muted">Email:</th>
+                        <td>{{ view_user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Documento:</th>
+                        <td>{{ view_user.documento }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Nombre:</th>
+                        <td>{{ view_user.first_name }} {{ view_user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Teléfono:</th>
+                        <td>{{ view_user.telefono|default:"—" }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Estado:</th>
+                        <td>
+                            {% if view_user.is_active %}
+                            <span class="badge bg-success">Activo</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactivo</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Fecha de Registro:</th>
+                        <td>{{ view_user.date_joined|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Último Ingreso:</th>
+                        <td>{{ view_user.last_login|date:"d/m/Y H:i"|default:"—" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Roles -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-shield-check me-2"></i>Roles Asignados</span>
+                <a href="{% url 'accounts_admin:user_roles' view_user.pk %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i>Asignar Rol
+                </a>
+            </div>
+            <div class="card-body">
+                {% if user_roles %}
+                <ul class="list-group list-group-flush">
+                    {% for ur in user_roles %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-{% if ur.role.type == 'interno' %}primary{% else %}success{% endif %} me-2">
+                                {{ ur.role.code }}
+                            </span>
+                            {{ ur.role.name }}
+                            {% if ur.convocation_scope_id %}
+                            <small class="text-muted">(Convocatoria: {{ ur.convocation_scope_id }})</small>
+                            {% endif %}
+                        </div>
+                        <form method="post" action="{% url 'accounts_admin:user_role_revoke' view_user.pk ur.role.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                    onclick="return confirm('¿Estás seguro de quitar este rol?')">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted text-center py-3">No tiene roles asignados</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-clock-history me-2"></i>Actividad Reciente
+    </div>
+    <div class="card-body">
+        {% if recent_logs %}
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Acción</th>
+                        <th>Detalles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in recent_logs %}
+                    <tr>
+                        <td>{{ log.created_at|date:"d/m/Y H:i" }}</td>
+                        <td>{{ log.action }}</td>
+                        <td>{{ log.details }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-3">No hay actividad registrada</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

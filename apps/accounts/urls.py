@@ -1,12 +1,13 @@
 """URL configuration for accounts app."""
-from django.urls import path
+from django.urls import include, path
 from rest_framework_simplejwt.views import (
     TokenBlacklistView,
     TokenObtainPairView,
     TokenRefreshView,
 )
 
-from . import views
+from apps.audit.views import AuditChainVerifyHtmlView, AuditDashboardView, AuditEventDetailView
+from . import accounts_views as views
 
 urlpatterns = [
     # JWT Authentication endpoints (API)
@@ -29,6 +30,15 @@ urlpatterns = [
     path("dashboard/", views.DashboardView.as_view(), name="dashboard"),
     path("profile/", views.ProfileView.as_view(), name="profile"),
 
+    # Admin views (accounts/admin/)
+    path("admin/", include("apps.accounts.admin_urls", namespace="accounts_admin")),
+
+    # Audit views (accounts/audit/)
+    path("audit/", AuditDashboardView.as_view(), name="audit_dashboard"),
+    path("audit/<uuid:id>/", AuditEventDetailView.as_view(), name="audit_detail"),
+    path("audit/verify/", AuditChainVerifyHtmlView.as_view(), name="audit_verify"),
+
     # API
     path("me/", views.CurrentUserAPIView.as_view(), name="current_user"),
+    path("api/", include("apps.accounts.api.urls")),
 ]

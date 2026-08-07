@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Listado Definitivo - FODEJAS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-list-check me-2"></i>Listado Definitivo</h2>
+        <a href="{% url 'governance:acto_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Volver
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-info-circle me-2"></i>Información
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Convocatoria:</dt>
+                <dd class="col-sm-9">{{ listado.convocatoria.nombre }}</dd>
+
+                <dt class="col-sm-3">Acto Administrativo:</dt>
+                <dd class="col-sm-9"><code>{{ listado.acto.numero }}</code></dd>
+
+                <dt class="col-sm-3">Fecha de Publicación:</dt>
+                <dd class="col-sm-9">{{ listado.fecha_publicacion|date:"d/m/Y H:i" }}</dd>
+
+                <dt class="col-sm-3">Total Beneficiarios:</dt>
+                <dd class="col-sm-9">{{ listado.ranking|length }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-trophy me-2"></i>Ranking de Beneficiarios
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Radicado</th>
+                            <th>Aspirante</th>
+                            <th>Puntaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in listado.ranking %}
+                        <tr>
+                            <td>{{ item.rank }}</td>
+                            <td><code>{{ item.radicado }}</code></td>
+                            <td>{{ item.aspirante }}</td>
+                            <td>{{ item.puntaje|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

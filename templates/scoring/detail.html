@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluar Solicitud - {{ solicitud.radicado }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .criterio-card {
+        border-left: 4px solid #6c757d;
+        transition: all 0.3s ease;
+    }
+    .criterio-card.evaluado {
+        border-left-color: #198754;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{% url 'scoring:list' %}" class="btn btn-outline-secondary mb-2">
+                <i class="bi bi-arrow-left me-2"></i>Volver a la Lista
+            </a>
+            <h2><i class="bi bi-clipboard-data me-2"></i>Evaluar Solicitud</h2>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Solicitud Info -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Información de la Solicitud</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Radicado:</strong>
+                    <p>{{ solicitud.radicado|default:"Sin radicado" }}</p>
+                </div>
+                <div class="col-md-3">
+                    <strong>Aspirante:</strong>
+                    <p>{{ solicitud.aspirante.first_name }} {{ solicitud.aspirante.last_name }}</p>
+                </div>
+                <div class="col-md-3">
+                    <strong>Convocatoria:</strong>
+                    <p>{{ solicitud.convocatoria.nombre }}</p>
+                </div>
+                <div class="col-md-3">
+                    <strong>Municipio:</strong>
+                    <p>{{ solicitud.datos_personales.municipio|default:"-" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Score Summary -->
+    {% if puntaje_total %}
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Puntaje Total</h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <h3>{{ weights.socioeconomico|floatformat:0 }}%</h3>
+                    <p class="text-muted">Socioeconómico</p>
+                    <h4>{{ puntaje_total.puntaje_socioeconomico|default:"0" }}</h4>
+                </div>
+                <div class="col-md-3">
+                    <h3>{{ weights.academico|floatformat:0 }}%</h3>
+                    <p class="text-muted">Académico</p>
+                    <h4>{{ puntaje_total.puntaje_academico|default:"0" }}</h4>
+                </div>
+                <div class="col-md-3">
+                    <h3>{{ weights.excelencia|floatformat:0 }}%</h3>
+                    <p class="text-muted">Excelencia</p>
+                    <h4>{{ puntaje_total.puntaje_excelencia|default:"0" }}</h4>
+                </div>
+                <div class="col-md-3">
+                    <h3>Total</h3>
+                    <p class="text-muted">Puntaje Final</p>
+                    <h2 class="text-success">{{ puntaje_total.puntaje_total }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Evaluation Criteria -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Criterios de Evaluación</h5>
+        </div>
+        <div class="card-body">
+            {% for evaluacion in evaluaciones %}
+            <div class="card mb-3 criterio-card {% if evaluacion.puntaje %}evaluado{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">
+                                {{ evaluacion.criterio_nombre }}
+                                <span class="badge bg-{% if evaluacion.puntaje %}success{% else %}secondary{% endif %} ms-2">
+                                    {% if evaluacion.puntaje %}{{ evaluacion.puntaje }}{% else %}Pendiente{% endif %}
+                                </span>
+                            </h5>
+                            <p class="text-muted mb-2">
+                                {% if evaluacion.criterio == 'socioeconomico' %}
+                                    Ponderación: {{ weights.socioeconomico|floatformat:0 }}%
+                                {% elif evaluacion.criterio == 'academico' %}
+                                    Ponderación: {{ weights.academico|floatformat:0 }}%
+                                {% else %}
+                                    Ponderación: {{ weights.excelencia|floatformat:0 }}%
+                                {% endif %}
+                            </p>
+                            
+                            {% if evaluacion.observaciones %}
+                            <div class="alert alert-info mb-2">
+                                <strong>Observaciones:</strong> {{ evaluacion.observaciones }}
+                            </div>
+                            {% endif %}
+                            
+                            {% if evaluacion.evaluado_por %}
+                            <small class="text-muted">
+                                Evaluado por: {{ evaluacion.evaluado_por.first_name|default:evaluacion.evaluado_por.username }} 
+                                el {{ evaluacion.updated_at|date:"d/m/Y H:i" }}
+                            </small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="ms-3" style="min-width: 200px;">
+                            <form method="post" action="{% url 'scoring:evaluate' solicitud_uuid=solicitud.uuid evaluacion_pk=evaluacion.id %}" class="eval-form">
+                                {% csrf_token %}
+                                <div class="input-group input-group-sm">
+                                    <input type="number" 
+                                           class="form-control" 
+                                           name="puntaje" 
+                                           value="{{ evaluacion.puntaje|default:'' }}"
+                                           min="0" 
+                                           max="100" 
+                                           step="0.01"
+                                           placeholder="0-100">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                </div>
+                                <textarea class="form-control form-control-sm mt-2" 
+                                          name="observaciones" 
+                                          placeholder="Observaciones (opcional)"
+                                          rows="2">{{ evaluacion.observaciones }}</textarea>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'scoring:list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Volver
+                </a>
+                
+                <form method="post" action="{% url 'scoring:calculate' solicitud.uuid %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-calculator me-2"></i>Calcular Puntaje Total
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Handle evaluation form submission
+    document.querySelectorAll('.eval-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error al guardar evaluación');
+                }
+            })
+            .catch(error => {
+                alert('Error al guardar evaluación');
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from apps.accounts.accounts_views import root_view
 from apps.core.health import liveness, readiness
 
 urlpatterns = [
@@ -25,6 +26,17 @@ urlpatterns = [
     path("healthz", liveness, name="healthz"),
     path("readyz", readiness, name="readyz"),
     path("", include("django_prometheus.urls")),
-    path("api/auth/", include("apps.accounts.urls")),  # JWT endpoints
+    path("", root_view, name="root"),  # Redirect to login
+    # HTML views for accounts (before API to avoid conflict)
+    path("accounts/", include("apps.accounts.urls")),
+    # APIs mantenidas (sin HTML equivalente)
+    path("api/auth/", include("apps.accounts.api.urls")),  # JWT API endpoints
     path("api/audit/", include("apps.audit.urls")),  # Audit endpoints
+
+    # HTML views
+    path("convocatorias/", include("apps.convocatories.urls")),  # Convocatory HTML views
+    path("applications/", include("apps.applications.urls")),  # Applications HTML views
+    path("scoring/", include("apps.scoring.urls")),  # Scoring HTML views
+    path("claims/", include("apps.claims.urls")),  # Claims HTML views (CHG-205)
+    path("governance/", include("apps.governance.urls")),  # Governance HTML views (CHG-207)
 ]

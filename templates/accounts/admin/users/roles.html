@@ -1,0 +1,91 @@
+{% extends "accounts/admin/admin_base.html" %}
+
+{% block admin_title %}Asignar Roles - {{ view_user.get_full_name|default:view_user.email }}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-shield-plus me-2"></i>Asignar Roles</h2>
+    <a href="{% url 'accounts_admin:user_detail' pk=view_user.pk %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Volver al usuario
+    </a>
+</div>
+
+<!-- User Info -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-person me-2"></i>Usuario
+    </div>
+    <div class="card-body">
+        <p><strong>Nombre:</strong> {{ view_user.get_full_name|default:"—" }}</p>
+        <p><strong>Email:</strong> {{ view_user.email }}</p>
+    </div>
+</div>
+
+<!-- Current Roles -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-check-circle me-2"></i>Roles Actuales
+    </div>
+    <div class="card-body">
+        {% if current_roles %}
+        <ul class="list-group">
+            {% for ur in current_roles %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ ur.role.name }}</strong>
+                    <span class="text-muted">({{ ur.role.code }})</span>
+                    {% if ur.convocation_scope_id %}
+                    <span class="badge bg-info ms-2">{{ ur.convocation_scope_id }}</span>
+                    {% endif %}
+                </div>
+                <form method="post" action="{% url 'accounts_admin:user_role_revoke' pk=view_user.pk role_id=ur.role.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Revocar este rol?')">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted">No tiene roles asignados.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Assign New Role -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-plus-circle me-2"></i>Asignar Nuevo Rol
+    </div>
+    <div class="card-body">
+        {% if available_roles %}
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="role_id" class="form-label">Seleccionar Rol</label>
+                <select name="role_id" id="role_id" class="form-select" required>
+                    <option value="">-- Seleccionar --</option>
+                    {% for role in available_roles %}
+                    <option value="{{ role.id }}">{{ role.name }} ({{ role.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="convocation_scope" class="form-label">Scope de Convocatoria (opcional)</label>
+                <input type="text" name="convocation_scope" id="convocation_scope" class="form-control" placeholder="ID de convocatoria si es específico">
+                <div class="form-text">Dejar vacío para acceso global.</div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg me-2"></i>Asignar Rol
+            </button>
+        </form>
+        {% else %}
+        <p class="text-muted">No hay roles disponibles para asignar.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

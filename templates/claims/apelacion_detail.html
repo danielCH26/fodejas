@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Apelación {{ apelacion.uuid }} - FODEJAS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-gavel me-2"></i>Apelación</h2>
+        <div>
+            <a href="{% url 'claims:apelacion_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Volver a la lista
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <!-- Main Info Card -->
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información de la Apelación</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>UUID:</strong>
+                            <p><code>{{ apelacion.uuid }}</code></p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Estado:</strong>
+                            <p>
+                                <span class="badge bg-{% if apelacion.estado == 'presentada' %}secondary{% elif apelacion.estado == 'en_analisis' %}warning{% elif apelacion.estado == 'confirmada' %}success{% else %}danger{% endif %}">
+                                    {{ apelacion.get_estado_display }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Reclamación:</strong>
+                            <p>
+                                <a href="{% url 'claims:detail' apelacion.reclamacion.uuid %}">
+                                    {{ apelacion.reclamacion.radicado|default:apelacion.reclamacion.uuid }}
+                                </a>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Estado de Reclamación:</strong>
+                            <p>
+                                <span class="badge bg-{% if apelacion.reclamacion.estado == 'resuelta' %}success{% elif apelacion.reclamacion.estado == 'rechazada' %}danger{% else %}warning{% endif %}">
+                                    {{ apelacion.reclamacion.get_estado_display }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Fecha de Creación:</strong>
+                            <p>{{ apelacion.created_at|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if apelacion.fecha_resolucion %}
+                            <strong>Fecha de Resolución:</strong>
+                            <p>{{ apelacion.fecha_resolucion|date:"d/m/Y H:i" }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Descripción:</strong>
+                        <p class="mt-1">{{ apelacion.descripcion|linebreaks }}</p>
+                    </div>
+
+                    {% if apelacion.respuesta %}
+                    <div class="mb-3">
+                        <strong>Respuesta:</strong>
+                        <p class="mt-1">{{ apelacion.respuesta|linebreaks }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if apelacion.evidencia %}
+                    <div class="mb-3">
+                        <strong>Evidencia:</strong>
+                        <p class="mt-1">
+                            <a href="{{ apelacion.evidencia.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="bi bi-paperclip me-1"></i>Descargar evidencia
+                            </a>
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- History Card -->
+            {% if historial %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Historial</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% for entry in historial %}
+                        <div class="timeline-item mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ entry.get_estado_nuevo_display }}</strong>
+                                <small class="text-muted">{{ entry.created_at|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <p class="mb-1">{{ entry.observacion|default:"-" }}</p>
+                            {% if entry.actor %}
+                            <small class="text-muted">Por: {{ entry.actor.get_full_name|default:entry.actor.email }}</small>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Actions Card -->
+        <div class="col-lg-4 mb-4">
+            {% if can_transition and apelacion.estado == 'presentada' %}
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Acciones OFIJUR</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'claims:apelacion_analisis' apelacion.uuid %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="iniciar_analisis">
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="bi bi-play me-2"></i>Iniciar Análisis
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if can_transition and apelacion.estado == 'en_analisis' %}
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-gavel me-2"></i>Resolver Apelación</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'claims:apelacion_confirmar' apelacion.uuid %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="respuesta" class="form-label">Fundamentación:</label>
+                            <textarea name="respuesta" id="respuesta" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" name="accion" value="confirmar" class="btn btn-success">
+                                <i class="bi bi-check-circle me-2"></i>Confirmar (Aceptar)
+                            </button>
+                            <button type="submit" name="accion" value="revocar" class="btn btn-danger">
+                                <i class="bi bi-x-circle me-2"></i>Revocar (Rechazar)
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

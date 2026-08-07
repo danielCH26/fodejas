@@ -58,6 +58,11 @@ class RegisterViewTests(TestCase):
 
     def setUp(self):
         """Set up test data."""
+        # Create R-ASPIRANTE role for registration tests
+        Role.objects.get_or_create(
+            code="R-ASPIRANTE",
+            defaults={"name": "Aspirante", "type": "externo"},
+        )
         self.url = reverse("register")
 
     def test_register_page_loads(self):
@@ -157,7 +162,7 @@ class DashboardViewTests(TestCase):
         UserRole.objects.get_or_create(
             user=self.user,
             role=self.role,
-            convocation_scope=None,
+            convocation_scope_id=None,
         )
         self.url = reverse("dashboard")
 

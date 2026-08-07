@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-gear me-2"></i>Administración
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'accounts_admin:user_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-people me-2"></i>Usuarios
+                    </a>
+                    <a href="{% url 'accounts_admin:role_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-shield me-2"></i>Roles
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+            
+            {% block admin_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

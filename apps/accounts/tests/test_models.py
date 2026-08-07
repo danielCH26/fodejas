@@ -1,4 +1,5 @@
 """Tests for accounts models."""
+import pytest
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.test import TestCase
@@ -130,3 +131,191 @@ class RoleModelTests(TestCase):
                 name="Invalid Role",
                 type="invalid",
             )
+    
+    def test_role_has_group_foreign_key(self):
+        """Test that Role model has a ForeignKey to auth.Group."""
+        # Import at function level to avoid circular imports
+        from django.contrib.auth.models import Group
+        from apps.accounts.models import Role
+        
+        # Create a test group
+        group = Group.objects.create(name="Test Group")
+        
+        # Create role with group reference
+        role = Role.objects.create(
+            code="R-WITH-GROUP",
+            name="Role With Group",
+            type="interno",
+            group=group,
+        )
+        
+        # Test the relationship
+        self.assertEqual(role.group, group)
+        self.assertEqual(role.group.name, "Test Group")
+        
+        # Test reverse relationship if it exists
+        # This would test if group.role exists (OneToOne reverse)
+        try:
+            # Check if group.role exists (OneToOne reverse)
+            if hasattr(group, 'role'):
+                self.assertEqual(group.role, role)
+        except AttributeError:
+            # It might not be a OneToOne, could be ForeignKey
+            pass
+    
+    def test_role_can_exist_without_group(self):
+        """Test that Role can be created without a group (field is nullable)."""
+        from apps.accounts.models import Role
+        
+        # Create role without group
+        role = Role.objects.create(
+            code="R-NO-GROUP",
+            name="Role Without Group",
+            type="externo",
+            # group is not provided, should be None
+        )
+        
+        # Test that group is None
+        self.assertIsNone(role.group)
+        
+        # Test that role still has all other fields
+        self.assertEqual(role.code, "R-NO-GROUP")
+        self.assertEqual(role.name, "Role Without Group")
+        self.assertEqual(role.type, "externo")
+
+
+class PermissionModelTests(TestCase):
+    """Test the Permission model."""
+
+    def test_permission_creation(self):
+        """Test creating a permission with required fields."""
+        from apps.accounts.models import Permission
+        
+        permission = Permission.objects.create(
+            app_label="applications",
+            action="add_application",
+        )
+        self.assertEqual(permission.app_label, "applications")
+        self.assertEqual(permission.action, "add_application")
+        self.assertIsNone(permission.convocation_scope_id)
+        self.assertIsNone(permission.stage)
+
+    def test_permission_has_auth_permission_foreign_key(self):
+        """Test that Permission model has a ForeignKey to auth.Permission."""
+        # Import at function level to avoid circular imports
+        from django.contrib.auth.models import Permission as AuthPermission
+        from apps.accounts.models import Permission
+        
+        # Create an auth permission
+        from django.contrib.contenttypes.models import ContentType
+        content_type = ContentType.objects.create(
+            app_label='accounts',
+            model='test'
+        )
+        auth_perm = AuthPermission.objects.create(
+            codename="test_permission",
+            name="Test Permission",
+            content_type=content_type,
+        )
+        
+        # Create permission with auth_permission reference
+        permission = Permission.objects.create(
+            app_label="applications",
+            action="view_convocatory",
+            auth_permission=auth_perm,
+        )
+        
+        # Test the relationship
+        self.assertEqual(permission.auth_permission, auth_perm)
+        self.assertEqual(permission.auth_permission.codename, "test_permission")
+        
+        # Test reverse relationship if it exists
+        try:
+            # Check if auth_perm.custom_permission exists (OneToOne reverse)
+            if hasattr(auth_perm, 'custom_permission'):
+                self.assertEqual(auth_perm.custom_permission, permission)
+        except AttributeError:
+            # It might not be a OneToOne, could be ForeignKey
+            pass
+
+    def test_permission_can_exist_without_auth_permission(self):
+        """Test that Permission can be created without auth_permission (field is nullable)."""
+        from apps.accounts.models import Permission
+        
+        # Create permission without auth_permission
+        permission = Permission.objects.create(
+            app_label="convocatories",
+            action="edit_convocatory",
+            # auth_permission is not provided, should be None
+        )
+        
+        # Test that auth_permission is None
+        self.assertIsNone(permission.auth_permission)
+        
+        # Test that permission still has all other fields
+        self.assertEqual(permission.app_label, "convocatories")
+        self.assertEqual(permission.action, "edit_convocatory")
+
+
+@pytest.mark.django_db
+class TestConsentimiento:
+    """Test Consentimiento model for habeas data."""
+
+    def test_consentimiento_creation(self):
+        """Test creating a consentimiento record."""
+        from django.contrib.auth import get_user_model
+        from apps.accounts.models import Consentimiento
+        import hashlib
+
+        User = get_user_model()
+        user = User.objects.create_user(
+            email="consent@test.com",
+            password="Test123!",
+            documento="12345678",
+        )
+
+        texto = "Texto de política de privacidad"
+        hash_texto = hashlib.sha256(texto.encode()).hexdigest()
+
+        consentimiento = Consentimiento.objects.create(
+            titular=user,
+            tipo="tratamiento_datos",
+            version_texto=texto,
+            version_etiqueta="v1",
+            hash_texto=hash_texto,
+            ip="127.0.0.1",
+        )
+
+        assert consentimiento.titular == user
+        assert consentimiento.tipo == "tratamiento_datos"
+
+
+@pytest.mark.django_db
+class TestSolicitudHabeasData:
+    """Test SolicitudHabeasData model."""
+
+    def test_solicitud_creation(self):
+        """Test creating a habeas data request."""
+        from django.contrib.auth import get_user_model
+        from apps.accounts.models import SolicitudHabeasData
+        from django.utils import timezone
+
+        User = get_user_model()
+        user = User.objects.create_user(
+            email="hd@test.com",
+            password="Test123!",
+            documento="11223344",
+        )
+
+        fecha_limite = timezone.now() + timezone.timedelta(days=30)
+
+        solicitud = SolicitudHabeasData.objects.create(
+            titular=user,
+            tipo="consulta",
+            descripcion="Quiero ejercer mi derecho de consulta",
+            fecha_limite=fecha_limite,
+        )
+
+        assert solicitud.titular == user
+        assert solicitud.tipo == "consulta"
+        assert solicitud.estado == "radicada"

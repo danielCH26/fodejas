@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-gear me-2"></i>Administración
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{% url 'accounts_admin:user_list' %}" class="list-group-item list-group-item-action {% if admin_section == 'users' %}active{% endif %}">
+                    <i class="bi bi-people me-2"></i>Usuarios
+                </a>
+                <a href="{% url 'accounts_admin:role_list' %}" class="list-group-item list-group-item-action {% if admin_section == 'roles' %}active{% endif %}">
+                    <i class="bi bi-shield-check me-2"></i>Roles
+                </a>
+                <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action">
+                    <i class="bi bi-arrow-left me-2"></i>Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
+        {% block admin_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

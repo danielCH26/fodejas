@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Presentar Reclamación - FODEJAS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-exclamation-triangle me-2"></i>Presentar Reclamación</h2>
+        <a href="{% url 'claims:list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Cancelar
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Postulación: {{ solicitud.radicado }}</h5>
+            <small class="text-muted">{{ solicitud.convocatoria.nombre }}</small>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="tipo" class="form-label">Tipo de Reclamación *</label>
+                    <select class="form-select" id="tipo" name="tipo" required>
+                        <option value="">Seleccione...</option>
+                        <option value="puntaje">Puntaje incorrecto</option>
+                        <option value="requisito">Requisito mal validado</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción *</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion" 
+                              rows="6" required
+                              placeholder="Explique detalladamente el motivo de su reclamación..."></textarea>
+                    <div class="form-text">
+                        Sea lo más específico posible. Incluya información que considere relevante para su reclamación.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="evidencia" class="form-label">Evidencia (opcional)</label>
+                    <input type="file" class="form-control" id="evidencia" name="evidencia">
+                    <div class="form-text">
+                        Adjunte documentos que sustenten su reclamación (PDF, JPG, PNG)
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Nota:</strong> Una vez presentada, la reclamación será revisada por la Junta Directiva.
+                    Recibirá una notificación cuando sea resuelta.
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send me-2"></i>Presentar Reclamación
+                    </button>
+                    <a href="{% url 'claims:list' %}" class="btn btn-outline-secondary">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

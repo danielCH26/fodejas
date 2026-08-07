@@ -1,0 +1,161 @@
+{% extends "audit/base.html" %}
+
+{% block audit_title %}Eventos de Auditoría{% endblock %}
+
+{% block audit_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-journal-text me-2"></i>Eventos de Auditoría</h2>
+    <a href="{% url 'audit_verify' %}" class="btn btn-outline-primary">
+        <i class="bi bi-shield-check me-2"></i>Verificar Cadena
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="action" class="form-label">Acción</label>
+                <select class="form-select" id="action" name="action">
+                    <option value="">Todas</option>
+                    {% for value, label in action_choices %}
+                    <option value="{{ value }}" {% if filters.action == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="entity" class="form-label">Entidad</label>
+                <select class="form-select" id="entity" name="entity">
+                    <option value="">Todas</option>
+                    {% for ent in entities %}
+                    <option value="{{ ent }}" {% if filters.entity == ent %}selected{% endif %}>{{ ent }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="module" class="form-label">Módulo</label>
+                <select class="form-select" id="module" name="module">
+                    <option value="">Todos</option>
+                    {% for mod in modules %}
+                    <option value="{{ mod }}" {% if filters.module == mod %}selected{% endif %}>{{ mod }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="search" class="form-label">Buscar</label>
+                <input type="text" class="form-control" id="search" name="search" value="{{ filters.search }}" placeholder="Entidad o módulo...">
+            </div>
+            <div class="col-md-3">
+                <label for="timestamp_from" class="form-label">Desde</label>
+                <input type="date" class="form-control" id="timestamp_from" name="timestamp_from" value="{{ filters.timestamp_from }}">
+            </div>
+            <div class="col-md-3">
+                <label for="timestamp_to" class="form-label">Hasta</label>
+                <input type="date" class="form-control" id="timestamp_to" name="timestamp_to" value="{{ filters.timestamp_to }}">
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-search me-2"></i>Filtrar
+                </button>
+                <a href="{% url 'audit_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle me-2"></i>Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Events Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Fecha/Hora</th>
+                        <th>Acción</th>
+                        <th>Entidad</th>
+                        <th>Módulo</th>
+                        <th>Usuario</th>
+                        <th>IP</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td>
+                            <small>{{ event.timestamp|date:"d/m/Y H:i:s" }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if event.action == 'CREATE' %}success{% elif event.action == 'UPDATE' %}warning{% elif event.action == 'DELETE' %}danger{% elif event.action == 'LOGIN' %}info{% else %}secondary{% endif %}">
+                                {{ event.action }}
+                            </span>
+                        </td>
+                        <td>
+                            <strong>{{ event.entity }}</strong>
+                            <br>
+                            <small class="text-muted">{{ event.entity_id|truncatechars:8 }}</small>
+                        </td>
+                        <td>{{ event.module }}</td>
+                        <td>
+                            {% if event.actor %}
+                            <span class="text-truncate d-inline-block" style="max-width: 150px;" title="{{ event.actor.email }}">
+                                {{ event.actor.email }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">Sistema</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small>{{ event.ip_address|default:"—" }}</small>
+                        </td>
+                        <td>
+                            <a href="{% url 'audit_detail' event.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mb-0">No se encontraron eventos de auditoría</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Paginación de auditoría">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">Primera</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

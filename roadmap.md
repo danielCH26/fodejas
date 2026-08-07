@@ -67,8 +67,8 @@
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │  FASE 0 — INFRAESTRUCTURA                                       │
-│  Repo, Docker, CI/CD, entornos, secrets, observabilidad,        │
-│  base de datos, storage, email, seguridad, DR                   │
+│  Repo, Docker, CI/CD, entornos, secrets, observabilidad,       │
+│  base de datos, storage, seguridad, DR                          │
 │  → Plataforma desplegable y observable desde el día 1           │
 └──────────────────────────────────────────────────────────────────┘
                               ↓
@@ -172,11 +172,11 @@ insostenibles.
 | INF-006   | `INF-006-observability`         | Logging estructurado (JSON), Sentry, Prometheus, Grafana, health checks (`/healthz`, `/readyz`) |
 | INF-007   | `INF-007-postgres-prod`         | PostgreSQL de producción: tuning, connection pooling (PgBouncer), backups automatizados, monitoreo de queries |
 | INF-008   | `INF-008-storage-prod`          | Storage S3-compatible de producción: bucket de anexos, versionado, cifrado en reposo, ciclo de vida |
-| INF-009   | `INF-009-email-transactional`   | Proveedor de email transaccional, plantillas, retry, rate limiting, dominio verificado (DKIM/SPF/DMARC) |
+| ~~INF-009~~ | ~~`INF-009-email-transactional`~~ | ~~**ELIMINADO**: Las notificaciones son internas (CAP-019), no se usa email transaccional~~ |
 | INF-010   | `INF-010-security-headers`      | HTTPS/TLS obligatorio, headers de seguridad, rate limiting, WAF, CORS, CSP |
-| INF-011   | `INF-011-disaster-recovery`     | Plan de DR, RTO/RPO definidos, backups verificados, procedimiento de restore documentado y probado |
-| INF-012   | `INF-012-runbooks`              | Runbooks operacionales: deploy, rollback, incidentes, on-call, procedimientos de escalamiento |
-| INF-013   | `INF-013-iac`                   | Infraestructura como código (Terraform o equivalente): red, balanceador, base de datos, storage, IAM |
+| INF-011   | `INF-011-disaster-recovery`     | Backups automatizados, procedimiento de restore básico, RTO/RPO documentados |
+| INF-012   | `INF-012-runbooks`              | README operativo mínimo: deploy, rollback, incidentes comunes |
+| INF-013   | `INF-013-iac`                   | **(APLAZADO)** - IaC para producción futura cuando el proyecto tenga más madurez |
 | INF-014   | `INF-014-migrations-strategy`   | Estrategia de migraciones de BD, zero-downtime deploys, migraciones reversibles, expands/contracts |
 | INF-015   | `INF-015-monitoring-alerts`     | Alertas operacionales: capacidad, error rate, latencia, jobs Celery, backups, expiración de certificados |
 | INF-016   | `INF-016-perf-baseline`         | Línea base de rendimiento y capacidad: smoke tests, pruebas de carga de la convocatoria piloto |
@@ -208,16 +208,15 @@ insostenibles.
       staging.
 - [ ] El bucket de anexos tiene versionado, cifrado y política
       de ciclo de vida.
-- [ ] El dominio de email está verificado (DKIM/SPF/DMARC) y
-      los correos transaccionales salen firmados.
+- [ ] ~~El dominio de email está verificado (DKIM/SPF/DMARC) y~~
+      ~~los correos transaccionales salen firmados.~~ *(Eliminado: notificaciones internas)*
 - [ ] HTTPS es obligatorio en todos los entornos no-locales.
 - [ ] Rate limiting y headers de seguridad activos en
       `staging` y `prod`.
 - [ ] RTO y RPO están documentados y firmados por la
       Secretaría de Educación.
-- [ ] Runbooks versionados en el repo (`docs/runbooks/`) para:
-      deploy, rollback, incidente de BD, incidente de email,
-      incidente de storage.
+- [ ] README operativo versionado en el repo para:
+      deploy, rollback, incidente de BD, incidente de storage.
 - [ ] Toda la infraestructura productiva está descrita como
       código (Terraform o equivalente) y es reproducible desde
       cero.
@@ -266,8 +265,8 @@ desde el día 1 (Ley 1581/2012, CPACA, auditoría).
       ejemplo (50/30/20) sin código nuevo.
 - [ ] El sistema captura consentimientos y soporta solicitudes de
       consulta, rectificación, actualización y supresión.
-- [ ] La infraestructura de notificaciones (email + registro en
-      bandeja) está operativa.
+- [ ] La infraestructura de notificaciones internas (bandeja en app)
+      está operativa.
 
 ### 5.3 Criterio de salida
 
@@ -286,35 +285,36 @@ del listado definitivo.
 
 ### 6.1 Capacidades y Cambios
 
-| CAP   | Cambio                          | Título                                       | Apps                       |
-| ----- | ------------------------------- | -------------------------------------------- | -------------------------- |
-| 002   | `CHG-201-convocatory-engine`    | Crear, configurar, publicar y cerrar convocatorias (ciclo de estados) | `apps/convocatories/` |
-| 003   | `CHG-202-applicator-fui`        | Wizard FUI digital + carga de anexos + radicado | `apps/applications/`    |
-| 004   | `CHG-203-requirements-check`    | Validación de requisitos mínimos + subsanaciones | `apps/applications/`    |
-| 005   | `CHG-204-scoring`               | Motor de scoring configurable (50/30/20) + ranking por municipio + regla Providencia Isla | `apps/scoring/` |
+| CAP   | Cambio                          | Título                                       | Apps                       | Estado |
+| ----- | ------------------------------- | -------------------------------------------- | -------------------------- | ------ |
+| 002   | `CHG-201-convocatory-engine`    | Crear, configurar, publicar y cerrar convocatorias (ciclo de estados) | `apps/convocatories/` | ✅ |
+| 003   | `CHG-202-applicator-fui`        | Wizard FUI digital + carga de anexos + radicado | `apps/applications/`    | ✅ |
+| 004   | `CHG-203-requirements-check`    | Validación de requisitos mínimos + subsanaciones | `apps/applications/`    | ✅ |
+| 005   | `CHG-204-scoring`               | Motor de scoring configurable (50/30/20) + ranking por municipio + regla Providencia Isla | `apps/scoring/` | ✅ |
+| 006   | `CHG-205-claims`                | Reclamaciones (1ª instancia ante la Junta) | `apps/claims/` | 🔄 En progreso |
 | 006   | `CHG-205-claims`                | Reclamaciones (1ª instancia ante la Junta)   | `apps/claims/`             |
 | 007   | `CHG-206-appeals`               | Apelaciones (2ª instancia ante Oficina Jurídica) | `apps/claims/`          |
 | 008   | `CHG-207-definitive-results`    | Resultados definitivos + acto administrativo + corrección de errores formales (Art. 45 CPACA) | `apps/convocatories/`, `apps/governance/` |
 
 ### 6.2 Entregables verificables
 
-- [ ] Una convocatoria se crea, configura y publica siguiendo el
-      cronograma de la convocatoria de referencia.
-- [ ] Un aspirante puede registrarse, diligenciar el FUI digital,
-      cargar anexos, firmar electrónicamente y obtener radicado.
-- [ ] La Coordinación Técnica valida cada uno de los 7 requisitos
+- [x] Una convocatoria se crea, configura y publica siguiendo el
+      cronograma de la convocatoria de referencia. (CHG-201)
+- [x] Un aspirante puede registrarse, diligenciar el FUI digital,
+      cargar anexos, firmar electrónicamente y obtener radicado. (CHG-202)
+- [x] La Coordinación Técnica valida cada uno de los 7 requisitos
       mínimos (verificación manual contra SNIES/SISBÉN/OCCRE,
-      registrada como evidencia en la plataforma).
-- [ ] El motor de scoring aplica los criterios 50/30/20, maneja
+      registrada como evidencia en la plataforma). (CHG-203)
+- [x] El motor de scoring aplica los criterios 50/30/20, maneja
       empates y produce el ranking por municipio (incluida la regla
-      de excepción de Providencia Isla).
+      de excepción de Providencia Isla). (CHG-204)
 - [ ] Un aspirante puede presentar reclamación; la Junta la
-      resuelve y notifica.
-- [ ] Un aspirante puede apelar; la Oficina Jurídica resuelve.
+      resuelve y notifica. (CHG-205)
+- [ ] Un aspirante puede apelar; la Oficina Jurídica resuelve. (CHG-206)
 - [ ] La Junta aprueba el listado definitivo y se emite el acto
-      administrativo con su consecutivo.
+      administrativo con su consecutivo. (CHG-207)
 - [ ] Un error formal puede corregirse vía un nuevo acto
-      modificatorio (CPACA Art. 45).
+      modificatorio (CPACA Art. 45). (CHG-207)
 
 ### 6.3 Criterio de salida
 
@@ -503,15 +503,15 @@ CAP-017/018 (gobernanza) y CAP-020/021/028 (transparencia/auditoría)
 
 | Fase | Capacidades                                                              | Cambios         |
 | ---- | ------------------------------------------------------------------------ | --------------- |
-| 0    | INF-001 a INF-016 (16 specs de infraestructura)                          | INF-001 a 016   |
+| 0    | INF-001 a INF-008, INF-010 a INF-016 (15 specs de infraestructura, INF-009 eliminado) | INF-001 a 008, INF-010 a 016   |
 | 1    | CAP-001, 019, 022, 023, 024, 025                                         | CHG-101 a 106   |
 | 2    | CAP-002, 003, 004, 005, 006, 007, 008                                   | CHG-201 a 207   |
 | 3    | CAP-009, 010, 015, 029                                                   | CHG-301 a 304   |
 | 4    | CAP-011, 012, 013, 014, 016, 026                                         | CHG-401 a 406   |
 | 5    | CAP-017, 018, 020, 021, 027, 028, 030                                    | CHG-501 a 507   |
 
-**Total**: 30 capacidades de aplicación + 16 de infraestructura =
-**46 specs** entregadas a través de **47 cambios** OpenSpec.
+**Total**: 30 capacidades de aplicación + 15 de infraestructura (INF-009 eliminado) =
+**45 specs** entregadas a través de **46 cambios** OpenSpec.
 
 ---
 
@@ -528,7 +528,7 @@ CAP-017/018 (gobernanza) y CAP-020/021/028 (transparencia/auditoría)
 | R7 | Filtración de datos personales.                                          | Mínimo privilegio, cifrado, DLP, tests de seguridad periódicos.     |
 | R8 | Migración incompleta desde el proceso actual.                            | Plan de migración como change previo a Fase 2 (`CHG-099-migration`). |
 | R9 | Captura de datos en zonas sin conectividad.                              | Radicación presencial conservada como opción.                       |
-| R10 | Indisponibilidad de infraestructura (DB, storage, email).                | Runbooks de incidente, RTO/RPO definidos, monitoreo con alertas, redundancia. |
+| R10 | Indisponibilidad de infraestructura (DB, storage).                | Runbooks de incidente, RTO/RPO definidos, monitoreo con alertas, redundancia. |
 | R11 | Pérdida de datos por falla de backups.                                   | Backups verificados periódicamente + DR probado en staging.         |
 | R12 | Exposición de secrets en el repo.                                        | Pre-commit hooks + secret scanning en CI + uso de secret manager.  |
 

@@ -1,0 +1,135 @@
+<div id="wizard-step-1">
+    <p class="text-muted mb-4">Ingresa tu información personal básica.</p>
+    
+    <form id="step-1-form">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="nombre" class="form-label">Nombre Completo *</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="nombre" 
+                       name="nombre"
+                       value="{{ application.datos_personales.nombre|default:'' }}"
+                       required>
+                <div class="form-text">Ej: Juan Pérez Rodríguez</div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="tipo_documento" class="form-label">Tipo de Documento *</label>
+                <select class="form-select" id="tipo_documento" name="tipo_documento" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="CC" {% if application.datos_personales.tipo_documento == 'CC' %}selected{% endif %}>Cédula de Ciudadanía</option>
+                    <option value="CE" {% if application.datos_personales.tipo_documento == 'CE' %}selected{% endif %}>Cédula de Extranjería</option>
+                    <option value="TI" {% if application.datos_personales.tipo_documento == 'TI' %}selected{% endif %}>Tarjeta de Identidad</option>
+                    <option value="PA" {% if application.datos_personales.tipo_documento == 'PA' %}selected{% endif %}>Pasaporte</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="numero_documento" class="form-label">Número de Documento *</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="numero_documento" 
+                       name="numero_documento"
+                       value="{{ application.datos_personales.numero_documento|default:'' }}"
+                       required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento *</label>
+                <input type="date" 
+                       class="form-control" 
+                       id="fecha_nacimiento" 
+                       name="fecha_nacimiento"
+                       value="{{ application.datos_personales.fecha_nacimiento|default:'' }}"
+                       required>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="telefono" class="form-label">Teléfono *</label>
+                <input type="tel" 
+                       class="form-control" 
+                       id="telefono" 
+                       name="telefono"
+                       value="{{ application.datos_personales.telefono|default:'' }}"
+                       required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="email_alternativo" class="form-label">Email Alternativo</label>
+                <input type="email" 
+                       class="form-control" 
+                       id="email_alternativo" 
+                       name="email_alternativo"
+                       value="{{ application.datos_personales.email_alternativo|default:'' }}">
+                <div class="form-text">Para notificaciones adicionales</div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <label for="direccion" class="form-label">Dirección de Residencia *</label>
+                <textarea class="form-control" 
+                          id="direccion" 
+                          name="direccion" 
+                          rows="2" 
+                          required>{{ application.datos_personales.direccion|default:'' }}</textarea>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="municipio" class="form-label">Municipio/Isla *</label>
+                <select class="form-select" id="municipio" name="municipio" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="san_andres" {% if application.datos_personales.municipio == 'san_andres' %}selected{% endif %}>San Andrés</option>
+                    <option value="providencia" {% if application.datos_personales.municipio == 'providencia' %}selected{% endif %}>Providencia</option>
+                    <option value="santa_catalina" {% if application.datos_personales.municipio == 'santa_catalina' %}selected{% endif %}>Santa Catalina</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="etnia" class="form-label">Etnia/Pertenencia Étnica</label>
+                <select class="form-select" id="etnia" name="etnia">
+                    <option value="">Seleccionar...</option>
+                    <option value="afrodescendiente" {% if application.datos_personales.etnia == 'afrodescendiente' %}selected{% endif %}>Afrodescendiente</option>
+                    <option value="indigena" {% if application.datos_personales.etnia == 'indigena' %}selected{% endif %}>Indígena</option>
+                    <option value="raizal" {% if application.datos_personales.etnia == 'raizal' %}selected{% endif %}>Raizal</option>
+                    <option value="ninguna" {% if application.datos_personales.etnia == 'ninguna' %}selected{% endif %}>Ninguna</option>
+                </select>
+            </div>
+        </div>
+    </form>
+    
+    <div class="alert alert-info mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        <strong>Información importante:</strong> Todos los campos marcados con * son obligatorios. 
+        Asegúrate de que la información sea verídica y coincida con tus documentos oficiales.
+    </div>
+</div>
+
+<script>
+    // Auto-save when leaving the step
+    document.addEventListener('htmx:beforeSwap', function(event) {
+        if (event.detail.target.id === 'wizard-step-content') {
+            saveStepData(1);
+        }
+    });
+    
+    function saveStepData(step) {
+        const form = document.getElementById('step-1-form');
+        if (!form) return;
+        
+        const formData = new FormData(form);
+        formData.append('step', step);
+        
+        // Send save request to wizard view
+        fetch('{% url "applications:wizard" application.uuid %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+    }
+</script>

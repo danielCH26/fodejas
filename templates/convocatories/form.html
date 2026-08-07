@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}{% if action == 'crear' %}Nueva Convocatoria{% else %}Editar Convocatoria{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-calendar-event me-2"></i>
+            {% if action == 'crear' %}Nueva Convocatoria{% else %}Editar Convocatoria{% endif %}
+        </h2>
+        <a href="{% url 'convocatories:list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Volver
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <label for="nombre" class="form-label">Nombre *</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" 
+                               value="{{ convocatory.nombre|default:'' }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="codigo" class="form-label">Código *</label>
+                        <input type="text" class="form-control" id="codigo" name="codigo" 
+                               value="{{ convocatory.codigo|default:'' }}" 
+                               {% if action == 'editar' %}readonly{% endif %} required>
+                        <div class="form-text">Código único (slug)</div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="tipo" class="form-label">Tipo *</label>
+                        <select class="form-select" id="tipo" name="tipo" required>
+                            {% for value, label in tipos %}
+                            <option value="{{ value }}" {% if convocatory.tipo == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="periodo" class="form-label">Período *</label>
+                        <input type="text" class="form-control" id="periodo" name="periodo" 
+                               placeholder="2026-1" value="{{ convocatory.periodo|default:'' }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="cupo_total" class="form-label">Cupo Total</label>
+                        <input type="number" class="form-control" id="cupo_total" name="cupo_total" 
+                               value="{{ convocatory.cupo_total|default:'100' }}">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="monto_semestre_smlmv" class="form-label">Monto por Semestre (SMLMV)</label>
+                        <input type="number" class="form-control" id="monto_semestre_smlmv" name="monto_semestre_smlmv" 
+                               step="0.01" value="{{ convocatory.monto_semestre_smlmv|default:'5' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="duracion_maxima_semestres" class="form-label">Duración Máxima (semestres)</label>
+                        <input type="number" class="form-control" id="duracion_maxima_semestres" name="duracion_maxima_semestres" 
+                               value="{{ convocatory.duracion_maxima_semestres|default:'4' }}">
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-2"></i>
+                        {% if action == 'crear' %}Crear Convocatoria{% else %}Guardar Cambios{% endif %}
+                    </button>
+                    <a href="{% url 'convocatories:list' %}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

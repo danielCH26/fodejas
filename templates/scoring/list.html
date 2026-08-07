@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluación de Solicitudes - FODEJAS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-clipboard-data me-2"></i>Evaluación de Solicitudes</h2>
+        <div>
+            <a href="{% url 'scoring:ranking' %}" class="btn btn-outline-primary">
+                <i class="bi bi-trophy me-2"></i>Ver Rankings
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Solicitudes Verificadas Pendientes de Evaluación</h5>
+        </div>
+        <div class="card-body">
+            {% if solicitudes %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Radicado</th>
+                            <th>Aspirante</th>
+                            <th>Convocatoria</th>
+                            <th>Municipio</th>
+                            <th>Progreso</th>
+                            <th>Puntaje Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for solicitud in solicitudes %}
+                        <tr>
+                            <td>
+                                <strong>{{ solicitud.radicado|default:"Sin radicado" }}</strong>
+                            </td>
+                            <td>
+                                {{ solicitud.aspirante.first_name }} {{ solicitud.aspirante.last_name }}
+                                <br>
+                                <small class="text-muted">{{ solicitud.aspirante.email }}</small>
+                            </td>
+                            <td>{{ solicitud.convocatoria.nombre }}</td>
+                            <td>{{ solicitud.datos_personales.municipio|default:"-" }}</td>
+                            <td>
+                                <div class="progress" style="height: 20px; width: 120px;">
+                                    <div class="progress-bar bg-primary" 
+                                         role="progressbar" 
+                                         style="width: {{ solicitud.progress }}%"
+                                         aria-valuenow="{{ solicitud.progress }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                        {{ solicitud.progress }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if solicitud.puntaje %}
+                                    <strong>{{ solicitud.puntaje }}</strong>
+                                {% else %}
+                                    <span class="text-muted">Sin calificar</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'scoring:detail' solicitud.uuid %}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil-square me-1"></i>Evaluar
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">No hay solicitudes pendientes</h4>
+                <p class="text-muted">No hay solicitudes verificadas que requieran evaluación.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
