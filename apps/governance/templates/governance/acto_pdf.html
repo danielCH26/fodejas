@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ acto.numero }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 12pt;
+            line-height: 1.5;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2cm;
+            border-bottom: 2px solid #333;
+            padding-bottom: 1cm;
+        }
+        .logo {
+            font-size: 18pt;
+            font-weight: bold;
+        }
+        .title {
+            font-size: 14pt;
+            margin-top: 0.5cm;
+        }
+        .subtitle {
+            font-size: 12pt;
+            color: #666;
+        }
+        .content {
+            text-align: justify;
+        }
+        .section {
+            margin-bottom: 1cm;
+        }
+        .section-title {
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 0.3cm;
+        }
+        .considerando {
+            margin-bottom: 0.3cm;
+            text-indent: 1cm;
+        }
+        .resolutivo {
+            font-weight: bold;
+        }
+        .footer {
+            position: fixed;
+            bottom: 1cm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 10pt;
+            color: #666;
+        }
+        .firmantes {
+            margin-top: 2cm;
+            page-break-inside: avoid;
+        }
+        .firma {
+            margin-top: 1.5cm;
+            text-align: center;
+        }
+        .linea-firma {
+            border-top: 1px solid #333;
+            width: 200px;
+            margin: 0 auto;
+            margin-top: 0.3cm;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">FODEJAS</div>
+        <div class="subtitle">Fondo para el Desarrollo Educativo de los Jóvenes del Archipiélago</div>
+        <div class="subtitle">Secretaría de Educación Departamental</div>
+        <div class="subtitle">San Andrés, Providencia y Santa Catalina</div>
+        <div class="title">{{ acto.get_tipo_display }} {{ acto.numero }}</div>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <div class="section-title">Fecha:</div>
+            <p>{{ fecha_formato }}</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Asunto:</div>
+            <p>{{ acto.asunto }}</p>
+        </div>
+
+        {% if acto.considerandos %}
+        <div class="section">
+            <div class="section-title">Considerandos:</div>
+            {% for considerando in acto.considerandos %}
+            <p class="considerando">{{ considerando }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="section">
+            <div class="section-title">Resolutivo:</div>
+            <p class="resolutivo">{{ acto.resolutivo }}</p>
+        </div>
+
+        {% if acto.firmantes %}
+        <div class="firmantes">
+            <div class="section-title">Firmantes:</div>
+            {% for firmante in acto.firmantes %}
+            <div class="firma">
+                <div class="linea-firma"></div>
+                <p><strong>{{ firmante.nombre }}</strong></p>
+                <p>{{ firmante.rol }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        Documento generado por el sistema FODEJAS
+    </div>
+</body>
+</html>

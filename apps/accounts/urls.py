@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from apps.audit.views import AuditChainVerifyHtmlView, AuditDashboardView, AuditEventDetailView
+from apps.audit.views import AuditChainVerifyHtmlView, AuditDashboardView, AuditEventDetailHtmlView
 from . import accounts_views as views
 
 urlpatterns = [
@@ -35,7 +35,7 @@ urlpatterns = [
 
     # Audit views (accounts/audit/)
     path("audit/", AuditDashboardView.as_view(), name="audit_dashboard"),
-    path("audit/<uuid:id>/", AuditEventDetailView.as_view(), name="audit_detail"),
+    path("audit/<uuid:id>/", AuditEventDetailHtmlView.as_view(), name="audit_detail"),
     path("audit/verify/", AuditChainVerifyHtmlView.as_view(), name="audit_verify"),
 
     # API

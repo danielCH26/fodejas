@@ -6,6 +6,9 @@ from .views import (
     ConvocatoryListView,
     ConvocatoryTransitionView,
     ConvocatoryUpdateView,
+    ListadoDefinitivoView,
+    ListadoDefinitivoCreateView,
+    ResultadosPublicosView,
 )
 
 app_name = "convocatories"
@@ -19,5 +22,22 @@ urlpatterns = [
         "<uuid:pk>/transicionar/",
         ConvocatoryTransitionView.as_view(),
         name="transition",
+    ),
+    # CHG-207: Resultados Definitivos
+    path(
+        "<uuid:pk>/listado/",
+        ListadoDefinitivoView.as_view(),
+        name="listado",
+    ),
+    path(
+        "<uuid:pk>/listado/crear/",
+        ListadoDefinitivoCreateView.as_view(),
+        name="listado_crear",
+    ),
+    # Public results
+    path(
+        "resultados/<slug:codigo>/",
+        ResultadosPublicosView.as_view(),
+        name="resultados_publicos",
     ),
 ]

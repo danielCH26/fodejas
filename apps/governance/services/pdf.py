@@ -1,5 +1,6 @@
 """Generación de PDF para actos administrativos (CHG-207)."""
 import hashlib
+from django.core.files.base import ContentFile
 from django.template.loader import get_template
 
 
@@ -58,7 +59,7 @@ def guardar_pdf_acto(acto) -> str:
 
     # Guardar archivo
     filename = f"{acto.numero}.pdf"
-    acto.pdf.save(filename, type(pdf_bytes)(pdf_bytes))
+    acto.pdf.save(filename, ContentFile(pdf_bytes))
     acto.pdf_sha256 = sha256_hash
     acto.save()
 

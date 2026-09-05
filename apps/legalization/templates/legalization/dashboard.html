@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Legalización - FODEJAS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><i class="bi bi-file-earmark-text me-2"></i>Panel de Legalización</h1>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Procesos</h5>
+                    <h2>{{ total_processes }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h5 class="card-title">Pendientes</h5>
+                    <h2>{{ pending_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Firmados</h5>
+                    <h2>{{ signed_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Legalizados</h5>
+                    <h2>{{ legalized_count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Processes -->
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="bi bi-clock-history me-2"></i>Procesos Recientes</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Beneficiario</th>
+                        <th>Convocatoria</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in recent_processes %}
+                    <tr>
+                        <td>{{ process.id }}</td>
+                        <td>{{ process.beneficiary.get_full_name }}</td>
+                        <td>{{ process.convocatoria.titulo }}</td>
+                        <td>
+                            <span class="badge bg-{% if process.status == 'LEGALIZADO' %}success{% elif process.status == 'FIRMADO' %}info{% else %}warning{% endif %}">
+                                {{ process.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ process.created_at|date:"d/m/Y" }}</td>
+                        <td>
+                            <a href="{% url 'legalization:detail' process.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No hay procesos de legalización.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

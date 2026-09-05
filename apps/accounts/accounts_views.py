@@ -234,6 +234,10 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
                     {"label": "Postulaciones", "icon": "bi-file-earmark-text", "url": "/applications/"},
                     {"label": "Auditoría", "icon": "bi-journal-text", "url": "/accounts/audit/"},
                 ])
+            elif role["code"] == "R-CONTROL":
+                nav_items.extend([
+                    {"label": "Auditoría", "icon": "bi-journal-text", "url": "/accounts/audit/"},
+                ])
 
         # Add common items for all users
         nav_items.append({"label": "Mi Perfil", "icon": "bi-person", "url": "/accounts/profile/"})

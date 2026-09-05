@@ -108,3 +108,71 @@ class LegalizationService:
         document.process.save()
 
         return document
+
+    @staticmethod
+    def generate_document_pdf(document):
+        """Generate PDF for a legal document using WeasyPrint.
+
+        Args:
+            document: LegalDocument instance
+
+        Returns:
+            bytes: PDF content
+        """
+        try:
+            from weasyprint import HTML
+            from django.template.loader import render_to_string
+
+            # Get document type display name
+            doc_type_display = document.get_document_type_display()
+
+            # Context for template
+            context = {
+                "document": document,
+                "process": document.process,
+                "beneficiary": document.process.beneficiary,
+                "convocatoria": document.process.convocatoria,
+                "doc_type": doc_type_display,
+                "generated_at": datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S"),
+            }
+
+            # Template based on document type
+            template_name = f"legalization/{document.document_type.lower()}.html"
+
+            try:
+                html_content = render_to_string(template_name, context)
+            except Exception:
+                # Fallback template
+                html_content = render_to_string("legalization/document_generic.html", context)
+
+            # Generate PDF
+            pdf_content = HTML(string=html_content).write_pdf()
+            return pdf_content
+
+        except ImportError:
+            # WeasyPrint not installed - return placeholder
+            return f"PDF Generator: {document.get_document_type_display()} for {document.process.beneficiary.email}".encode()
+
+    @staticmethod
+    def save_document_pdf(document):
+        """Generate and save PDF for a legal document.
+
+        Args:
+            document: LegalDocument instance
+
+        Returns:
+            str: SHA-256 hash of the PDF
+        """
+        import hashlib
+
+        pdf_content = LegalizationService.generate_document_pdf(document)
+
+        # Calculate SHA-256
+        sha256_hash = hashlib.sha256(pdf_content).hexdigest()
+
+        # Save to document
+        from django.core.files.base import ContentFile
+        document.pdf.save(f"{document.id}_{document.document_type}.pdf", ContentFile(pdf_content))
+        document.save()
+
+        return sha256_hash

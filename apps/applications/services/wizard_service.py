@@ -104,6 +104,7 @@ def submit(solicitud, consentimiento: bool, actor) -> None:
 def _log_submission(solicitud, actor) -> None:
     """Log application submission to audit."""
     try:
+        from apps.applications.models import Solicitud
         from apps.audit.models import AuditEvent
 
         AuditEvent.objects.create(

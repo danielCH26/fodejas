@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Listado Definitivo" %} - {{ convocatory.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'convocatories:list' %}">{% trans "Convocatorias" %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'convocatories:detail' pk=convocatory.pk %}">{{ convocatory.nombre }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Listado Definitivo" %}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{% trans "Listado Definitivo de Beneficiarios" %}</h1>
+            <h4 class="text-muted">{{ convocatory.nombre }}</h4>
+        </div>
+    </div>
+
+    {% if acto %}
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{% trans "Acto Administrativo" %}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>{% trans "Número:" %}</strong> {{ acto.numero }}</p>
+                    <p><strong>{% trans "Fecha de Expedición:" %}</strong> {{ acto.fecha_expedicion }}</p>
+                    <p><strong>{% trans "Estado:" %}</strong> {{ acto.get_estado_display }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{% trans "Ranking de Beneficiarios" %}</h5>
+                    <span class="badge bg-primary">{{ total_beneficiarios }} {% trans "beneficiarios" %}</span>
+                </div>
+                <div class="card-body">
+                    {% if ranking %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Rank" %}</th>
+                                    <th>{% trans "Radicado" %}</th>
+                                    <th>{% trans "Puntaje" %}</th>
+                                    <th>{% trans "Detalle" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in ranking %}
+                                <tr>
+                                    <td>{{ item.rank }}</td>
+                                    <td>{{ item.radicado }}</td>
+                                    <td>
+                                        <strong>{{ item.puntaje|floatformat:2 }}</strong>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#detalle-{{ forloop.counter }}">
+                                            {% trans "Ver detalle" %}
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="collapse" id="detalle-{{ forloop.counter }}">
+                                    <td colspan="4">
+                                        <div class="ps-3">
+                                            <strong>{% trans "Puntaje por componente:" %}</strong>
+                                            <ul>
+                                                <li>{% trans "Mérito:" %} {{ item.puntaje_detallado.merito|floatformat:2 }}</li>
+                                                <li>{% trans "Socioeconómico:" %} {{ item.puntaje_detallado.socioeconomico|floatformat:2 }}</li>
+                                                <li>{% trans "Residencia:" %} {{ item.puntaje_detallado.residencia|floatformat:2 }}</li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">{% trans "No hay beneficiarios registrados." %}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

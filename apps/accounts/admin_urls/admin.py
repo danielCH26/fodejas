@@ -20,4 +20,7 @@ urlpatterns = [
     path("roles/crear/", admin_views.RoleCreateView.as_view(), name="role_create"),
     path("roles/<int:pk>/", admin_views.RoleDetailView.as_view(), name="role_detail"),
     path("roles/<int:pk>/editar/", admin_views.RoleUpdateView.as_view(), name="role_update"),
+
+    # Permission matrix
+    path("permisos/", admin_views.PermissionMatrixView.as_view(), name="permission_matrix"),
 ]

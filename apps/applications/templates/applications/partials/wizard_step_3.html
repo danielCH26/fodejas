@@ -1,0 +1,49 @@
+<div id="wizard-step-3">
+    <p class="text-muted mb-4">Ingresa tu información socioeconómica.</p>
+    
+    <form id="step-3-form">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="estrato" class="form-label">Estrato Socioeconómico *</label>
+                <select class="form-select" id="estrato" name="estrato" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="1" {% if application.datos_socioeconomicos.estrato == '1' %}selected{% endif %}>Estrato 1</option>
+                    <option value="2" {% if application.datos_socioeconomicos.estrato == '2' %}selected{% endif %}>Estrato 2</option>
+                    <option value="3" {% if application.datos_socioeconomicos.estrato == '3' %}selected{% endif %}>Estrato 3</option>
+                    <option value="4" {% if application.datos_socioeconomicos.estrato == '4' %}selected{% endif %}>Estrato 4</option>
+                    <option value="5" {% if application.datos_socioeconomicos.estrato == '5' %}selected{% endif %}>Estrato 5</option>
+                    <option value="6" {% if application.datos_socioeconomicos.estrato == '6' %}selected{% endif %}>Estrato 6</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="ingresos" class="form-label">Ingresos Familiares Mensuales *</label>
+                <input type="number" 
+                       class="form-control" 
+                       id="ingresos" 
+                       name="ingresos"
+                       value="{{ application.datos_socioeconomicos.ingresos|default:'' }}"
+                       min="0"
+                       required>
+                <div class="form-text">Valor en pesos colombianos (COP)</div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="personas_cargo" class="form-label">Número de Personas a Cargo *</label>
+                <input type="number" 
+                       class="form-control" 
+                       id="personas_cargo" 
+                       name="personas_cargo"
+                       value="{{ application.datos_socioeconomicos.personas_cargo|default:'' }}"
+                       min="0"
+                       required>
+            </div>
+        </div>
+    </form>
+    
+    <div class="alert alert-info mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        <strong>Información importante:</strong> Esta información será verificada. Por favor ingresa datos verídicos.
+    </div>
+</div>

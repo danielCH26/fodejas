@@ -88,6 +88,13 @@ class TerminationService:
         termination.reviewed_at = datetime.now(UTC)
         termination.save()
 
+        # Also update the linked LegalizationProcess to TERMINADO
+        if hasattr(termination, 'legalization_process'):
+            process = termination.legalization_process
+            from apps.legalization.models import LegalizationProcess as LP
+            process.status = LP.Status.TERMINADO
+            process.save()
+
         # Auto-create sanction for fraud causes
         if termination.cause in SANCTION_TRIGGER_CAUSES:
             SanctionService.create_sanction_from_termination(termination)
@@ -144,10 +151,21 @@ class TerminationService:
         termination.reviewed_at = datetime.now(UTC)
         termination.save()
 
-        # Condon all active sanctions
-        if hasattr(termination, "sanction"):
-            sanction = termination.sanction
-            SanctionService.condone_sanction(sanction.id, reviewed_by)
+        # Condon ALL active sanctions for this beneficiary (per spec)
+        # Get all active sanctions linked to this beneficiary via their legalization process
+        beneficiary = termination.legalization_process.beneficiary if hasattr(termination, 'legalization_process') else None
+        if beneficiary:
+            from apps.legalization.models import LegalizationProcess
+            process = LegalizationProcess.objects.filter(beneficiary=beneficiary).first()
+            if process:
+                # Find all active sanctions for this process
+                from apps.condonation.models import Sanction
+                active_sanctions = Sanction.objects.filter(
+                    legalization_process=process,
+                    status=Sanction.Status.ACTIVA
+                )
+                for sanction in active_sanctions:
+                    SanctionService.condone_sanction(sanction.id, reviewed_by)
 
         return termination
 

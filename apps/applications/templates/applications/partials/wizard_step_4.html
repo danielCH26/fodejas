@@ -1,0 +1,71 @@
+<div id="wizard-step-4">
+    <p class="text-muted mb-4">Sube los documentos de soporte requeridos.</p>
+    
+    <form id="step-4-form" hx-encoding="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="file_cedula" class="form-label">Cédula de Identidad</label>
+                <input type="file" 
+                       class="form-control" 
+                       id="file_cedula" 
+                       name="file_cedula"
+                       accept=".pdf,.jpg,.jpeg,.png">
+                <div class="form-text">PDF, JPG o PNG máximo 10MB</div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="file_certificado_notas" class="form-label">Certificado de Notas</label>
+                <input type="file" 
+                       class="form-control" 
+                       id="file_certificado_notas" 
+                       name="file_certificado_notas"
+                       accept=".pdf,.jpg,.jpeg,.png">
+                <div class="form-text">PDF, JPG o PNG máximo 10MB</div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="file_diploma" class="form-label">Diploma o Acta de Grado</label>
+                <input type="file" 
+                       class="form-control" 
+                       id="file_diploma" 
+                       name="file_diploma"
+                       accept=".pdf,.jpg,.jpeg,.png">
+                <div class="form-text">PDF, JPG o PNG máximo 10MB</div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="file_recibo_pago" class="form-label">Recibo de Pago Matrícula</label>
+                <input type="file" 
+                       class="form-control" 
+                       id="file_recibo_pago" 
+                       name="file_recibo_pago"
+                       accept=".pdf,.jpg,.jpeg,.png">
+                <div class="form-text">PDF, JPG o PNG máximo 10MB</div>
+            </div>
+        </div>
+    </form>
+    
+    <!-- Uploaded Files List -->
+    {% if application.anexos.exists %}
+    <div class="mt-4">
+        <h6>Archivos Subidos</h6>
+        <ul class="list-group">
+            {% for anexo in application.anexos.all %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-file-earmark me-2"></i>
+                    {{ anexo.nombre_original }}
+                    <span class="badge bg-secondary ms-2">{{ anexo.get_tipo_anexo_display }}</span>
+                </div>
+                <span class="text-muted">{{ anexo.tamano|filesizeformat }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div class="alert alert-info mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        <strong>Información importante:</strong> Los documentos deben ser legibles y estar vigentes.
+    </div>
+</div>

@@ -1,0 +1,93 @@
+{% extends "accounts/admin/admin_base.html" %}
+{% load matrix_tags %}
+
+{% block title %}Matriz de Permisos - FODEJAS{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-grid me-2"></i>Matriz de Permisos por Rol</h2>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive" style="max-height: 70vh; overflow: auto;">
+            <table class="table table-bordered table-sm">
+                <thead class="table-light sticky-top">
+                    <tr>
+                        <th style="min-width: 150px; position: sticky; left: 0; z-index: 10;">Rol / Permiso</th>
+                        {% for app_label, permissions in permissions_by_app.items %}
+                        <th colspan="{{ permissions|length }}" class="text-center table-secondary">
+                            {{ app_label|title }}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th style="min-width: 150px; position: sticky; left: 0; z-index: 10;"></th>
+                        {% for app_label, permissions in permissions_by_app.items %}
+                        {% for perm in permissions %}
+                        <th class="text-center" style="writing-mode: vertical-lr; transform: rotate(180deg); min-width: 30px; font-size: 0.75rem;" title="{{ perm.name }}">
+                            {{ perm.codename|truncatechars:15 }}
+                        </th>
+                        {% endfor %}
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for role in roles %}
+                    <tr>
+                        <td style="position: sticky; left: 0; background: white; font-weight: 500;">
+                            <i class="bi bi-shield me-1"></i>{{ role.name }}
+                            <br><small class="text-muted">{{ role.code }}</small>
+                        </td>
+                        {% for app_label, permissions in permissions_by_app.items %}
+                        {% for perm in permissions %}
+                        <td class="text-center">
+                            {% if role.id in role_permissions and perm.codename in role_permissions|get_item:role.id %}
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                            {% else %}
+                            <i class="bi bi-x-circle text-secondary"></i>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                        {% endfor %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="100" class="text-center text-muted">
+                            No hay roles activos en el sistema.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if not roles %}
+        <div class="alert alert-info mt-3">
+            <i class="bi bi-info-circle me-2"></i>
+            No hay roles en el sistema. Crea roles primero en la 
+            <a href="{% url 'accounts_admin:role_list' %}">gestión de roles</a>.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-3">
+    <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        Esta matriz muestra los permisos asignados a cada rol del sistema.
+        Los permisos se agrupan por aplicación (app_label).
+    </small>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    th[colspan] {
+        border-bottom: 2px solid #dee2e6;
+    }
+    td i {
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}

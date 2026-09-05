@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}Wizard FUI - Paso {{ current_step }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .wizard-step-card {
+        border-left: 4px solid var(--fodejas-primary);
+        transition: all 0.3s ease;
+    }
+    .wizard-step-card.active {
+        border-left-color: var(--fodejas-accent);
+        background-color: rgba(40, 167, 69, 0.05);
+    }
+    .wizard-step-number {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 12px;
+    }
+    .wizard-step-number.active {
+        background-color: var(--fodejas-accent);
+        color: white;
+    }
+    .wizard-step-number.completed {
+        background-color: var(--fodejas-primary);
+        color: white;
+    }
+    .wizard-step-number.pending {
+        background-color: #e9ecef;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4" 
+     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-magic me-2"></i>Wizard FUI - {{ application.convocatoria.nombre }}</h2>
+        <div>
+            <a href="{% url 'applications:detail' application.uuid %}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left me-2"></i>Volver al Detalle
+            </a>
+            <a href="{% url 'applications:list' %}" class="btn btn-outline-primary">
+                <i class="bi bi-list me-2"></i>Ver Todas
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Progress Steps -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                {% for step in steps %}
+                <div class="col">
+                    <div class="wizard-step-card card mb-0 {% if step.number == current_step %}active{% endif %}">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="wizard-step-number 
+                                {% if step.number < current_step %}completed
+                                {% elif step.number == current_step %}active
+                                {% else %}pending{% endif %}">
+                                {{ step.number }}
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ step.title }}</h6>
+                                <small class="text-muted">{{ step.description }}</small>
+                            </div>
+                            {% if step.number < current_step %}
+                            <div class="ms-auto">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Wizard Content -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                Paso {{ current_step }}: 
+                {% for step in steps %}
+                    {% if step.number == current_step %}
+                        {{ step.title }}
+                    {% endif %}
+                {% endfor %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- HTMX target for step content -->
+            <div id="wizard-step-content">
+                {% if current_step == 1 %}
+                    {% include "applications/partials/wizard_step_1.html" %}
+                {% elif current_step == 2 %}
+                    {% include "applications/partials/wizard_step_2.html" %}
+                {% elif current_step == 3 %}
+                    {% include "applications/partials/wizard_step_3.html" %}
+                {% elif current_step == 4 %}
+                    {% include "applications/partials/wizard_step_4.html" %}
+                {% elif current_step == 5 %}
+                    {% include "applications/partials/wizard_step_5.html" %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between">
+                {% if current_step > 1 %}
+                <a href="{% url 'applications:wizard_step' application.uuid current_step|add:'-1' %}" 
+                   class="btn btn-outline-secondary"
+                   hx-get="{% url 'applications:wizard_step' application.uuid current_step|add:'-1' %}"
+                   hx-target="#wizard-step-content"
+                   hx-push-url="true">
+                    <i class="bi bi-chevron-left me-2"></i>Anterior
+                </a>
+                {% else %}
+                <div></div>
+                {% endif %}
+                
+                <div>
+                    <button type="button" 
+                            class="btn btn-outline-primary me-2"
+                            onclick="saveDraft()">
+                        <i class="bi bi-save me-2"></i>Guardar Draft
+                    </button>
+                    
+                    {% if current_step < 5 %}
+                    <a href="{% url 'applications:wizard_step' application.uuid current_step|add:'1' %}" 
+                       class="btn btn-primary"
+                       hx-get="{% url 'applications:wizard_step' application.uuid current_step|add:'1' %}"
+                       hx-target="#wizard-step-content"
+                       hx-push-url="true">
+                        Siguiente <i class="bi bi-chevron-right ms-2"></i>
+                    </a>
+                    {% else %}
+                    <button type="button" 
+                            class="btn btn-success"
+                            onclick="submitApplication()">
+                        <i class="bi bi-send-check me-2"></i>Radicar Solicitud
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Info -->
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Convocatoria:</strong>
+                    <p>{{ application.convocatoria.nombre }}</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Estado:</strong>
+                    <p>
+                        <span class="badge bg-{% if application.estado == 'borrador' %}secondary{% elif application.estado == 'completa' %}info{% elif application.estado == 'radicada' %}success{% elif application.estado == 'rechazada' %}danger{% else %}warning{% endif %}">
+                            {{ application.get_estado_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Save draft function
+    function saveDraft() {
+        const currentStep = {{ current_step }};
+        
+        // Get form data from current step
+        let formData = new FormData();
+        formData.append('step', currentStep);
+        
+        // Collect form fields based on step
+        const form = document.querySelector('#wizard-step-content form');
+        if (form) {
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    formData.append(input.name, input.checked ? 'on' : '');
+                } else {
+                    formData.append(input.name, input.value);
+                }
+            });
+        }
+        
+        // Send POST to wizard view
+        fetch('{% url "applications:wizard" application.uuid %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Draft guardado exitosamente', 'success');
+                if (data.next_step) {
+                    // Navigate to next step
+                    window.location.href = '{% url "applications:wizard_step" application.uuid 999 %}'.replace('999', data.next_step);
+                }
+            } else {
+                showToast(data.error || 'Error guardando draft', 'danger');
+            }
+        })
+        .catch(error => {
+            showToast('Error guardando draft', 'danger');
+        });
+    }
+    
+    // Submit application function
+    function submitApplication() {
+        if (confirm('¿Estás seguro de que deseas radicar esta solicitud? Una vez radicada no podrá ser modificada.')) {
+            let formData = new FormData();
+            formData.append('step', 5);
+            formData.append('consentimiento', 'on');
+            
+            fetch('{% url "applications:wizard" application.uuid %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Solicitud radicada exitosamente', 'success');
+                    setTimeout(() => {
+                        window.location.href = data.redirect || '{% url "applications:detail" application.uuid %}';
+                    }, 1500);
+                } else {
+                    showToast(data.error || 'Error radicando la solicitud', 'danger');
+                }
+            })
+            .catch(error => {
+                showToast('Error radicando la solicitud', 'danger');
+            });
+        }
+    }
+    
+    // Toast notification function
+    function showToast(message, type = 'info') {
+        const toastContainer = document.createElement('div');
+        toastContainer.className = `toast-container position-fixed top-0 end-0 p-3`;
+        document.body.appendChild(toastContainer);
+        
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type} border-0`;
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+        
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        toast.addEventListener('hidden.bs.toast', () => {
+            toastContainer.remove();
+        });
+    }
+</script>
+{% endblock %}
+{% endblock %}

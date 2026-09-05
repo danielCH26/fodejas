@@ -13,6 +13,7 @@ class LegalizationProcess(models.Model):
         PENDIENTE = "PENDIENTE", "Pendiente"
         EN_PROCESO = "EN_PROCESO", "En Proceso"
         LEGALIZADO = "LEGALIZADO", "Legalizado"
+        TERMINADO = "TERMINADO", "Terminado"
         CANCELADO = "CANCELADO", "Cancelado"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

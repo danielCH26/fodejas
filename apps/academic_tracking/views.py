@@ -5,6 +5,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.academic_tracking.models import AcademicAlert, AcademicRecord
+from apps.academic_tracking.serializers import (
+    AcademicAlertSerializer,
+    AcademicRecordSerializer,
+)
 from apps.academic_tracking.services import AcademicTrackingService
 
 
@@ -12,7 +16,7 @@ class AcademicRecordViewSet(viewsets.ModelViewSet):
     """ViewSet for academic records."""
 
     queryset = AcademicRecord.objects.all()
-    serializer_class = None  # TODO: Add serializers
+    serializer_class = AcademicRecordSerializer
 
     @action(detail=True, methods=["post"])
     def add_grade(self, request, pk=None):
@@ -73,7 +77,7 @@ class AcademicAlertViewSet(viewsets.ModelViewSet):
     """ViewSet for academic alerts."""
 
     queryset = AcademicAlert.objects.all()
-    serializer_class = None  # TODO: Add serializers
+    serializer_class = AcademicAlertSerializer
 
     @action(detail=True, methods=["post"])
     def resolve(self, request, pk=None):

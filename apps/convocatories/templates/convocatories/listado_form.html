@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Publicar Listado Definitivo" %} - {{ convocatory.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'convocatories:list' %}">{% trans "Convocatorias" %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'convocatories:detail' pk=convocatory.pk %}">{{ convocatory.nombre }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Publicar Listado" %}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{% trans "Publicar Listado Definitivo" %}</h1>
+            <h4 class="text-muted">{{ convocatory.nombre }}</h4>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <h5>{% trans "Resumen de Solicitudes" %}</h5>
+                <p>{% trans "Total de solicitudes verificadas:" %} <strong>{{ total_solicitudes }}</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{% trans "Datos del Acto Administrativo" %}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="asunto" class="form-label">{% trans "Asunto" %} *</label>
+                            <input type="text" class="form-control" id="asunto" name="asunto" required
+                                   value="Por la cual se publica el listado definitivo de beneficiarios de la convocatoria {{ convocatory.nombre }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="resolutivo" class="form-label">{% trans "Resolutivo" %} *</label>
+                            <textarea class="form-control" id="resolutivo" name="resolutivo" rows="6" required
+                                      placeholder="ARTÍCULO PRIMERO: Publicar el listado definitivo de beneficiarios..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>{% trans "Considerandos sugeridos:" %}</h6>
+                            <ul>
+                                <li>{% trans "Que la convocatoria {{ convocatory.nombre }} se encuentra en estado de resultados definitivos" %}</li>
+                                <li>{% trans "Que se han surtido las etapas de verificación, calificación y reclamaciones" %}</li>
+                                <li>{% trans "Que el ranking fue generado conforme a los criterios de puntaje establecidos" %}</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                {% trans "Publicar Listado Definitivo" %}
+                            </button>
+                            <a href="{% url 'convocatories:detail' pk=convocatory.pk %}" class="btn btn-secondary">
+                                {% trans "Cancelar" %}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{% trans "Top 10 Beneficiarios" %}</h5>
+                </div>
+                <div class="card-body">
+                    {% if ranking %}
+                    <ol>
+                        {% for item in ranking|slice:":10" %}
+                        <li>{{ item.radicado }} - {{ item.puntaje|floatformat:2 }}</li>
+                        {% endfor %}
+                    </ol>
+                    {% if total_solicitudes > 10 %}
+                    <p class="text-muted">...y {{ total_solicitudes|add:"-10" }} más</p>
+                    {% endif %}
+                    {% else %}
+                    <p class="text-muted">{% trans "No hay solicitudes" %}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

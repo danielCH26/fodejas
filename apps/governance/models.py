@@ -10,7 +10,6 @@ class SecuencialActo(models.Model):
 
     tipo = models.CharField(
         max_length=20,
-        unique=True,
         verbose_name=_("tipo de acto"),
     )
     anio = models.PositiveIntegerField(

@@ -156,7 +156,7 @@ class AcademicTrackingService:
         new_status = get_status_from_average(cumulative_avg)
 
         # Check for automatic suspension trigger
-        if consecutive_low >= CONSECUTIVE_LOW_SEMESTRES_TRIGGER:  # noqa: F821
+        if consecutive_low >= CONSECUTIVE_LOW_SEMESTERS_TRIGGER:
             new_status = AcademicRecord.Status.SUSPENDIDO
             AcademicTrackingService.create_alert(
                 record,

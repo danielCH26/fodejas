@@ -213,6 +213,7 @@ class ConvocatoryTransitionView(BaseConvocatoryView):
             "cerrar_inscripciones": "en_verificacion",
             "iniciar_calificacion": "en_calificacion",
             "publicar_resultados": "definitiva",
+            "publicar_resultados_definitivos": "resultados_definitivos",
             "cerrar": "cerrada",
         }
 
@@ -242,3 +243,134 @@ class ConvocatoryTransitionView(BaseConvocatoryView):
             messages.error(request, str(e))
 
         return redirect("convocatories:detail", pk=pk)
+
+
+class ListadoDefinitivoView(ConvocatoryViewMixin):
+    """View for definitive listing of beneficiaries."""
+
+    template_name = "convocatories/listado_definitivo.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get("pk")
+        convocatory = get_object_or_404(Convocatory, pk=pk)
+
+        # Get the listing
+        try:
+            from apps.governance.models import ListadoDefinitivo
+            listing = ListadoDefinitivo.objects.get(convocatoria=convocatory)
+            context["listado"] = listing
+            context["ranking"] = listing.ranking[:100]  # Limit for display
+            context["total_beneficiarios"] = len(listing.ranking)
+            context["acto"] = listing.acto
+        except ListadoDefinitivo.DoesNotExist:
+            context["listado"] = None
+            context["ranking"] = []
+            context["total_beneficiarios"] = 0
+
+        context["convocatory"] = convocatory
+        return context
+
+
+class ListadoDefinitivoCreateView(BaseConvocatoryView):
+    """Create definitive listing for a convocation."""
+
+    template_name = "convocatories/listado_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get("pk")
+        convocatory = get_object_or_404(Convocatory, pk=pk)
+
+        # Get ranking data
+        from apps.governance.services.listado import obtener_ranking_final
+        ranking = obtener_ranking_final(convocatory)
+
+        context["convocatory"] = convocatory
+        context["ranking"] = ranking
+        context["total_solicitudes"] = len(ranking)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        pk = self.kwargs.get("pk")
+        convocatory = get_object_or_404(Convocatory, pk=pk)
+
+        # Check if listing already exists
+        from apps.governance.models import ListadoDefinitivo
+        if hasattr(convocatory, "listado_definitivo"):
+            messages.error(request, "Ya existe un listado definitivo para esta convocatoria.")
+            return redirect("convocatories:detail", pk=pk)
+
+        # Get ranking data
+        from apps.governance.services.listado import obtener_ranking_final, generar_listado_definitivo
+        from apps.governance.services.generador import generar_numero_acto
+        from apps.governance.models import ActoAdministrativo
+        from django.utils import timezone
+
+        ranking = obtener_ranking_final(convocatory)
+
+        # Get form data
+        asunto = request.POST.get("asunto", "").strip()
+        resolutivo = request.POST.get("resolutivo", "").strip()
+
+        if not asunto or not resolutivo:
+            messages.error(request, "El asunto y resolutivo son requeridos.")
+            return redirect("convocatories:listado_crear", pk=pk)
+
+        # Create administrative act
+        numero = generar_numero_acto("resolucion")
+        acto = ActoAdministrativo.objects.create(
+            numero=numero,
+            tipo=ActoAdministrativo.Tipo.RESOLUCION,
+            fecha_expedicion=timezone.now().date(),
+            asunto=asunto,
+            resolutivo=resolutivo,
+            considerandos=[],
+            convocatoria=convocatory,
+            estado=ActoAdministrativo.Estado.BORRADOR,
+        )
+
+        # Generate listing
+        try:
+            listado = generar_listado_definitivo(convocatory, acto, ranking)
+            messages.success(request, f"Listado definitivo publicado con {len(ranking)} beneficiarios.")
+        except Exception as e:
+            messages.error(request, f"Error al generar listado: {str(e)}")
+
+        return redirect("convocatories:detail", pk=pk)
+
+
+class ResultadosPublicosView(TemplateView):
+    """Public view for definitive results (no PII)."""
+
+    template_name = "convocatories/resultados_publicos.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        codigo = self.kwargs.get("codigo")
+
+        from apps.governance.models import ListadoDefinitivo
+        from apps.convocatories.models import Convocatory
+
+        try:
+            convocatory = Convocatory.objects.get(codigo=codigo)
+            listing = ListadoDefinitivo.objects.get(convocatoria=convocatory)
+
+            # Only aggregate data (no PII)
+            context["convocatoria"] = convocatory
+            context["listado"] = listing
+            context["total_beneficiarios"] = len(listing.ranking)
+
+            # Calculate statistics
+            if listing.ranking:
+                puntajes = [r.get("puntaje", 0) for r in listing.ranking]
+                context["puntaje_maximo"] = max(puntajes) if puntajes else 0
+                context["puntaje_minimo"] = min(puntajes) if puntajes else 0
+                context["puntaje_promedio"] = sum(puntajes) / len(puntajes) if puntajes else 0
+
+            context["acto"] = listing.acto
+            context["fecha_publicacion"] = listing.fecha_publicacion
+        except (Convocatory.DoesNotExist, ListadoDefinitivo.DoesNotExist):
+            context["error"] = "Convocatoria no encontrada"
+
+        return context

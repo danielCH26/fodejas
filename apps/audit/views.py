@@ -160,7 +160,7 @@ class AuditDashboardView(BaseAuditView):
         return context
 
 
-class AuditEventDetailView(LoginRequiredMixin, DetailView):
+class AuditEventDetailHtmlView(LoginRequiredMixin, DetailView):
     """Detail view for a single audit event."""
 
     template_name = "audit/detail.html"

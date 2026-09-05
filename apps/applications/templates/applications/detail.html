@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Postulación - {{ application.convocatoria.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-text me-2"></i>Postulación</h2>
+        <div>
+            <a href="{% url 'applications:list' %}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left me-2"></i>Volver a la lista
+            </a>
+            <a href="{% url 'applications:wizard_step' application.uuid 1 %}" class="btn btn-primary">
+                <i class="bi bi-pencil me-2"></i>Continuar Edición
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <!-- Main Info Card -->
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información de la Postulación</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Convocatoria:</strong>
+                            <p>{{ application.convocatoria.nombre }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Estado:</strong>
+                            <p>
+                                <span class="badge bg-{% if application.estado == 'borrador' %}secondary{% elif application.estado == 'completa' %}info{% elif application.estado == 'radicada' %}success{% elif application.estado == 'rechazada' %}danger{% else %}warning{% endif %}">
+                                    {{ application.get_estado_display }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if application.radicado %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Radicado:</strong>
+                            <p><code>{{ application.radicado }}</code></p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>UUID:</strong>
+                            <p><code class="text-muted">{{ application.uuid }}</code></p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Fecha de Creación:</strong>
+                            <p>{{ application.created_at|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Última Actualización:</strong>
+                            <p>{{ application.updated_at|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Paso Actual:</strong>
+                            <p>{{ application.current_step }} de 5</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Consentimiento:</strong>
+                            <p>
+                                {% if application.consentimiento %}
+                                <span class="badge bg-success">Aceptado el {{ application.consentimiento_fecha|date:"d/m/Y H:i" }}</span>
+                                {% else %}
+                                <span class="badge bg-warning">Pendiente</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Card -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-lightning-charge me-2"></i>Acciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'applications:list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-list me-2"></i>Ver Todas las Postulaciones
+                        </a>
+                        
+                        <a href="{% url 'applications:wizard_step' application.uuid 1 %}" class="btn btn-primary">
+                            <i class="bi bi-pencil-square me-2"></i>Continuar con el Wizard
+                        </a>
+                        
+                        {% if resultados_publicados %}
+                        <hr>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Resultados publicados</strong>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Progreso del Wizard</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3" style="height: 20px;">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                             style="width: {% widthratio application.current_step 5 100 %}%;" 
+                             aria-valuenow="{{ application.current_step }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="5">
+                            Paso {{ application.current_step }} de 5
+                        </div>
+                    </div>
+                    
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>1. Datos Personales</span>
+                            <i class="bi bi-circle{% if application.current_step >= 1 %}-fill text-success{% endif %}"></i>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>2. Información Académica</span>
+                            <i class="bi bi-circle{% if application.current_step >= 2 %}-fill text-success{% endif %}"></i>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>3. Información Socioeconómica</span>
+                            <i class="bi bi-circle{% if application.current_step >= 3 %}-fill text-success{% endif %}"></i>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>4. Anexos</span>
+                            <i class="bi bi-circle{% if application.current_step >= 4 %}-fill text-success{% endif %}"></i>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>5. Declaración y Consentimiento</span>
+                            <i class="bi bi-circle{% if application.current_step >= 5 %}-fill text-success{% endif %}"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scoring Results -->
+            {% if puntaje_total %}
+            <div class="card mt-4 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-award me-2"></i>Resultados de la Evaluación</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <h3 class="text-primary">{{ puntaje_total.puntaje_total }}</h3>
+                                <small class="text-muted">Puntaje Total</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <h4>{{ puntaje_total.ranking_general|default:"-" }}</h4>
+                                <small class="text-muted">Ranking General</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <h4>{{ puntaje_total.ranking_municipio|default:"-" }}</h4>
+                                <small class="text-muted">Ranking Municipal</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+<div id="wizard-step-2">
+    <p class="text-muted mb-4">Ingresa tu información académica.</p>
+    
+    <form id="step-2-form">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="programa" class="form-label">Programa Académico *</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="programa" 
+                       name="programa"
+                       value="{{ application.datos_academicos.programa|default:'' }}"
+                       required>
+                <div class="form-text">Ej: Ingeniería de Sistemas</div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="semestre" class="form-label">Semestre Actual *</label>
+                <input type="number" 
+                       class="form-control" 
+                       id="semestre" 
+                       name="semestre"
+                       value="{{ application.datos_academicos.semestre|default:'' }}"
+                       min="1" max="20"
+                       required>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="promedio" class="form-label">Promedio Ponderado *</label>
+                <input type="number" 
+                       class="form-control" 
+                       id="promedio" 
+                       name="promedio"
+                       value="{{ application.datos_academicos.promedio|default:'' }}"
+                       step="0.01"
+                       min="0"
+                       max="5"
+                       required>
+                <div class="form-text">Ej: 4.20</div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="ies" class="form-label">Institución de Educación Superior *</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="ies" 
+                       name="ies"
+                       value="{{ application.datos_academicos.ies|default:'' }}"
+                       required>
+                <div class="form-text">Universidad donde estudias</div>
+            </div>
+        </div>
+    </form>
+    
+    <div class="alert alert-info mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        <strong>Información importante:</strong> El promedio debe estar sustentado con el certificado de notas.
+    </div>
+</div>

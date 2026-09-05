@@ -167,6 +167,7 @@ def _log_signature_audit(
     document_type: str,
     result: SignatureResult,
     actor_id: int | None = None,
+    entity_id: str | None = None,
 ) -> None:
     """Log signature operation to audit trail (CAP-022).
 
@@ -174,25 +175,28 @@ def _log_signature_audit(
         document_type: Type of document being signed (e.g., 'promissory_note').
         result: SignatureResult from the signing operation.
         actor_id: ID of the user performing the signing (optional).
+        entity_id: UUID of the document being signed (optional).
     """
     try:
-        from apps.audit.models import AuditEvent
+        from apps.audit.services import log_audit_event
 
-        AuditEvent.objects.create(
+        log_audit_event(
+            actor=None,  # Will be resolved by the service
             action="ELECTRONIC_SIGNATURE",
             entity=document_type,
-            module="legalization",
-            actor_id=actor_id,
-            details={
+            entity_id=entity_id,
+            changes={
                 "pre_sign_hash": result.pre_sign_hash,
                 "post_sign_hash": result.post_sign_hash,
                 "provider": result.provider,
                 "metadata": result.metadata,
             },
+            module="legalization",
         )
-    except Exception:
-        # Audit failure should not block signing
-        pass
+    except Exception as e:
+        # Log the error instead of silent pass - per AGENTS.md §7
+        import logging
+        logging.warning(f"Audit logging failed for signature: {e}")
 
 
 def sign_document(

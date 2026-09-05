@@ -1,0 +1,44 @@
+<div id="wizard-step-5">
+    <p class="text-muted mb-4">Declara y acepta los términos y condiciones.</p>
+    
+    <form id="step-5-form">
+        <div class="alert alert-warning">
+            <h5><i class="bi bi-exclamation-triangle me-2"></i>Declaración</h5>
+            <p>Al marcar la siguiente casilla, declaro bajo gravedad de juramento que:</p>
+            <ol>
+                <li>La información proporcionada en este formulario es verídica y correcta.</li>
+                <li>No recibo otro beneficio económico de entidades gubernamentales para el mismo fin.</li>
+                <li>Me comprometo a cumplir con los requisitos académicos establecidos.</li>
+                <li>Autorizo la verificación de los datos proporcionados.</li>
+            </ol>
+        </div>
+        
+        <div class="form-check mb-3">
+            <input type="checkbox" 
+                   class="form-check-input" 
+                   id="consentimiento" 
+                   name="consentimiento"
+                   required>
+            <label class="form-check-label" for="consentimiento">
+                <strong>Acepto los términos y condiciones *</strong>
+            </label>
+        </div>
+        
+        <div class="form-check mb-3">
+            <input type="checkbox" 
+                   class="form-check-input" 
+                   id="autorizacion_datos" 
+                   name="autorizacion_datos"
+                   required>
+            <label class="form-check-label" for="autorizacion_datos">
+                <strong>Autorizo el tratamiento de mis datos personales conforme a la Ley 1581 de 2012 *</strong>
+            </label>
+        </div>
+    </form>
+    
+    <div class="alert alert-info mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        <strong>Información importante:</strong> Una vez radicada la solicitud, no podrás realizar modificaciones.
+        Asegúrate de haber completado todos los pasos anteriores correctamente.
+    </div>
+</div>

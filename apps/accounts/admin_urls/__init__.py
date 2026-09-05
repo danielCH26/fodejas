@@ -2,18 +2,19 @@
 from django.urls import path
 
 from apps.accounts.views.admin_views import (
-    UserListView,
-    UserCreateView,
-    UserUpdateView,
-    UserDetailView,
-    UserToggleActiveView,
-    UserRoleAssignView,
-    UserRoleRevokeView,
-    UserRoleHistoryView,
-    RoleListView,
+    PermissionMatrixView,
     RoleCreateView,
     RoleDetailView,
+    RoleListView,
     RoleUpdateView,
+    UserCreateView,
+    UserDetailView,
+    UserListView,
+    UserRoleAssignView,
+    UserRoleHistoryView,
+    UserRoleRevokeView,
+    UserToggleActiveView,
+    UserUpdateView,
 )
 
 app_name = "accounts_admin"
@@ -36,4 +37,7 @@ urlpatterns = [
     path("roles/<uuid:pk>/", RoleDetailView.as_view(), name="role_detail"),
     path("roles/<uuid:pk>/editar/", RoleUpdateView.as_view(), name="role_update"),
     path("roles/<uuid:pk>/edit/", RoleUpdateView.as_view(), name="role_edit"),
+
+    # Permission matrix
+    path("permisos/", PermissionMatrixView.as_view(), name="permission_matrix"),
 ]

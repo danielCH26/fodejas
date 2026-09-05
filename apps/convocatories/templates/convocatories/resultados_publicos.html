@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Resultados Definitivos" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if error %}
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">{% trans "Convocatoria no encontrada" %}</h4>
+        <p>{% trans "La convocatoria solicitada no existe o no ha publicado sus resultados definitivos." %}</p>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1>{% trans "Resultados Definitivos" %}</h1>
+            <h3 class="text-muted">{{ convocatoria.nombre }}</h3>
+            <p class="text-muted">{{ convocatoria.periodo }}</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">{% trans "Convocatoria" %}</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>{% trans "Código:" %}</th>
+                            <td>{{ convocatoria.codigo }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Tipo:" %}</th>
+                            <td>{{ convocatoria.get_tipo_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Período:" %}</th>
+                            <td>{{ convocatoria.periodo }}</td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Cupo Total:" %}</th>
+                            <td>{{ convocatoria.cupo_total }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{% trans "Resultados" %}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h2 class="text-primary">{{ total_beneficiarios }}</h2>
+                            <p>{% trans "Total Beneficiarios" %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h2 class="text-success">{{ puntaje_maximo|floatformat:1 }}</h2>
+                            <p>{% trans "Puntaje Máximo" %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h2 class="text-info">{{ puntaje_minimo|floatformat:1 }}</h2>
+                            <p>{% trans "Puntaje Mínimo" %}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>{% trans "Puntaje Promedio:" %}</strong> {{ puntaje_promedio|floatformat:2 }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{% trans "Acto Administrativo" %}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>{% trans "Número de Resolución:" %}</strong> {{ acto.numero }}</p>
+                    <p><strong>{% trans "Fecha de Expedición:" %}</strong> {{ acto.fecha_expedicion }}</p>
+                    <p><strong>{% trans "Fecha de Publicación:" %}</strong> {{ fecha_publicacion|date:"d de F de Y" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="alert alert-light border">
+                <h5>{% trans "Nota sobre privacidad" %}</h5>
+                <p class="mb-0">
+                    {% trans "Este portal muestra únicamente datos agregados y estadísticas de los resultados definitivos." %}
+                    {% trans "La información detallada de cada beneficiario se encuentra disponible en el acto administrativo publicado." %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

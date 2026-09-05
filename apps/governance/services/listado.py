@@ -67,11 +67,11 @@ def obtener_ranking_final(convocatoria):
                 "solicitud_id": str(sol.uuid),
                 "radicado": sol.radicado,
                 "aspirante": sol.aspirante.get_full_name() or sol.aspirante.email,
-                "puntaje": puntaje.puntaje_total,
+                "puntaje": float(puntaje.puntaje_total or 0),
                 "puntaje_detallado": {
-                    "merito": puntaje.puntaje_merito,
-                    "socioeconomico": puntaje.puntaje_socioeconomico,
-                    "residencia": puntaje.puntaje_residencia,
+                    "academico": float(puntaje.puntaje_academico or 0),
+                    "excelencia": float(puntaje.puntaje_excelencia or 0),
+                    "socioeconomico": float(puntaje.puntaje_socioeconomico or 0),
                 },
             })
         except PuntajeTotal.DoesNotExist:
@@ -81,9 +81,9 @@ def obtener_ranking_final(convocatoria):
                 "aspirante": sol.aspirante.get_full_name() or sol.aspirante.email,
                 "puntaje": 0,
                 "puntaje_detallado": {
-                    "merito": 0,
+                    "academico": 0,
+                    "excelencia": 0,
                     "socioeconomico": 0,
-                    "residencia": 0,
                 },
             })
 

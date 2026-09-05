@@ -44,6 +44,7 @@ class Convocatory(models.Model):
         EN_VERIFICACION = "en_verificacion", _("En verificación")
         EN_CALIFICACION = "en_calificacion", _("En calificación")
         DEFINITIVA = "definitiva", _("Definitiva")
+        RESULTADOS_DEFINITIVOS = "resultados_definitivos", _("Resultados Definitivos")
         CERRADA = "cerrada", _("Cerrada")
         CANCELADA = "cancelada", _("Cancelada")
 
@@ -124,7 +125,7 @@ class Convocatory(models.Model):
     )
     estado = models.CharField(
         _("estado"),
-        max_length=16,
+        max_length=32,
         choices=Estado.choices,
         default=Estado.BORRADOR,
         help_text=_("Estado actual de la convocatoria"),
