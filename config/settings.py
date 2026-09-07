@@ -14,6 +14,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import environ
+from celery.schedules import crontab
 
 from apps.core.secrets import secrets
 
@@ -76,6 +77,48 @@ ALLOWED_HOSTS = env.list(
     default=["localhost", "127.0.0.1", "0.0.0.0", "*"] if not IS_PRODUCTION else [],
 )
 
+# Upload size limits (CHG-803 / AUD-021). Applied globally — the
+# FUI anexos (PDFs of cedula, diplomas) typically run 2-8 MB and
+# the Django default of 2.5 MB would reject legitimate attachments.
+# Kept global (not just production) so dev mirrors prod behaviour.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB — non-multipart body
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB — multipart / FUI anexos
+
+# Production security headers (CHG-803 / AUD-017). See
+# openspec/changes/CHG-803-fix-prod-security/specs/security-headers/spec.md
+# and roadmap.md §4.2 Anexo "Security Headers". Staging/prod only;
+# dev keeps the Django defaults (no HTTPS, no HSTS) to keep local
+# workflow frictionless.
+if IS_PRODUCTION:
+    # Force HTTPS.
+    SECURE_SSL_REDIRECT = True
+    # HSTS family — 1 year, subdomains, preload-eligible.
+    SECURE_HSTS_SECONDS = 31_536_000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    # Browser-side hardening.
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+    # Cookies only over HTTPS.
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # Trust the X-Forwarded-Proto header from nginx (TLS terminator).
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    # CSRF allowlist for the official domains only.
+    CSRF_TRUSTED_ORIGINS = [
+        "https://fodejas.gov.co",
+        "https://www.fodejas.gov.co",
+    ]
+    # Clickjacking — explicit DENY (not the middleware default SAMEORIGIN).
+    X_FRAME_OPTIONS = "DENY"
+    # CORS — official origins only; credentials allowed so session
+    # cookies are sent on authenticated cross-origin requests.
+    CORS_ALLOWED_ORIGINS = [
+        "https://fodejas.gov.co",
+        "https://www.fodejas.gov.co",
+    ]
+    CORS_ALLOW_CREDENTIALS = True
+
 # Application definition
 AUTH_USER_MODEL = "accounts.CustomUser"
 
@@ -87,6 +130,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_prometheus",
+    "corsheaders",  # CHG-803 — CORS_ALLOWED_ORIGINS for the official domains.
     "apps.accounts",
     "apps.convocatories",
     "apps.applications",
@@ -95,10 +139,10 @@ INSTALLED_APPS = [
     "apps.legalization",
     "apps.treasury",
     "apps.academic_tracking",
-    "apps.psychosocial",
+    # CHG-806 — apps.psychosocial removida (stub). Ver docs/stubs-removed.md.
+    # CHG-806 — apps.reporting removida (stub). Ver docs/stubs-removed.md.
     "apps.condonation",
     "apps.governance",
-    "apps.reporting",
     "apps.audit",
     "apps.core",
     "crispy_forms",
@@ -112,6 +156,10 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # CHG-803 — CorsMiddleware runs after SecurityMiddleware and
+    # before CommonMiddleware so Access-Control-* headers are added
+    # to the response before it leaves Django.
+    "corsheaders.middleware.CorsMiddleware",
     "apps.core.middleware.RequestIDMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -154,7 +202,7 @@ else:
 
 if IS_PRODUCTION:
     DATABASES = {
-        "default": env.db(url=_db_url),
+        "default": env.db(_db_url),
     }
 else:
     DATABASES = {
@@ -248,6 +296,37 @@ else:
     CELERY_BROKER_URL = REDIS_URL
 
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+# Celery beat schedule for deadline sweeps (CHG-802 / AUD-016).
+# All times are America/Bogota. Tasks are idempotent.
+CELERY_BEAT_SCHEDULE = {
+    "tesoreria-sweep-v5d": {
+        "task": "apps.treasury.tasks.tesoreria_sweep_v5d",
+        "schedule": crontab(hour=9, minute=0),
+    },
+    "tesoreria-alert-v5d": {
+        "task": "apps.treasury.tasks.tesoreria_alert_v5d",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "exoneracion-sweep-v30d": {
+        "task": "apps.condonation.tasks.exoneracion_sweep_v30d",
+        "schedule": crontab(hour=9, minute=5),
+    },
+    "exoneracion-alert-v30d": {
+        "task": "apps.condonation.tasks.exoneracion_alert_v30d",
+        "schedule": crontab(hour=9, minute=10),
+    },
+    "habeas-sweep-v30d": {
+        "task": "apps.accounts.tasks.habeas_sweep_v30d",
+        "schedule": crontab(hour=9, minute=15),
+    },
+    "habeas-alert-v30d": {
+        "task": "apps.accounts.tasks.habeas_alert_v30d",
+        "schedule": crontab(hour=9, minute=20),
+    },
+}
+
+CELERY_TIMEZONE = TIME_ZONE
 
 # S3/MinIO Storage
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="minioadmin")
