@@ -1,9 +1,31 @@
 """Models for accounts app."""
 import uuid
+from datetime import timedelta
+
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import MinLengthValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from dateutil.relativedelta import relativedelta
+
+
+def _add_working_days(start, days: int):
+    """Advance ``start`` by ``days`` Mon-Fri steps.
+
+    Returned as a ``datetime`` if ``start`` is a ``datetime``,
+    else a ``date``. Negative ``days`` walks backwards.
+    """
+    if days == 0:
+        return start
+    step = timedelta(days=1 if days > 0 else -1)
+    remaining = abs(days)
+    cursor = start
+    while remaining > 0:
+        cursor = cursor + step
+        if cursor.weekday() < 5:
+            remaining -= 1
+    return cursor
 
 
 class CustomUserManager(BaseUserManager):
@@ -492,6 +514,37 @@ class SolicitudHabeasData(models.Model):
 
     def __str__(self):
         return f"{self.titular.email} - {self.get_tipo_display()} ({self.get_estado_display()})"
+
+    def save(self, *args, **kwargs):
+        """Autocompute ``fecha_limite`` for the 30-working-day window (CAP-025).
+
+        Ley 1581/2012 and Decreto 1377/2013 establish that ARCO
+        requests must be resolved within 30 *working* days
+        (lunes a viernes) from the moment they are received.
+
+        Implementation note: ``fecha_radicacion`` uses
+        ``auto_now_add=True`` which Django applies in
+        ``Model.save_base()`` AFTER our ``save()`` override runs.
+        Therefore on a fresh insert we must set
+        ``fecha_radicacion`` ourselves before computing
+        ``fecha_limite``. The override is a no-op when:
+          - ``fecha_limite`` is already set (caller supplied an
+            explicit value), or
+          - this is an update of an existing row whose
+            ``fecha_radicacion`` is already populated.
+        """
+        if self.pk is None and getattr(self, "fecha_radicacion", None) is None:
+            self.fecha_radicacion = timezone.now()
+        if (
+            self.fecha_limite is None
+            and getattr(self, "fecha_radicacion", None) is not None
+        ):
+            # 30 working days = up to 42 calendar days. Walk forward
+            # one calendar day at a time, counting only Mon-Fri.
+            self.fecha_limite = _add_working_days(
+                self.fecha_radicacion, 30
+            )
+        super().save(*args, **kwargs)
 
 
 class Notification(models.Model):

@@ -39,4 +39,5 @@ urlpatterns = [
     path("scoring/", include("apps.scoring.urls")),  # Scoring HTML views
     path("claims/", include("apps.claims.urls")),  # Claims HTML views (CHG-205)
     path("governance/", include("apps.governance.urls")),  # Governance HTML views (CHG-207)
+    path("treasury/", include("apps.treasury.urls")),  # Treasury reconciliation (CHG-802)
 ]

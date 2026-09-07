@@ -1,4 +1,10 @@
 services:
+  # NOTE (CHG-803 / AUD-018): the `app` service below uses
+  # `python manage.py runserver` because this base compose is the
+  # dev/local workflow. docker/docker-compose.production.yml
+  # overrides `app.command` with `gunicorn` for staging/prod; the
+  # Dockerfile's CMD was also changed to gunicorn in CHG-803 so
+  # the base image is production-safe by default.
   app:
     build:
       context: ..
@@ -22,6 +28,52 @@ services:
       redis:
         condition: service_healthy
       minio:
+        condition: service_healthy
+    volumes:
+      - ..:/app
+
+  celery-worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: fodejas_celery_worker
+    command: celery -A config worker -l info --concurrency 2
+    environment:
+      - DATABASE_URL=postgres://fodejas_user:fodejas_password@db:5432/fodejas_db
+      - REDIS_URL=redis://redis:6379/0
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_USE_SSL=False
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=config.settings
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ..:/app
+
+  celery-beat:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: fodejas_celery_beat
+    command: celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    environment:
+      - DATABASE_URL=postgres://fodejas_user:fodejas_password@db:5432/fodejas_db
+      - REDIS_URL=redis://redis:6379/0
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_USE_SSL=False
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=config.settings
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     volumes:
       - ..:/app

@@ -13,8 +13,10 @@ class DisbursementAuthorization(models.Model):
         PENDIENTE = "PENDIENTE", "Pendiente"
         AUTORIZADO = "AUTORIZADO", "Autorizado"
         ORDENADO = "ORDENADO", "Ordenado a Tesorería"
+        RECIBIDO = "RECIBIDO", "Recibido por Tesorería"
         PAGADO = "PAGADO", "Pagado"
         RECHAZADO = "RECHAZADO", "Rechazado"
+        VENCIDO = "VENCIDO", "Vencido (5 días hábiles)"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     legalization_process = models.ForeignKey(
@@ -47,6 +49,14 @@ class DisbursementAuthorization(models.Model):
     # Treasury order
     treasury_order_number = models.CharField(max_length=50, blank=True, default="")
     treasury_order_date = models.DateField(null=True, blank=True)
+    # CHG-802: receipt timestamp set by `TreasuryService.mark_as_received`.
+    # Sweep task `tesoreria_sweep_v5d` transitions to VENCIDO when
+    # treasury_order_date is older than 5 working days without a
+    # payment confirmation.
+    treasury_received_at = models.DateTimeField(null=True, blank=True)
+    # CHG-802: dedupe marker so re-running the alert task does not
+    # double-notify on the same calendar day.
+    last_alerted_at = models.DateTimeField(null=True, blank=True)
     # Payment confirmation
     paid_at = models.DateTimeField(null=True, blank=True)
     payment_proof = models.FileField(

@@ -1,9 +1,10 @@
 """Services for termination and sanction management."""
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 from django.db import transaction
+from django.utils import timezone
 
 from apps.condonation.models import Sanction, TerminationRequest
 
@@ -241,8 +242,16 @@ class SanctionService:
         return sanction
 
     @staticmethod
+    @transaction.atomic
     def submit_justification(sanction_id, justification, details):
         """Submit justification for exception.
+
+        CHG-802 / CAP-016: when the sanction transitions to
+        ``EN_REVISION`` we start a 30-calendar-day clock
+        (``fecha_limite = now + timedelta(days=30)``). The sweep
+        task ``exoneracion_sweep_v30d`` will later transition the
+        row to ``VENCIDO`` if no decision is recorded before
+        ``fecha_limite``.
 
         Args:
             sanction_id: Sanction ID
@@ -258,7 +267,7 @@ class SanctionService:
             raise ValueError(f"Invalid justification. Must be one of: {valid_justifications}")
 
         try:
-            sanction = Sanction.objects.get(id=sanction_id)
+            sanction = Sanction.objects.select_for_update().get(id=sanction_id)
         except Sanction.DoesNotExist:
             raise ValueError("Sanction not found") from None
 
@@ -268,8 +277,29 @@ class SanctionService:
         sanction.justification = justification
         sanction.justification_details = details
         sanction.status = Sanction.Status.EN_REVISION
+        # CHG-802: 30 calendar days, Decreto 0372/2025 Art. 17.
+        sanction.fecha_limite = timezone.now() + timedelta(days=30)
         sanction.save()
 
+        return sanction
+
+    @staticmethod
+    @transaction.atomic
+    def mark_as_expired(sanction_id):
+        """Helper used by the Celery sweep task.
+
+        Transitions ``EN_REVISION`` sanctions with
+        ``fecha_limite <= now`` to ``VENCIDO``. Idempotent: rows
+        already in ``VENCIDO`` are left untouched.
+        """
+        try:
+            sanction = Sanction.objects.select_for_update().get(id=sanction_id)
+        except Sanction.DoesNotExist:
+            return None
+        if sanction.status != Sanction.Status.EN_REVISION:
+            return sanction
+        sanction.status = Sanction.Status.VENCIDO
+        sanction.save(update_fields=["status", "updated_at"])
         return sanction
 
     @staticmethod

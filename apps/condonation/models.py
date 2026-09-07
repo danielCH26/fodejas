@@ -81,6 +81,7 @@ class Sanction(models.Model):
         RECHAZADA = "RECHAZADA", "Rechazada"
         PAGADA = "PAGADA", "Pagada"
         CONDONADA = "CONDONADA", "Condonada"
+        VENCIDO = "VENCIDO", "Vencido (30 días calendario)"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     termination = models.OneToOneField(
@@ -115,6 +116,13 @@ class Sanction(models.Model):
         blank=True,
     )
     paid_at = models.DateTimeField(null=True, blank=True)
+    # CHG-802: deadline for the 30-calendar-day exoneration window
+    # (Decreto 0372/2025 Art. 17). Populated by
+    # ``SanctionService.submit_justification`` when the sanction
+    # transitions to ``EN_REVISION``.
+    fecha_limite = models.DateTimeField(null=True, blank=True)
+    # CHG-802: dedupe marker for the preventive alert task.
+    last_alerted_at = models.DateTimeField(null=True, blank=True)
     reviewed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

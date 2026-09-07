@@ -16,6 +16,7 @@ dependencies = [
     "redis>=5.0",
     "celery>=5.3",
     "django-celery-beat>=2.5",
+    "python-dateutil>=2.8",  # relativedelta for working-day deadline math (CHG-802)
     "boto3>=1.28",
     "django-storages>=1.14",
     "weasyprint>=60.0",
@@ -25,6 +26,8 @@ dependencies = [
     "sentry-sdk>=2.0",
     "prometheus-client>=0.20",
     "django-prometheus>=2.3",
+    "gunicorn>=21.2",  # CHG-803 — production WSGI server (replaces runserver).
+    "django-cors-headers>=4.3",  # CHG-803 — CORS_ALLOWED_ORIGINS for the official domains.
 ]
 
 [project.optional-dependencies]
