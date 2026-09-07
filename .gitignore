@@ -79,3 +79,7 @@ celerybeat.pid
 pip-log.txt
 pip-delete-this-directory.txt
 node_modules/
+
+# Local test artifacts (e.g. uploaded comprobantes from running the
+# treasury reconciliation view). Not part of the repo; do not commit.
+treasury/
