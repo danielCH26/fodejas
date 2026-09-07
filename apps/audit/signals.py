@@ -1,14 +1,32 @@
-"""Audit signals for automatic logging."""
-import uuid
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
+"""Audit signals for automatic logging (CAP-022 / CHG-801).
 
-from apps.accounts.models import CustomUser, Role, Permission
+``AUDIT_MODELS`` is keyed on the **model class** (not a string
+label) so the ``sender`` argument of a Django signal can be compared
+with class identity (``sender is ModelClass``). String keys were
+broken at runtime: ``sender`` is always a class object, so
+``sender in ["apps.core.models.Estrato", ...]`` always evaluated to
+``False`` and the receivers never fired (AUD-010 / CHG-801).
+
+Note: the ``audit_save_receiver`` / ``audit_delete_receiver``
+functions are **not** decorated with ``@receiver(...)``. They are
+connected explicitly by ``register_audit_signals()`` for each model
+in ``AUDIT_MODELS``. Using ``@receiver(post_save)`` without a
+``sender`` would also catch every model save in the project and
+double-fire for the audited ones, polluting the chain.
+"""
+import logging
+
+from django.apps import apps as django_apps
+from django.db.models.signals import post_delete, post_save
+
+from apps.core.logging_config import get_actor
 from .services import log_audit_event
+
+logger = logging.getLogger(__name__)
 
 
 def get_request_info(request):
-    """Extract request info for audit logging."""
+    """Extract request info for audit logging (kept for backward compatibility)."""
     if request is None:
         return None, None
 
@@ -27,11 +45,33 @@ def get_client_ip(request):
     return ip
 
 
-# Models to audit
-AUDIT_MODELS = [
-    (CustomUser, "accounts"),
-    (Role, "accounts"),
-    (Permission, "accounts"),
+def _resolve_model(label: str):
+    """Resolve a dotted label to its model class.
+
+    Accepts both ``app_label.ModelName`` (Django's canonical form,
+    e.g. ``core.Estrato``) and the full Python path
+    ``apps.core.models.Estrato`` (used in the source tree). The
+    full path is rewritten to ``core.Estrato`` before being passed
+    to ``django_apps.get_model``.
+    """
+    if label.startswith("apps."):
+        # Rewrite ``apps.<app_label>.models.<ModelName>`` to
+        # ``<app_label>.<ModelName>`` so Django's app registry can
+        # resolve it without a manual import.
+        parts = label.split(".")
+        if len(parts) == 4 and parts[2] == "models":
+            label = f"{parts[1]}.{parts[3]}"
+    return django_apps.get_model(label)
+
+
+# Models to audit. Keyed by class (not string) so the receiver can
+# compare with ``sender is ModelClass``. The second element of each
+# tuple is the module label stored on the audit event.
+AUDIT_MODELS: list[tuple[str, str]] = [
+    # Accounts
+    ("apps.accounts.models.CustomUser", "accounts"),
+    ("apps.accounts.models.Role", "accounts"),
+    ("apps.accounts.models.Permission", "accounts"),
     # Core domain catalogs
     ("apps.core.models.Estrato", "core"),
     ("apps.core.models.GrupoSisben", "core"),
@@ -52,35 +92,59 @@ AUDIT_MODELS = [
 ]
 
 
-def register_audit_signals():
-    """Register audit signals for all models."""
-    for model, module in AUDIT_MODELS:
-        post_save.connect(audit_save_receiver, sender=model)
-        post_delete.connect(audit_delete_receiver, sender=model)
+def _audited_models():
+    """Return the resolved ``(class, module)`` pairs.
+
+    Resolved lazily because the app registry may not be ready when
+    this module is first imported. Failures are logged and the
+    offending entry is skipped — never raises during import.
+    """
+    resolved: list[tuple[type, str]] = []
+    for entry in AUDIT_MODELS:
+        label, module = entry
+        try:
+            model_cls = _resolve_model(label) if isinstance(label, str) else label
+        except LookupError:
+            logger.warning("audit: model %s not found in app registry", label)
+            continue
+        resolved.append((model_cls, module))
+    return resolved
 
 
-@receiver(post_save)
+def register_audit_signals() -> None:
+    """Connect audit receivers to ``post_save`` / ``post_delete``.
+
+    Called from ``apps.audit.apps.AuditConfig.ready()`` once the
+    app registry is populated. Iterating over the resolved model
+    classes (rather than string labels) means Django's signal
+    dispatcher does the class-identity match, which is exactly
+    what we need.
+    """
+    for model_cls, _module in _audited_models():
+        post_save.connect(audit_save_receiver, sender=model_cls)
+        post_delete.connect(audit_delete_receiver, sender=model_cls)
+
+
 def audit_save_receiver(sender, instance, created, **kwargs):
-    """Log model create/update events."""
-    # Skip if not one of our audited models
-    if sender not in [m[0] for m in AUDIT_MODELS]:
+    """Log model create/update events for audited models."""
+    # Skip models we are not auditing. Use class identity (`is`), not
+    # equality — subclasses should not trigger an audit event for the
+    # parent class.
+    if not any(sender is m[0] for m in _audited_models()):
         return
 
-    # Get module name
     module = sender._meta.app_label
-
     action = "CREATE" if created else "UPDATE"
 
-    # Get changes for updates
-    changes = None
-    if not created:
-        # For updates, we could track changed fields
-        # For now, just log that an update happened
-        changes = {"updated": True}
+    # The helper stamps ``actor_is_system=True`` onto ``changes``
+    # when ``actor is None``. We always pass a dict so the
+    # sentinel survives the round-trip into JSON storage.
+    changes = {"updated": False} if created else {"updated": True}
 
+    actor = get_actor()
     try:
         log_audit_event(
-            actor=None,  # Would need to get from request context
+            actor=actor,
             action=action,
             entity=sender._meta.model_name,
             entity_id=instance.id,
@@ -88,27 +152,38 @@ def audit_save_receiver(sender, instance, created, **kwargs):
             module=module,
         )
     except Exception:
-        # Don't let audit failures break the main operation
-        pass
+        # Log the failure with structured context; never let an
+        # audit failure abort the user's save (CHG-801 / AUD-002).
+        logger.exception(
+            "audit: post_save handler failed",
+            extra={
+                "sender": sender.__name__,
+                "instance_id": getattr(instance, "id", None),
+            },
+        )
 
 
-@receiver(post_delete)
 def audit_delete_receiver(sender, instance, **kwargs):
-    """Log model delete events."""
-    # Skip if not one of our audited models
-    if sender not in [m[0] for m in AUDIT_MODELS]:
+    """Log model delete events for audited models."""
+    if not any(sender is m[0] for m in _audited_models()):
         return
 
     module = sender._meta.app_label
-
+    actor = get_actor()
     try:
         log_audit_event(
-            actor=None,
+            actor=actor,
             action="DELETE",
             entity=sender._meta.model_name,
             entity_id=instance.id,
-            changes={"deleted": True},
+            changes={"deleted": True, "actor_is_system": actor is None},
             module=module,
         )
     except Exception:
-        pass
+        logger.exception(
+            "audit: post_delete handler failed",
+            extra={
+                "sender": sender.__name__,
+                "instance_id": getattr(instance, "id", None),
+            },
+        )

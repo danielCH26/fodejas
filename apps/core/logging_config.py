@@ -3,11 +3,16 @@ import sys
 from contextvars import ContextVar
 from logging.handlers import QueueHandler, QueueListener
 from queue import Queue
+from typing import Any
 
 from pythonjsonlogger import jsonlogger
 
 request_id_var: ContextVar[str] = ContextVar("request_id", default="")
 user_id_var: ContextVar[str] = ContextVar("user_id", default="")
+# Actor contextvar — populated by RequestIDMiddleware from request.user.
+# Audit signal handlers read this to attribute the actor without an
+# explicit request object (CHG-801 / AUD-002).
+actor_var: ContextVar[Any] = ContextVar("actor", default=None)
 
 
 def get_request_id() -> str:
@@ -24,6 +29,26 @@ def get_user_id() -> str:
 
 def set_user_id(user_id: str) -> None:
     user_id_var.set(user_id)
+
+
+def get_actor() -> Any:
+    """Return the actor (request user) bound to the current task.
+
+    Set by ``apps.core.middleware.RequestIDMiddleware`` for HTTP
+    requests. ``None`` outside of an authenticated request (management
+    commands, signals fired outside of a view, background tasks).
+    """
+    return actor_var.get()
+
+
+def set_actor(user: Any) -> None:
+    """Bind the actor (request user) to the current task."""
+    actor_var.set(user)
+
+
+def reset_actor() -> None:
+    """Reset the actor contextvar (called by middleware on response)."""
+    actor_var.set(None)
 
 
 class JSONFormatter(jsonlogger.JsonFormatter):

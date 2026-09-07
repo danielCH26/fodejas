@@ -10,12 +10,16 @@ as required by Art. 45 CPACA and Decreto 0372/2025.
 
 import hashlib
 import json
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -175,24 +179,33 @@ def _log_signature_audit(
         result: SignatureResult from the signing operation.
         actor_id: ID of the user performing the signing (optional).
     """
-    try:
-        from apps.audit.models import AuditEvent
+    from apps.audit.services import log_audit_event
 
-        AuditEvent.objects.create(
+    CustomUser = get_user_model()
+    actor = None
+    if actor_id is not None:
+        actor = CustomUser.objects.filter(id=actor_id).first()
+
+    try:
+        log_audit_event(
+            actor=actor,
             action="ELECTRONIC_SIGNATURE",
             entity=document_type,
-            module="legalization",
-            actor_id=actor_id,
-            details={
+            entity_id=hashlib.md5(
+                f"{document_type}:{result.pre_sign_hash}".encode()
+            ).hexdigest(),
+            changes={
                 "pre_sign_hash": result.pre_sign_hash,
                 "post_sign_hash": result.post_sign_hash,
                 "provider": result.provider,
                 "metadata": result.metadata,
             },
+            module="legalization",
         )
     except Exception:
-        # Audit failure should not block signing
-        pass
+        # Audit failure should not block signing, but must be logged
+        # so the integrity gap is visible to operators (CHG-801).
+        logger.exception("audit: signature audit log failed")
 
 
 def sign_document(

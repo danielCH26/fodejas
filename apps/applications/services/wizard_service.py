@@ -102,20 +102,31 @@ def submit(solicitud, consentimiento: bool, actor) -> None:
 
 
 def _log_submission(solicitud, actor) -> None:
-    """Log application submission to audit."""
-    try:
-        from apps.audit.models import AuditEvent
+    """Log application submission to audit (CAP-022 / CHG-801).
 
-        AuditEvent.objects.create(
-            user=actor,
+    Goes through ``log_audit_event(...)`` so the chain head is
+    locked and the hash chain cannot fork under concurrent
+    submissions (AUD-001 / AUD-003).
+    """
+    import logging
+
+    from apps.audit.services import log_audit_event
+
+    logger = logging.getLogger(__name__)
+
+    try:
+        log_audit_event(
+            actor=actor,
             action="solicitud.submitted",
-            entity="applications.Solicitud",
+            entity="Solicitud",
             entity_id=solicitud.id,
             changes={
                 "radicado": solicitud.radicado,
                 "estado": Solicitud.Estado.RADICADA,
             },
+            module="applications",
         )
     except Exception:
-        # Audit failure should not block submission
-        pass
+        # Audit failure should not block submission, but must be
+        # logged so the gap is visible to operators (CHG-801).
+        logger.exception("audit: solicitud submission audit log failed")

@@ -265,26 +265,40 @@ class NotificationAdmin(admin.ModelAdmin):
     
     def marcar_como_leida(self, request, queryset):
         """Mark selected notifications as read."""
+        import logging
+        import uuid
+
         from django.utils import timezone
-        from apps.audit.models import AuditEvent
-        
+        from apps.audit.services import log_audit_event
+
+        logger = logging.getLogger(__name__)
+
         updated = queryset.filter(read_at__isnull=True).update(read_at=timezone.now())
-        
-        # Log batch audit event
+
+        # Log batch audit event via the canonical helper so the
+        # hash chain stays intact. ``entity_id`` is a stable UUID5
+        # of the batch timestamp so the value is unique and not a
+        # reference to a specific row (CHG-801 / AUD-001).
+        batch_id = uuid.uuid5(
+            uuid.NAMESPACE_URL,
+            f"notif-batch-read:{request.user.id}:{timezone.now().isoformat()}",
+        )
         try:
-            AuditEvent.objects.create(
+            log_audit_event(
                 actor=request.user,
                 action="notif.batch_read",
                 entity="Notification",
-                entity_id=None,  # Batch operation
+                entity_id=batch_id,
                 changes={"count": updated},
                 ip_address=None,
                 user_agent="",
                 module="accounts",
             )
         except Exception:
-            pass  # Ignore audit failure
-        
+            # Log loud failure; don't swallow silently (CHG-801 /
+            # AUD-001 + AUD-020).
+            logger.exception("audit: notif.batch_read audit log failed")
+
         self.message_user(request, f"{updated} notificaciones marcadas como leídas.")
     
     marcar_como_leida.short_description = _("Marcar como leídas")

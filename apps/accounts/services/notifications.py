@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 from apps.accounts.models import Notification
-from apps.audit.models import AuditEvent
+from apps.audit.services import log_audit_event
 
 logger = logging.getLogger(__name__)
 CustomUser = get_user_model()
@@ -175,26 +175,33 @@ class InAppNotifier:
         return titulo, mensaje
     
     def _log_audit_event(self, action: str, entity: str, entity_id, user: CustomUser, changes: dict = None):
-        """Log an audit event - simplified version."""
+        """Log an audit event via ``apps.audit.services.log_audit_event``.
+
+        The helper computes ``previous_hash`` and ``current_hash``
+        atomically and takes a row-level lock on the chain head so
+        concurrent notifications cannot fork the chain
+        (CHG-801 / AUD-001, AUD-003).
+        """
+        # Use shorter action names to fit in 20 chars (model limit).
+        short_action = action.replace("notification.", "notif.")
+        if len(short_action) > 20:
+            short_action = short_action[:20]
+
         try:
-            # Use shorter action names to fit in 20 chars
-            short_action = action.replace("notification.", "notif.")
-            if len(short_action) > 20:
-                short_action = short_action[:20]
-            
-            AuditEvent.objects.create(
+            log_audit_event(
                 actor=user,
                 action=short_action,
                 entity=entity,
                 entity_id=entity_id,
                 changes=changes or {},
-                ip_address=None,  # Would get from request in real implementation
+                ip_address=None,  # Resolved from request in middleware-bound views
                 user_agent="",
                 module="accounts",
             )
-        except Exception as e:
-            logger.error(f"Failed to create audit event: {e}")
-            # Don't fail notification creation if audit fails
+        except Exception:
+            # Don't fail notification creation if audit fails, but
+            # log loudly so operators see the integrity gap.
+            logger.exception("audit: notification audit log failed")
     
     def _dispatch_notification(self, notification_id):
         """Dispatch notification synchronously - simplified without Celery."""

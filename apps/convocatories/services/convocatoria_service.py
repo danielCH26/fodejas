@@ -159,14 +159,27 @@ def transicionar_estado(convocatoria, estado_destino: str, actor, motivo: str = 
 
 
 def _log_transition(convocatoria, actor, accion: str, motivo: str = "") -> None:
-    """Log transition to audit (CHG-102)."""
-    try:
-        from apps.audit.models import AuditEvent
+    """Log transition to audit (CHG-102 / CHG-801).
 
-        AuditEvent.objects.create(
-            user=actor,
-            action=f"convocatory.{accion}",
-            entity="convocatories.Convocatory",
+    Writes via ``log_audit_event(...)`` so the chain head is locked
+    and the hash chain cannot fork under concurrent transitions
+    (AUD-001 / AUD-003).
+    """
+    import logging
+
+    from apps.audit.services import log_audit_event
+
+    logger = logging.getLogger(__name__)
+
+    # Action must fit the 20-char cap on the AuditEvent column. Drop
+    # the "convocatory." prefix to keep room for verb forms.
+    action = f"conv.{accion}" if len(accion) <= 16 else accion[:20]
+
+    try:
+        log_audit_event(
+            actor=actor,
+            action=action,
+            entity="Convocatory",
             entity_id=convocatoria.id,
             changes={
                 "estado": {
@@ -175,10 +188,12 @@ def _log_transition(convocatoria, actor, accion: str, motivo: str = "") -> None:
                 },
                 "motivo": motivo,
             },
+            module="convocatories",
         )
     except Exception:
-        # Audit failure should not block the transition
-        pass
+        # Audit failure should not block the transition, but must
+        # be logged loudly for operators (CHG-801).
+        logger.exception("audit: convocatoria transition audit log failed")
 
 
 def _send_notification(user, title: str, message: str, event: str) -> None:

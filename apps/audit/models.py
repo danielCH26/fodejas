@@ -1,5 +1,6 @@
 """Models for audit app."""
 import hashlib
+import json
 import uuid
 from django.conf import settings
 from django.db import models
@@ -51,8 +52,28 @@ class AuditEvent(models.Model):
 
     @staticmethod
     def calculate_hash(timestamp, actor_id, action, entity, entity_id, changes, previous_hash):
-        """Calculate SHA-256 hash for audit record."""
-        data = f"{timestamp}|{actor_id}|{action}|{entity}|{entity_id}|{changes}|{previous_hash}"
+        """Calculate SHA-256 hash for audit record.
+
+        Mirrors ``apps.audit.services.calculate_hash`` so any code path
+        that uses the model-level helper produces the same digest as
+        the service-level helper. ``changes`` is canonicalized via
+        ``json.dumps(sort_keys=True)`` to avoid Python's
+        ``str(dict)`` order-sensitive repr causing a hash mismatch
+        between write and verify.
+
+        NOTE: this method is called by ``services.log_audit_event``
+        AFTER the row has been inserted (so the timestamp reflects the
+        stored ``auto_now_add`` value). The model's ``save()`` does
+        NOT call this — see comment there.
+        """
+        if changes is None:
+            changes_str = "null"
+        else:
+            changes_str = json.dumps(changes, sort_keys=True, default=str)
+        data = (
+            f"{timestamp}|{actor_id}|{action}|{entity}|"
+            f"{entity_id}|{changes_str}|{previous_hash}"
+        )
         return hashlib.sha256(data.encode()).hexdigest()
 
     @classmethod
@@ -64,19 +85,32 @@ class AuditEvent(models.Model):
         return "0" * 64
 
     def save(self, *args, **kwargs):
-        """Save with automatic hash calculation."""
+        """Save the audit event.
+
+        **This method does NOT compute ``current_hash``.**
+
+        The hash computation requires the ``timestamp`` field to be
+        stamped by Django's ``auto_now_add`` (``Field.pre_save``). That
+        stamp runs INSIDE ``Model.save_base``, which is invoked by
+        ``super().save()``. If we tried to compute the hash here we
+        would use ``self.timestamp = None`` and persist an unverifiable
+        row. Instead, the canonical write path is
+        ``apps.audit.services.log_audit_event``, which:
+          1. Inserts the row without ``current_hash`` (relying on
+             ``auto_now_add`` to stamp ``timestamp`` and ``super().save()``
+             to INSERT).
+          2. Reads the persisted event back so ``event.timestamp`` is the
+             stamped value.
+          3. Computes ``current_hash`` and persists it via a second
+             ``save(update_fields=["current_hash"])``.
+
+        ``previous_hash`` MUST be set before this method is called;
+        callers obtain it via ``AuditEvent.get_previous_hash()`` or
+        pass it explicitly through ``log_audit_event``.
+        """
         if not self.previous_hash:
-            self.previous_hash = self.get_previous_hash()
-
-        if not self.current_hash:
-            self.current_hash = self.calculate_hash(
-                self.timestamp,
-                self.actor_id if self.actor else None,
-                self.action,
-                self.entity,
-                self.entity_id,
-                self.changes,
-                self.previous_hash,
+            raise ValueError(
+                "AuditEvent.save() requires previous_hash to be set "
+                "before insertion. Use apps.audit.services.log_audit_event."
             )
-
         super().save(*args, **kwargs)

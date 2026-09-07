@@ -3,17 +3,23 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, permissions
 from rest_framework.response import Response
 
+from apps.accounts.permissions import IsAuditAdmin, IsAuditViewer
 from .models import AuditEvent
 from .serializers import AuditChainVerifySerializer, AuditEventSerializer
 from .services import verify_chain
 
 
 class AuditEventListView(generics.ListAPIView):
-    """List audit events with filters."""
+    """List audit events with filters.
+
+    Permission tightened in CHG-801 (AUD-015): only users with
+    R-ADMIN or R-CONTROL (or superuser / staff) may read the audit
+    log. The previous ``IsAuthenticated`` only was too permissive.
+    """
 
     queryset = AuditEvent.objects.all()
     serializer_class = AuditEventSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuditViewer]
 
     filter_backends = [
         DjangoFilterBackend,
@@ -36,16 +42,24 @@ class AuditEventListView(generics.ListAPIView):
 
 
 class AuditEventDetailView(generics.RetrieveAPIView):
-    """Retrieve a single audit event."""
+    """Retrieve a single audit event.
+
+    Same permission tightening as ``AuditEventListView`` (CHG-801 /
+    AUD-015).
+    """
 
     queryset = AuditEvent.objects.all()
     serializer_class = AuditEventSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuditViewer]
     lookup_field = "id"
 
 
 class AuditChainVerifyView(generics.RetrieveAPIView):
-    """Verify the integrity of the audit chain."""
+    """Verify the integrity of the audit chain.
+
+    Verification triggers a chain-wide scan and exposes integrity
+    metadata, so it stays restricted to admin users only.
+    """
 
     permission_classes = [permissions.IsAdminUser]
     serializer_class = AuditChainVerifySerializer
@@ -65,7 +79,6 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
 
 from apps.accounts.permissions_mixin import PermissionMixin
-from apps.accounts.permissions import IsAuditAdmin, IsAuditViewer
 from apps.audit import selectors
 
 
