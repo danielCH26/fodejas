@@ -1,0 +1,92 @@
+name: migrations-safety
+
+# CHG-804 — guard automático contra migraciones destructivas.
+# Referencia: docs/migrations/expand-contract.md, INF-014 en roadmap.md.
+
+on:
+  pull_request:
+    paths:
+      - "apps/**/migrations/**"
+      - "docs/migrations/**"
+      - ".github/workflows/migrations-safety.yml"
+  push:
+    branches: [main, develop]
+    paths:
+      - "apps/**/migrations/**"
+
+jobs:
+  migrations-safety:
+    name: migrations-safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install project (dev deps)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Make migrations check
+        # Si hay migraciones sin commitear que deberían existir, falla.
+        run: |
+          python manage.py makemigrations --check --dry-run \
+            2>&1 | tee /tmp/makemigrations.log
+
+      - name: Detect destructive PK migrations without backfill
+        # Heurística: una migración es "destructiva sin backfill" si contiene
+        # AlterField con primary_key=True sobre una tabla referenciada por FKs,
+        # y NO existe una migración posterior (en el mismo app) que sea
+        # RunPython sobre la misma tabla.
+        #
+        # Implementación: listar archivos de migración en orden cronológico
+        # por nombre, buscar el patrón y verificar.
+        run: |
+          set -euo pipefail
+          DESTRUCTIVE=0
+          REPORT_FILE="/tmp/destructive-migrations.txt"
+          : > "$REPORT_FILE"
+
+          for migration_file in $(git ls-files 'apps/*/migrations/*.py' | sort); do
+            if grep -q 'primary_key=True' "$migration_file" && \
+               grep -q 'AlterField' "$migration_file"; then
+              # Es una migración destructiva de PK.
+              app_name=$(echo "$migration_file" | cut -d/ -f2)
+              migration_name=$(basename "$migration_file" .py)
+              # Buscar migraciones posteriores en el mismo app que sean
+              # RunPython (típica firma de un backfill idempotente).
+              has_backfill=$(git ls-files "apps/$app_name/migrations/"*.py | \
+                sort | \
+                awk -v current="$migration_name" '$0 > current' | \
+                xargs grep -l "RunPython" 2>/dev/null | head -1 || true)
+
+              if [ -z "$has_backfill" ]; then
+                echo "DESTRUCTIVE WITHOUT BACKFILL: $migration_file" >> "$REPORT_FILE"
+                DESTRUCTIVE=1
+              else
+                echo "OK (backfill in $has_backfill): $migration_file" >> "$REPORT_FILE"
+              fi
+            fi
+          done
+
+          cat "$REPORT_FILE"
+          if [ "$DESTRUCTIVE" -ne 0 ]; then
+            echo "::error::Se encontraron migraciones destructivas sin backfill. Ver $REPORT_FILE."
+            exit 1
+          fi
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: migrations-safety-report
+          path: /tmp/destructive-migrations.txt
+          if-no-files-found: ignore
