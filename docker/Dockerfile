@@ -37,4 +37,10 @@ COPY --from=builder /app .
 EXPOSE 8000
 
 ENTRYPOINT ["docker/wait-for-services.sh", "python", "manage.py"]
-CMD ["runserver", "0.0.0.0:8000"]
+# CHG-803 / AUD-018 — gunicorn is the production WSGI server.
+# runserver is for local dev only (docker/docker-compose.yml's `app`
+# service keeps the runserver command for that purpose). The prod
+# override (docker/docker-compose.production.yml) pins the same
+# command so the override is consistent even if this base CMD is
+# changed later.
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "60", "--access-logfile", "-", "--error-logfile", "-"]

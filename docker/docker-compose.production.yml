@@ -13,7 +13,8 @@ services:
       - DEBUG=False
       - DJANGO_SETTINGS_MODULE=config.settings
     restart: always
-    command: python manage.py runserver 0.0.0.0:8000
+    # CHG-803 / AUD-018 — gunicorn replaces runserver in production.
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60 --access-logfile - --error-logfile -
     depends_on:
       pgbouncer:
         condition: service_healthy
