@@ -23,9 +23,9 @@ def create_ofijur_role(apps, schema_editor):
     )
     
     if created:
-        print(f"✓ Created role: {role.code} - {role.name}")
+        print(f"[OK] Created role: {role.code} - {role.name}")
     else:
-        print(f"✓ Role already exists: {role.code} - {role.name}")
+        print(f"[OK] Role already exists: {role.code} - {role.name}")
 
 
 def reverse_create_ofijur_role(apps, schema_editor):
@@ -34,7 +34,7 @@ def reverse_create_ofijur_role(apps, schema_editor):
     
     # Only delete if it exists and we created it
     Role.objects.filter(code="R-OFIJUR").delete()
-    print(f"✓ Removed role: R-OFIJUR")
+    print(f"[OK] Removed role: R-OFIJUR")
 
 
 class Migration(migrations.Migration):
