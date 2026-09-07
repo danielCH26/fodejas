@@ -358,9 +358,14 @@ from django.contrib import messages
 User = get_user_model()
 
 
+# CHG-805 AUD-008: route role checks through the ``Role`` table via the
+# module-level helper, not through Django's ``Group`` membership.
+from apps.accounts.permissions import has_role as _has_role
+
+
 def has_revisor_role(user):
     """Check if user has R-REVISOR role."""
-    return user.groups.filter(name="R-REVISOR").exists()
+    return _has_role(user, "R-REVISOR")
 
 
 class RequirementReviewListView(LoginRequiredMixin, ReviewerPermissionMixin, ListView):

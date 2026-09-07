@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import ListView, DetailView, UpdateView, TemplateView
 
+from apps.accounts.permissions import has_role as _has_role
 from apps.accounts.permissions_mixin import PermissionMixin, CommitteePermissionMixin
 from apps.applications.models import Solicitud
 from apps.scoring.models import Evaluacion, PuntajeTotal
@@ -22,7 +23,9 @@ from apps.scoring.services.scoring_service import (
 
 def has_comite_role(user):
     """Check if user has R-COMITE role."""
-    return user.groups.filter(name="R-COMITE").exists()
+    # CHG-805 AUD-008: route through the ``Role`` table via the
+    # module-level helper instead of ``user.groups``.
+    return _has_role(user, "R-COMITE")
 
 
 class ScoringListView(LoginRequiredMixin, CommitteePermissionMixin, ListView):
@@ -153,10 +156,13 @@ class RankingView(LoginRequiredMixin, TemplateView):
     
     def dispatch(self, request, *args, **kwargs):
         """Check if user has R-COMITE or R-COORDINADOR role."""
+        # CHG-805 AUD-008: route the ``R-COORDINADOR`` check through the
+        # ``Role`` table via the module-level helper instead of
+        # ``request.user.groups.filter(name=...)``.
         has_access = (
-            has_comite_role(request.user) or
-            request.user.groups.filter(name="R-COORDINADOR").exists() or
-            request.user.is_superuser
+            has_comite_role(request.user)
+            or _has_role(request.user, "R-COORDINADOR")
+            or request.user.is_superuser
         )
         if not has_access:
             messages.error(request, "No tienes permiso para acceder a esta sección.")

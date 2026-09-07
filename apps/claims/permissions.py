@@ -64,9 +64,14 @@ class IsApelacionTitular(BasePermission):
 
 class CanCreateApelacion(BasePermission):
     """Check if user can create an appeal for a specific claim."""
-    
+
     def has_object_permission(self, request, view, obj):
-        from apps.claims.services.apelaciones import can_apelar
-        
-        can_create, _ = can_apelar(obj, request.user)
+        # CHG-805 AUD-009: ``apps.claims.services.apelaciones`` exposes
+        # ``validar_apelacion`` (returns ``(is_valid, error_message)``),
+        # NOT ``can_apelar``. The import name is fixed here so any DRF
+        # view wired with ``permission_classes = [CanCreateApelacion]``
+        # resolves at runtime.
+        from apps.claims.services.apelaciones import validar_apelacion
+
+        can_create, _ = validar_apelacion(obj, request.user)
         return can_create

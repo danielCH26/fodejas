@@ -9,7 +9,7 @@ from apps.accounts.models import Role, UserRole
 class IsAdminRole(BasePermission):
     """
     Verifies that the user has the role R-ADMIN.
-    
+
     Different from IsAdminUser:
     - IsAdminUser checks is_staff or is_superuser
     - IsAdminRole checks user_roles with role__code='R-ADMIN'
@@ -20,42 +20,13 @@ class IsAdminRole(BasePermission):
         return request.user.user_roles.filter(role__code='R-ADMIN').exists()
 
 
-class HasRole(permissions.BasePermission):
-    """
-    Permission class that checks if user has a specific role.
-    
-    Usage:
-        permission_classes = [HasRole]
-        
-    With role code:
-        permission_classes = [HasRole]
-        has_role = 'R-ADMIN'
-        
-    Or in get_permissions():
-        def get_permissions(self):
-            if self.action in ['list']:
-                return [HasRoleRole('R-ADMIN')]
-            return [permissions.IsAuthenticated()]
-    """
-
-    def has_role(self, request, role_code):
-        """Check if user has a specific role code."""
-        if not request.user.is_authenticated:
-            return False
-        return request.user.user_roles.filter(role__code=role_code).exists()
-
-    def has_any_role(self, request, role_codes):
-        """Check if user has any of the specified role codes."""
-        if not request.user.is_authenticated:
-            return False
-        return request.user.user_roles.filter(role__code__in=role_codes).exists()
-
-    def has_all_roles(self, request, role_codes):
-        """Check if user has all of the specified role codes."""
-        if not request.user.is_authenticated:
-            return False
-        user_roles = set(request.user.user_roles.values_list('role__code', flat=True))
-        return all(rc in user_roles for rc in role_codes)
+# CHG-805 AUD-006: the legacy duplicate ``HasRole`` that exposed
+# ``has_role``/``has_any_role``/``has_all_roles`` as instance methods
+# has been removed. Those helpers now live as module-level functions
+# further down this file (``has_role``, ``has_any_role``,
+# ``get_user_roles``, ``is_internal_user``, ``is_external_user``)
+# with a consistent signature ``(user, role_code)`` /
+# ``(user, [role_codes])``.
 
 
 class HasRole(permissions.BasePermission):

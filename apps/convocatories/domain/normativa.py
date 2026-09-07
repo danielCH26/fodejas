@@ -37,14 +37,16 @@ NORMATIVA = {
         "descripcion": "Plazo para doctorados: 5 años",
         "meses": 60,
     },
-    # Beneficio duration (Art. ...)
+    # Beneficio duration (Art. 11 Decreto 0372/2025)
+    # TENTATIVE-CITATION: confirmar con equipo legal antes de deploy a producción
     "beneficio_5_semestres": {
-        "articulo": "Art. ... Decreto 0372/2025",
+        "articulo": "Art. 11 Decreto 0372/2025",
         "descripcion": "Beneficio educativo: 5 semestres",
         "semestres": 5,
     },
+    # TENTATIVE-CITATION: confirmar con equipo legal antes de deploy a producción
     "beneficio_10_semestres": {
-        "articulo": "Art. ... Decreto 0372/2025",
+        "articulo": "Art. 11 Decreto 0372/2025",
         "descripcion": "Beneficio educativo: 10 semestres",
         "semestres": 10,
     },
@@ -54,15 +56,17 @@ NORMATIVA = {
         "descripcion": "Providencia es territorio insular especial",
         "codigo": "PROVIDENCIA",
     },
-    # Tesorería payment window
+    # Tesorería payment window (Art. 2 Decreto 0072/2026)
+    # TENTATIVE-CITATION: confirmar con equipo legal antes de deploy a producción
     "tesoreria_5_dias": {
-        "articulo": "Art. ... Decreto 0372/2025",
+        "articulo": "Art. 2 Decreto 0072/2026",
         "descripcion": "Tesorería ejecuta pago en 5 días hábiles",
         "dias": 5,
     },
-    # Exoneration window
+    # Exoneration window (Art. 17 Decreto 0372/2025)
+    # TENTATIVE-CITATION: confirmar con equipo legal antes de deploy a producción
     "exoneracion_30_dias": {
-        "articulo": "Art. ... Decreto 0372/2025",
+        "articulo": "Art. 17 Decreto 0372/2025",
         "descripcion": "Exoneración resuelta en 30 días calendario",
         "dias": 30,
     },

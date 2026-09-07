@@ -1,17 +1,22 @@
 """Generación del listado definitivo de beneficiarios (CHG-207)."""
+import logging
+
 from django.db import transaction
 from django.utils import timezone
+
+
+logger = logging.getLogger(__name__)
 
 
 def generar_listado_definitivo(convocatoria, acto, ranking_data):
     """
     Genera y guarda el listado definitivo de beneficiarios.
-    
+
     Args:
         convocatoria: Instancia de Convocatory
         acto: Instancia de ActoAdministrativo que aprueba el listado
         ranking_data: Lista de dicts con {"solicitud_id": ..., "puntaje": ..., "rank": ...}
-    
+
     Returns:
         Instancia de ListadoDefinitivo
     """
@@ -25,13 +30,24 @@ def generar_listado_definitivo(convocatoria, acto, ranking_data):
             ranking=ranking_data,
         )
 
-        # Actualizar estado de la convocatoria
+        # Actualizar estado de la convocatoria.
+        # CHG-805 AUD-005: el modelo expone ``DEFINITIVA`` (no ``RESULTADOS_DEFINITIVOS``).
+        # Cualquier otro fallo de transición se registra de forma explícita en logs
+        # en lugar de tragarse la excepción silenciosamente.
         from apps.convocatories.models import Convocatory
         try:
-            convocatoria.estado = Convocatory.Estado.RESULTADOS_DEFINITIVOS
+            convocatoria.estado = Convocatory.Estado.DEFINITIVA
             convocatoria.save(update_fields=["estado", "updated_at"])
-        except Exception:
-            pass  # Si el estado no existe, continuar
+        except (AttributeError, ValueError) as exc:
+            logger.warning(
+                "listado_definitivo.estado_no_transicionado",
+                extra={
+                    "convocatoria_id": str(getattr(convocatoria, "id", "")),
+                    "estado_intentado": "DEFINITIVA",
+                    "error_class": exc.__class__.__name__,
+                    "error_message": str(exc),
+                },
+            )
 
     return listado
 
@@ -58,7 +74,10 @@ def obtener_ranking_final(convocatoria):
         estado=Solicitud.Estado.VERIFICADA,
     ).select_related("aspirante")
 
-    # Obtener puntajes
+    # Obtener puntajes.
+    # CHG-805 AUD-005: PuntajeTotal expone ``puntaje_socioeconomico``,
+    # ``puntaje_academico`` y ``puntaje_excelencia`` (no ``puntaje_merito`` /
+    # ``puntaje_residencia``). El payload usa esos nombres reales.
     ranking = []
     for sol in solicitudes:
         try:
@@ -69,9 +88,9 @@ def obtener_ranking_final(convocatoria):
                 "aspirante": sol.aspirante.get_full_name() or sol.aspirante.email,
                 "puntaje": puntaje.puntaje_total,
                 "puntaje_detallado": {
-                    "merito": puntaje.puntaje_merito,
+                    "excelencia": puntaje.puntaje_excelencia,
+                    "academico": puntaje.puntaje_academico,
                     "socioeconomico": puntaje.puntaje_socioeconomico,
-                    "residencia": puntaje.puntaje_residencia,
                 },
             })
         except PuntajeTotal.DoesNotExist:
@@ -81,9 +100,9 @@ def obtener_ranking_final(convocatoria):
                 "aspirante": sol.aspirante.get_full_name() or sol.aspirante.email,
                 "puntaje": 0,
                 "puntaje_detallado": {
-                    "merito": 0,
+                    "excelencia": 0,
+                    "academico": 0,
                     "socioeconomico": 0,
-                    "residencia": 0,
                 },
             })
 

@@ -31,46 +31,56 @@ def get_weights(convocatoria=None):
     return DEFAULT_WEIGHTS
 
 
+@transaction.atomic
 def calcular_puntaje_total(solicitud, actor=None):
     """Calculate total score for a solicitud.
     
     Formula: (socio * 0.50) + (academico * 0.30) + (excelencia * 0.20)
+    
+    CHG-805 AUD-007 (CRITICAL): the function is wrapped in
+    ``@transaction.atomic`` and acquires the row-level lock via
+    ``PuntajeTotal.objects.select_for_update().get_or_create(...)``
+    so two concurrent scorers cannot race the read-modify-write of
+    the ``PuntajeTotal`` and produce a ``puntaje_total`` that is
+    inconsistent with its components.
     """
     from apps.scoring.models import Evaluacion, PuntajeTotal
-    
+
     weights = get_weights(solicitud.convocatoria)
-    
+
     # Get evaluations
     eval_socio = solicitud.evaluaciones.filter(
         criterio=Evaluacion.Criterio.SOCIOECONOMICO
     ).first()
-    
+
     eval_acad = solicitud.evaluaciones.filter(
         criterio=Evaluacion.Criterio.ACADEMICO
     ).first()
-    
+
     eval_excel = solicitud.evaluaciones.filter(
         criterio=Evaluacion.Criterio.EXCELENCIA
     ).first()
-    
+
     # Get puntajes (default to 0 if not evaluated)
     socio = eval_socio.puntaje or Decimal("0")
     acad = eval_acad.puntaje or Decimal("0")
     excel = eval_excel.puntaje or Decimal("0")
-    
+
     # Calculate total
     total = (socio * weights["socioeconomico"]) + \
             (acad * weights["academico"]) + \
             (excel * weights["excelencia"])
-    
-    # Get or create PuntajeTotal
-    puntaje, _ = PuntajeTotal.objects.get_or_create(
-        solicitud=solicitud,
-        defaults={
-            "calculado_por": actor,
-        }
+
+    # Get or create PuntajeTotal with row-level lock.
+    # select_for_update() requires PostgreSQL/MySQL — callers on
+    # SQLite will raise NotSupportedError, which is the expected
+    # signal to use a real RDBMS for concurrent scoring.
+    puntaje, _ = (
+        PuntajeTotal.objects
+        .select_for_update()
+        .get_or_create(solicitud=solicitud, defaults={"calculado_por": actor})
     )
-    
+
     # Update values
     puntaje.puntaje_socioeconomico = socio
     puntaje.puntaje_academico = acad
@@ -78,7 +88,7 @@ def calcular_puntaje_total(solicitud, actor=None):
     puntaje.puntaje_total = total
     puntaje.calculado_por = actor
     puntaje.save()
-    
+
     return puntaje
 
 
