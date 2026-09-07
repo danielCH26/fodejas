@@ -1,7 +1,7 @@
-"""HTML views for governance app (CHG-207)."""
+"""HTML views for governance app (CHG-207 + CHG-208)."""
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -9,6 +9,7 @@ from django.views import View
 from django.views.generic import (
     CreateView,
     DetailView,
+    FormView,
     ListView,
     TemplateView,
     UpdateView,
@@ -16,6 +17,7 @@ from django.views.generic import (
 
 from apps.accounts.permissions_mixin import PermissionMixin, JuntaPermissionMixin
 from apps.convocatories.models import Convocatory
+from apps.governance.domain.transitions import crear_modificatorio, firmar_acto
 from apps.governance.models import ActoAdministrativo, ListadoDefinitivo
 from apps.governance.services import (
     generar_listado_definitivo,
@@ -98,6 +100,114 @@ class ActoPublishView(JuntaPermissionMixin, View):
 
         messages.success(request, "Acto administrativo publicado exitosamente.")
         return redirect("governance:acto_detail", pk=pk)
+
+
+class ActoSignView(JuntaPermissionMixin, View):
+    """Transition BORRADOR → FIRMADO (CHG-208).
+
+    Receives the firmantes in the POST body as a single comma-separated
+    field (``firmantes_csv``). Splits, strips, and passes them to
+    ``apps.governance.domain.transitions.firmar_acto``.
+    """
+
+    def post(self, request, pk):
+        csv = request.POST.get("firmantes_csv", "")
+        firmantes = [s.strip() for s in csv.split(",") if s.strip()]
+        if not firmantes:
+            messages.error(
+                request,
+                "Debe indicar al menos un firmante (separados por coma).",
+            )
+            return redirect("governance:acto_detail", pk=pk)
+        try:
+            acto = firmar_acto(pk, firmantes, usuario=request.user)
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            return redirect("governance:acto_detail", pk=pk)
+        messages.success(
+            request,
+            f"Acto {acto.numero} firmado por {len(firmantes)} firmante(s).",
+        )
+        return redirect("governance:acto_detail", pk=acto.uuid)
+
+
+class ActoModificatorioCreateView(JuntaPermissionMixin, FormView):
+    """Create a CPACA Art. 45 acto modificatorio (CHG-208).
+
+    GET renders the form pre-poblado con el acto original.
+    POST crea el nuevo acto via
+    ``apps.governance.domain.transitions.crear_modificatorio``.
+    """
+
+    template_name = "governance/acto_modificatorio_create.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.original = get_object_or_404(
+            ActoAdministrativo, uuid=kwargs.get("pk")
+        )
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["original"] = self.original
+        return ctx
+
+    def post(self, request, *args, **kwargs):
+        asunto = request.POST.get("asunto", "").strip()
+        resolutivo = request.POST.get("resolutivo", "").strip()
+        considerandos_raw = request.POST.get("considerandos", "[]").strip() or "[]"
+        fecha_str = request.POST.get("fecha_expedicion", "").strip()
+
+        if not asunto or not resolutivo:
+            messages.error(request, "Asunto y resolutivo son obligatorios.")
+            return redirect(
+                "governance:acto_modificatorio_create", pk=self.original.uuid
+            )
+
+        try:
+            import json
+            considerandos = json.loads(considerandos_raw)
+            if not isinstance(considerandos, list):
+                raise ValueError
+        except (ValueError, json.JSONDecodeError):
+            messages.error(request, "Considerandos debe ser JSON válido (lista).")
+            return redirect(
+                "governance:acto_modificatorio_create", pk=self.original.uuid
+            )
+
+        fecha_expedicion = None
+        if fecha_str:
+            try:
+                from datetime import date
+                fecha_expedicion = date.fromisoformat(fecha_str)
+            except ValueError:
+                messages.error(
+                    request,
+                    "fecha_expedicion debe estar en formato AAAA-MM-DD.",
+                )
+                return redirect(
+                    "governance:acto_modificatorio_create", pk=self.original.uuid
+                )
+
+        try:
+            modificatorio = crear_modificatorio(
+                self.original.uuid,
+                asunto=asunto,
+                considerandos=considerandos,
+                resolutivo=resolutivo,
+                fecha_expedicion=fecha_expedicion,
+            )
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            return redirect(
+                "governance:acto_modificatorio_create", pk=self.original.uuid
+            )
+
+        messages.success(
+            request,
+            f"Acto modificatorio {modificatorio.numero} creado en BORRADOR.",
+        )
+        return redirect("governance:acto_detail", pk=modificatorio.uuid)
 
 
 # ============================================================================

@@ -6,7 +6,9 @@ from apps.governance.views import (
     ActoDetailView,
     ActoGeneratePdfView,
     ActoListView,
+    ActoModificatorioCreateView,
     ActoPublishView,
+    ActoSignView,
     ListadoDefinitivoCreateView,
     ListadoDefinitivoDetailView,
     ListadoPublicoView,
@@ -21,6 +23,12 @@ urlpatterns = [
     path("actos/<uuid:pk>/", ActoDetailView.as_view(), name="acto_detail"),
     path("actos/<uuid:pk>/generar-pdf/", ActoGeneratePdfView.as_view(), name="acto_generate_pdf"),
     path("actos/<uuid:pk>/publicar/", ActoPublishView.as_view(), name="acto_publish"),
+    path("actos/<uuid:pk>/firmar/", ActoSignView.as_view(), name="acto_sign"),
+    path(
+        "actos/<uuid:pk>/modificatorio/",
+        ActoModificatorioCreateView.as_view(),
+        name="acto_modificatorio_create",
+    ),
 
     # Listados definitivos
     path("listados/crear/", ListadoDefinitivoCreateView.as_view(), name="listado_create"),

@@ -69,6 +69,11 @@ class ActoAdministrativo(models.Model):
     fecha_expedicion = models.DateField(
         verbose_name=_("fecha de expedición"),
     )
+    fecha_firma = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("fecha de firma"),
+    )
     fecha_publicacion = models.DateTimeField(
         null=True,
         blank=True,
