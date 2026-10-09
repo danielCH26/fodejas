@@ -131,6 +131,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_prometheus",
     "corsheaders",  # CHG-803 — CORS_ALLOWED_ORIGINS for the official domains.
+    "rest_framework_simplejwt.token_blacklist",  # JWT token blacklist for logout (CAP-001).
     "apps.accounts",
     "apps.convocatories",
     "apps.applications",
@@ -149,6 +150,13 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_filters",
 ]
+
+# CHG-301 — Electronic signature provider (CAP-029).
+# "mock" sólo para dev/tests; staging y prod DEBEN usar "local".
+# El signer usa HMAC-SHA256 internamente; la diferencia mock/local es
+# solo metadata, no el algoritmo criptográfico.
+SIGNATURE_PROVIDER = env("SIGNATURE_PROVIDER", default="mock")
+
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"

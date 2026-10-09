@@ -5,6 +5,7 @@ from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.accounts.api.serializers import (
     ConsentimientoSerializer,
@@ -13,7 +14,7 @@ from apps.accounts.api.serializers import (
     SolicitudHabeasDataUpdateSerializer,
     NotificationSerializer,
 )
-from apps.accounts.models import Consentimiento, SolicitudHabeasData, Notification
+from apps.accounts.models import Consentimiento, SolicitudHabeasData, Notification, UserRole
 from apps.accounts.permissions import HasRole, HasAnyRole, IsAdminOrHasRole
 
 
@@ -325,3 +326,40 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
         """Get count of unread notifications."""
         unread_count = self.get_queryset().filter(read_at__isnull=True).count()
         return Response({"unread": unread_count})
+
+
+class MeView(APIView):
+    """GET /api/auth/me/ — return authenticated user with roles (JSON).
+
+    Reuses the payload shape from accounts_views.CurrentUserAPIView.
+    Test: apps.accounts.tests.test_jwt.JWTUserRolesTests.test_user_info_includes_roles.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Handle GET — return JSON user payload with roles."""
+        from django.http import JsonResponse
+
+        user = request.user
+        roles = list(
+            UserRole.objects.filter(user=user)
+            .select_related("role")
+            .values("role__code", "role__name", "role__type")
+        )
+
+        return JsonResponse({
+            "id": str(user.id),
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "documento": user.documento,
+            "roles": [
+                {
+                    "code": r["role__code"],
+                    "name": r["role__name"],
+                    "type": r["role__type"],
+                }
+                for r in roles
+            ],
+        })
