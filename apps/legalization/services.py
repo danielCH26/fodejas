@@ -124,7 +124,7 @@ def sign_legal_document(
 
     if not document.pdf:
         raise ValueError(
-            f"LegalDocument {document.uuid} no tiene PDF cargado; "
+            f"LegalDocument {document.id} no tiene PDF cargado; "
             f"cargue el pagaré / carta / contrato antes de firmar."
         )
 
@@ -160,13 +160,13 @@ def sign_legal_document(
             actor=actor,
             action="ELECTRONIC_SIGNATURE",
             entity=f"legal_{document.document_type.lower()}",
-            entity_id=document.uuid,
+            entity_id=str(document.id),
             changes={
                 "pre_sign_hash": result.pre_sign_hash,
                 "post_sign_hash": result.post_sign_hash,
                 "provider": result.provider,
                 "metadata": result.metadata,
-                "legal_document_uuid": str(document.uuid),
+                "legal_document_uuid": str(document.id),
             },
             module="legalization",
         )
@@ -176,7 +176,7 @@ def sign_legal_document(
         # loudly so operators see it.
         import logging
         logging.getLogger(__name__).exception(
-            "audit: signature audit log failed (CHG-301) for %s", document.uuid
+            "audit: signature audit log failed (CHG-301) for %s", document.id
         )
 
     return result
