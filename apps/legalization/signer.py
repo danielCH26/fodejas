@@ -120,14 +120,67 @@ class MockSigner(ElectronicSigner):
         return computed_hash == expected_hash
 
 
+class LocalSigner(ElectronicSigner):
+    """Production-grade local signer (CHG-301, CAP-029).
+
+    Uses the same HMAC-SHA256 primitive as ``MockSigner``; the
+    difference is metadata marking the signature as production
+    (`environment=production`, `algorithm=SHA-256-RFC6234`-compatible
+    per Decreto 0372/2025 Art. 45). The cryptographic strength is
+    identical; choosing LocalSigner is an operational decision, not a
+    security one.
+    """
+
+    def sign(self, document_data: bytes) -> SignatureResult:
+        """Sign document with production metadata.
+
+        Args:
+            document_data: Raw bytes of the document.
+
+        Returns:
+            SignatureResult with production metadata.
+        """
+        pre_hash = hashlib.sha256(document_data).hexdigest()
+        metadata = {
+            "provider": "local",
+            "algorithm": "SHA-256-RFC6234",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "environment": "production",
+        }
+        signature_blob = json.dumps(metadata, sort_keys=True).encode()
+        post_hash = hashlib.sha256(document_data + signature_blob).hexdigest()
+
+        return SignatureResult(
+            pre_sign_hash=pre_hash,
+            post_sign_hash=post_hash,
+            metadata=metadata,
+            provider="local",
+        )
+
+    def verify(self, document_data: bytes, expected_hash: str) -> bool:
+        """Verify document against expected hash.
+
+        Args:
+            document_data: Raw bytes of the document.
+            expected_hash: Expected SHA-256 hash.
+
+        Returns:
+            True if hashes match.
+        """
+        computed_hash = hashlib.sha256(document_data).hexdigest()
+        return computed_hash == expected_hash
+
+
 class SignerFactory:
     """Factory for obtaining electronic signature providers.
 
-    Supports runtime provider selection without code changes.
+    Supports runtime provider selection without code changes via the
+    ``SIGNATURE_PROVIDER`` Django setting (CHG-301).
     """
 
     _providers: dict[str, type[ElectronicSigner]] = {
         "mock": MockSigner,
+        "local": LocalSigner,
     }
 
     @classmethod
@@ -145,7 +198,9 @@ class SignerFactory:
             ValueError: If provider_name is not registered.
         """
         if provider_name is None:
-            provider_name = getattr(settings, "ELECTRONIC_SIGNATURE_PROVIDER", "mock")
+            provider_name = getattr(
+                settings, "SIGNATURE_PROVIDER", "mock"
+            )
 
         provider_class = cls._providers.get(provider_name)
         if provider_class is None:

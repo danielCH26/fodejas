@@ -84,4 +84,4 @@ node_modules/
 # treasury reconciliation view). Not part of the repo; do not commit.
 treasury/
 # local test artifacts (same policy as treasury/)
-legalization/
+/legalization/
