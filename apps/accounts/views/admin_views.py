@@ -28,7 +28,7 @@ class BaseAdminView(LoginRequiredMixin, TemplateView):
     """Base view for admin pages with R-ADMIN role check."""
     
     permission_class = IsAdminRole
-    login_url = reverse_lazy("login")
+    login_url = reverse_lazy("accounts:login")
     
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:

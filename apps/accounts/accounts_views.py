@@ -68,11 +68,11 @@ class LoginView(BaseLoginView):
 
         # For regular form submission, redirect to dashboard
         login(self.request, user)
-        return redirect("dashboard")
+        return redirect("accounts:dashboard")
 
     def get_success_url(self):
         """Return success URL."""
-        return reverse_lazy("dashboard")
+        return reverse_lazy("accounts:dashboard")
 
 
 class LogoutView(BaseLogoutView):
@@ -84,7 +84,7 @@ class LogoutView(BaseLogoutView):
         """Handle logout with success message and redirect."""
         logout(request)
         messages.success(request, "Sesión cerrada correctamente.")
-        return redirect("login")
+        return redirect("accounts:login")
 
 
 class RegisterView(View):
@@ -96,7 +96,7 @@ class RegisterView(View):
     def get(self, request):
         """Show registration form."""
         if request.user.is_authenticated:
-            return redirect("dashboard")
+            return redirect("accounts:dashboard")
         form = self.form_class()
         return render(request, self.template_name, {"form": form})
 
@@ -127,7 +127,7 @@ class RegisterView(View):
                 request,
                 "Registro exitoso. Ya puede iniciar sesión con sus credenciales."
             )
-            return redirect("login")
+            return redirect("accounts:login")
 
         return render(request, self.template_name, {"form": form})
 
@@ -166,7 +166,7 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
     """Role-based dashboard view."""
 
     template_name = "accounts/dashboard.html"
-    login_url = "login"
+    login_url = "accounts:login"
 
     def get_context_data(self, **kwargs):
         """Add role-specific context."""
@@ -247,7 +247,7 @@ class ProfileView(LoginRequiredMixin, PermissionMixin, TemplateView):
     """User profile view."""
 
     template_name = "accounts/profile.html"
-    login_url = "login"
+    login_url = "accounts:login"
 
     def get_context_data(self, **kwargs):
         """Add user profile data."""
@@ -294,4 +294,4 @@ class CurrentUserAPIView(APIView):
 
 def root_view(request):
     """Redirect root URL to login page."""
-    return redirect("login")
+    return redirect("accounts:login")

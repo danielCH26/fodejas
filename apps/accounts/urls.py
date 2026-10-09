@@ -1,4 +1,6 @@
 """URL configuration for accounts app."""
+app_name = "accounts"
+
 from django.urls import include, path
 from rest_framework_simplejwt.views import (
     TokenBlacklistView,

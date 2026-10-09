@@ -6,7 +6,7 @@
 {% block breadcrumb %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
         <li class="breadcrumb-item"><a href="{% url 'accounts_admin:user_list' %}">Usuarios</a></li>
         <li class="breadcrumb-item"><a href="{% url 'accounts_admin:user_detail' user.pk %}">{{ user.email }}</a></li>
         <li class="breadcrumb-item active" aria-current="page">Roles</li>

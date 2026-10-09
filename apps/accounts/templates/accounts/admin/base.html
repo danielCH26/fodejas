@@ -56,7 +56,7 @@
                     
                     <ul class="nav flex-column mb-auto">
                         <li class="nav-item">
-                            <a class="nav-link {% if admin_section == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                            <a class="nav-link {% if admin_section == 'dashboard' %}active{% endif %}" href="{% url 'accounts:dashboard' %}">
                                 <i class="bi bi-house-door"></i>
                                 Dashboard
                             </a>
@@ -79,7 +79,7 @@
                         <hr class="my-2">
                         
                         <li class="nav-item">
-                            <a class="nav-link text-danger" href="{% url 'logout' %}">
+                            <a class="nav-link text-danger" href="{% url 'accounts:logout' %}">
                                 <i class="bi bi-box-arrow-right"></i>
                                 Cerrar Sesión
                             </a>

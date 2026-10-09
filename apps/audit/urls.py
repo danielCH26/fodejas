@@ -1,4 +1,6 @@
 """URL configuration for audit app."""
+app_name = "audit"
+
 from django.urls import path
 
 from .views import (

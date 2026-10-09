@@ -17,7 +17,7 @@
             <div class="card-body p-4">
                 <h5 class="card-title text-center mb-4">Iniciar Sesión</h5>
 
-                <form method="post" action="{% url 'login' %}">
+                <form method="post" action="{% url 'accounts:login' %}">
                     {% csrf_token %}
 
                     {{ form|crispy }}
@@ -34,7 +34,7 @@
 
                 <div class="text-center">
                     <p class="mb-2">¿Olvidó su contraseña?</p>
-                    <a href="{% url 'password_reset' %}" class="btn btn-outline-secondary btn-sm">
+                    <a href="{% url 'accounts:password_reset' %}" class="btn btn-outline-secondary btn-sm">
                         Recuperar contraseña
                     </a>
                 </div>
@@ -43,7 +43,7 @@
 
                 <div class="text-center">
                     <p class="mb-2">¿No tiene cuenta?</p>
-                    <a href="{% url 'register' %}" class="btn btn-fodejas-accent">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-fodejas-accent">
                         <i class="bi bi-person-plus me-2"></i>
                         Registrarse como Aspirante
                     </a>
