@@ -99,6 +99,8 @@ class TestSignerAlgorithms:
         a = signer.sign(b"hello world")
         b = signer.sign(b"hello world")
         assert a.pre_sign_hash == b.pre_sign_hash
+        # post_sign_hash is also deterministic now (fixed-epoch blob —
+        # design.md D1 / CHG-301 proposal §1 for reproducible tests).
         assert a.post_sign_hash == b.post_sign_hash
 
     def test_local_signer_is_deterministic(self):
@@ -221,7 +223,7 @@ class TestSignLegalDocument(TestCase):
         )
         assert events.exists()
         latest = events.order_by("-timestamp").first()
-        assert latest.entity_id == self.document.uuid
+        assert latest.entity_id == self.document.id
         assert latest.changes["pre_sign_hash"] == self.document.pre_sign_hash
         assert latest.changes["post_sign_hash"] == self.document.post_sign_hash
 
