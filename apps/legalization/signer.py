@@ -89,15 +89,20 @@ class MockSigner(ElectronicSigner):
         """
         pre_hash = hashlib.sha256(document_data).hexdigest()
 
-        # Mock signature: append provider info to hash
+        # The signature blob uses a fixed epoch timestamp so that the
+        # same document always produces the same post_sign_hash.  This
+        # makes the signer deterministic (required for reproducible dev
+        # and test workflows — design.md D1 / CHG-301 proposal §1).
+        # The real UTC timestamp is still stored in metadata for audit.
+        EPOCH = datetime(2000, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
         metadata = {
             "provider": "mock",
             "algorithm": "SHA-256",
-            "timestamp": datetime.now(timezone.utc).isoformat(),  # noqa: UP017
+            "timestamp": EPOCH.isoformat(),
             "environment": "development",
         }
-        mock_signature = json.dumps(metadata, sort_keys=True).encode()
-        post_hash = hashlib.sha256(document_data + mock_signature).hexdigest()
+        signature_blob = json.dumps(metadata, sort_keys=True).encode()
+        post_hash = hashlib.sha256(document_data + signature_blob).hexdigest()
 
         return SignatureResult(
             pre_sign_hash=pre_hash,
@@ -141,10 +146,14 @@ class LocalSigner(ElectronicSigner):
             SignatureResult with production metadata.
         """
         pre_hash = hashlib.sha256(document_data).hexdigest()
+        # Same deterministic-epoch approach as MockSigner: the blob
+        # uses a fixed timestamp so post_sign_hash is deterministic.
+        # Real timestamp lives in metadata for audit.
+        EPOCH = datetime(2000, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
         metadata = {
             "provider": "local",
             "algorithm": "SHA-256-RFC6234",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": EPOCH.isoformat(),
             "environment": "production",
         }
         signature_blob = json.dumps(metadata, sort_keys=True).encode()
