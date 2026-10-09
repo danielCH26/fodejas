@@ -72,6 +72,10 @@ class LegalDocument(models.Model):
     post_sign_hash = models.CharField(max_length=64, blank=True, default="")
     pdf = models.FileField(upload_to="legalization/pdfs/", null=True, blank=True)
     signed_at = models.DateTimeField(null=True, blank=True)
+    # CHG-301: stores the full signature metadata JSON so the
+    # SignatureResult can be reconstructed without re-running the signer
+    # (idempotency path).
+    changes = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
