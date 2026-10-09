@@ -312,7 +312,9 @@ del listado definitivo.
       resuelve y notifica. (CHG-205)
 - [ ] Un aspirante puede apelar; la Oficina Jurídica resuelve. (CHG-206)
 - [ ] La Junta aprueba el listado definitivo y se emite el acto
-      administrativo con su consecutivo. (CHG-207)
+      administrativo con su consecutivo. (CHG-207 — modelos,
+      generador de consecutivos, ListadoDefinitivo views completados;
+      PDF, modificatorio público, portal abiertos pending)
 - [ ] Un error formal puede corregirse vía un nuevo acto
       modificatorio (CPACA Art. 45). (CHG-207)
 - [x] La cadena de auditoría es inyectable y thread-safe (CHG-801)
