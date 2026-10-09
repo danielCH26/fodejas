@@ -315,6 +315,13 @@ del listado definitivo.
       administrativo con su consecutivo. (CHG-207)
 - [ ] Un error formal puede corregirse vía un nuevo acto
       modificatorio (CPACA Art. 45). (CHG-207)
+- [x] La cadena de auditoría es inyectable y thread-safe (CHG-801)
+- [x] Los barridos Celery de plazos están implementados (CHG-802)
+- [x] Cabeceras de seguridad, gunicorn y CORS en producción (CHG-803)
+- [x] Estrategia expand/contract para migraciones UUID (CHG-804)
+- [x] Defectos de dominio corregidos: scoring atómico, listado,
+      apelaciones, normativa, RBAC (CHG-805)
+- [x] Stubs de apps no implementadas eliminados (CHG-806)
 
 ### 6.3 Criterio de salida
 

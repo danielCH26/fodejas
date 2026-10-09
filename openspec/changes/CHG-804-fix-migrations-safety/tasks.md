@@ -4,30 +4,30 @@
 
 ## 1. Migración de backfill de UUIDs en `accounts` (data-only)
 
-- [ ] Crear `apps/accounts/migrations/0008_backfill_uuids_customuser_role.py`.
-- [ ] Encadenar con `dependencies = [("accounts", "0007_alter_role_id")]`.
-- [ ] Implementar `backfill_customuser_uuid(apps, schema_editor)`:
+- [x] Crear `apps/accounts/migrations/0008_backfill_uuids_customuser_role.py`.
+- [x] Encadenar con `dependencies = [("accounts", "0007_alter_role_id")]`.
+- [x] Implementar `backfill_customuser_uuid(apps, schema_editor)`:
   - [ ] `CustomUser = apps.get_model("accounts", "CustomUser")`.
   - [ ] Detectar PK actual vía `CustomUser._meta.pk.get_internal_type()`.
   - [ ] Si el PK ya es `UUIDField` → noop (idempotencia).
   - [ ] Iterar `CustomUser.objects.all()` y reasignar `pk` con `uuid.uuid5(NAMESPACE_URL, f"customuser:{old_pk}")` solo si `pk` no es instancia de `uuid.UUID`.
   - [ ] Persistir con `user.save(update_fields=["id"])` (no tocar campos PII).
-- [ ] Implementar `backfill_role_uuid(apps, schema_editor)` análogo para `Role` (namespace key `"role:{old_pk}"`).
-- [ ] `reverse_code` documentado como `noop` con comentario explicando por qué (sin tabla de mapeo no es seguro).
-- [ ] `operations = [migrations.RunPython(forward, reverse)]` — sólo data, sin `state_operations`.
+- [x] Implementar `backfill_role_uuid(apps, schema_editor)` análogo para `Role` (namespace key `"role:{old_pk}"`).
+- [x] `reverse_code` documentado como `noop` con comentario explicando por qué (sin tabla de mapeo no es seguro).
+- [x] `operations = [migrations.RunPython(forward, reverse)]` — sólo data, sin `state_operations`.
 
 ## 2. Migración de backfill de UUIDs en `convocatories` (data-only)
 
-- [ ] Crear `apps/convocatories/migrations/0003_backfill_uuids_convocatory.py`.
-- [ ] Encadenar con `dependencies = [("convocatories", "0002_alter_convocatory_id")]`.
-- [ ] `backfill_convocatory_uuid(apps, schema_editor)` análogo a §1, con `Convocatory = apps.get_model("convocatories", "Convocatory")` y namespace key `"convocatory:{old_pk}"`.
-- [ ] `reverse_code` como `noop` documentado.
-- [ ] `operations = [migrations.RunPython(forward, reverse)]`.
+- [x] Crear `apps/convocatories/migrations/0003_backfill_uuids_convocatory.py`.
+- [x] Encadenar con `dependencies = [("convocatories", "0002_alter_convocatory_id")]`.
+- [x] `backfill_convocatory_uuid(apps, schema_editor)` análogo a §1, con `Convocatory = apps.get_model("convocatories", "Convocatory")` y namespace key `"convocatory:{old_pk}"`.
+- [x] `reverse_code` como `noop` documentado.
+- [x] `operations = [migrations.RunPython(forward, reverse)]`.
 
 ## 3. Documentación `docs/migrations/expand-contract.md`
 
-- [ ] Crear directorio `docs/migrations/`.
-- [ ] Crear `docs/migrations/expand-contract.md` con secciones:
+- [x] Crear directorio `docs/migrations/`.
+- [x] Crear `docs/migrations/expand-contract.md` con secciones:
   - [ ] "Por qué expand/contract" (zero-downtime, reversible, INF-014).
   - [ ] "Receta en 4 pasos" (expand → backfill → swap → contract).
   - [ ] "Plantilla de migración" (esqueleto `AddField`/`RunPython`/`AlterField`/`RemoveField`).
@@ -39,9 +39,9 @@
 
 ## 4. CI guard `.github/workflows/migrations-safety.yml`
 
-- [ ] Crear `.github/workflows/migrations-safety.yml`.
-- [ ] Disparar en `pull_request` y `push` a `main`/`develop`.
-- [ ] Job `migrations-safety` con:
+- [x] Crear `.github/workflows/migrations-safety.yml`.
+- [x] Disparar en `pull_request` y `push` a `main`/`develop`.
+- [x] Job `migrations-safety` con:
   - [ ] `actions/setup-python@v5` (3.11).
   - [ ] `pip install -e ".[dev]"`.
   - [ ] `python manage.py makemigrations --check --dry-run` (no debe generar migraciones nuevas).
@@ -50,36 +50,36 @@
 
 ## 5. Anotación de migraciones destructivas existentes (sólo comentarios)
 
-- [ ] Agregar bloque de comentario al inicio de:
+- [x] Agregar bloque de comentario al inicio de:
   - [ ] `apps/accounts/migrations/0006_alter_customuser_id.py`.
   - [ ] `apps/accounts/migrations/0007_alter_role_id.py`.
   - [ ] `apps/convocatories/migrations/0002_alter_convocatory_id.py`.
-- [ ] El comentario referencia la nueva migración de backfill y `docs/migrations/expand-contract.md`.
-- [ ] **NO** modificar `operations`, `dependencies` ni el cuerpo ejecutable. Solo añadir líneas de comentario al tope del archivo.
+- [x] El comentario referencia la nueva migración de backfill y `docs/migrations/expand-contract.md`.
+- [x] **NO** modificar `operations`, `dependencies` ni el cuerpo ejecutable. Solo añadir líneas de comentario al tope del archivo.
 
 ## 6. Tests
 
 ### 6.1 `apps/accounts/tests/test_migrations_uuid.py`
 
-- [ ] Test de la función de backfill: invocar `backfill_customuser_uuid` y `backfill_role_uuid` con un app registry sintético (sin tocar la DB real).
-- [ ] Test de idempotencia: crear un `CustomUser` con PK UUID (estado actual del modelo), llamar dos veces consecutivas y verificar que no se modifica ni lanza.
-- [ ] Test de no-PII: ninguna fixture debe contener emails, documentos o nombres reales.
+- [x] Test de la función de backfill: invocar `backfill_customuser_uuid` y `backfill_role_uuid` con un app registry sintético (sin tocar la DB real).
+- [x] Test de idempotencia: crear un `CustomUser` con PK UUID (estado actual del modelo), llamar dos veces consecutivas y verificar que no se modifica ni lanza.
+- [x] Test de no-PII: ninguna fixture debe contener emails, documentos o nombres reales.
 
 ### 6.2 `apps/convocatories/tests/test_migrations_uuid.py`
 
-- [ ] Análogo a 6.1 para `Convocatory` y la función `backfill_convocatory_uuid`.
+- [x] Análogo a 6.1 para `Convocatory` y la función `backfill_convocatory_uuid`.
 
 ### 6.3 Reversibilidad
 
-- [ ] Test que llame `migrate accounts 0007` (estado pre-backfill) y luego `migrate accounts 0008` (forward); verificar que ambas direcciones dejan los datos consistentes.
-- [ ] Verificar que correr la migración dos veces seguidas no rompe.
+- [x] Test que llame `migrate accounts 0007` (estado pre-backfill) y luego `migrate accounts 0008` (forward); verificar que ambas direcciones dejan los datos consistentes.
+- [x] Verificar que correr la migración dos veces seguidas no rompe.
 
 ## 7. Verificación final
 
-- [ ] `python -c "import ast; ast.parse(...)"` sobre las dos migraciones nuevas.
-- [ ] `python -m pytest apps/accounts/tests/test_migrations_uuid.py apps/convocatories/tests/test_migrations_uuid.py -x`.
-- [ ] `python manage.py makemigrations --check --dry-run` (debe pasar sin generar nuevas migraciones).
+- [x] `python -c "import ast; ast.parse(...)"` sobre las dos migraciones nuevas.
+- [x] `python -m pytest apps/accounts/tests/test_migrations_uuid.py apps/convocatories/tests/test_migrations_uuid.py -x`.
+- [x] `python manage.py makemigrations --check --dry-run` (debe pasar sin generar nuevas migraciones).
 
 ## 8. Hand-off
 
-- [ ] Escribir `openspec/changes/CHG-804-fix-migrations-safety/apply-progress.md` con resumen, archivos tocados, comandos de verificación y resultados.
+- [x] Escribir `openspec/changes/CHG-804-fix-migrations-safety/apply-progress.md` con resumen, archivos tocados, comandos de verificación y resultados.

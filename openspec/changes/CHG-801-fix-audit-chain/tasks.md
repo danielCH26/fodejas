@@ -7,25 +7,25 @@
 
 ## 1. Audit model + services (transactional safety, select_for_update)
 
-- [ ] `apps/audit/services.py::log_audit_event(...)` envuelve la lectura de
+- [x] `apps/audit/services.py::log_audit_event(...)` envuelve la lectura de
       `previous_hash` + `AuditEvent.objects.create(...)` dentro de un
       `transaction.atomic` y usa `AuditEvent.objects.select_for_update()
       .order_by("-timestamp").first()` para leer la cabeza de la cadena.
-- [ ] `apps/audit/models.py::AuditEvent.get_previous_hash()` permanece
+- [x] `apps/audit/models.py::AuditEvent.get_previous_hash()` permanece
       inalterado como helper; la versión con lock vive inline en
       `log_audit_event(...)` para no contaminar al modelo con semántica
       transaccional.
-- [ ] El helper sigue siendo **idempotente** desde la API pública:
+- [x] El helper sigue siendo **idempotente** desde la API pública:
       firma `(actor, action, entity, entity_id, changes=None,
       ip_address=None, user_agent=None, module=None) -> AuditEvent`.
-- [ ] Docstring de `log_audit_event(...)` documenta: (a) lock por
+- [x] Docstring de `log_audit_event(...)` documenta: (a) lock por
       `SELECT ... FOR UPDATE` sobre la cabeza, (b) tolerancia a
       `actor=None` con sentinel `actor_is_system=True`, (c) excepción
       `AuditChainError` si la cabeza de la cadena está corrupta.
 
 ## 2. Audit signals (AUDIT_MODELS como clases, register_audit_signals desde AppConfig)
 
-- [ ] `apps/audit/signals.py::AUDIT_MODELS` reemplaza las tuplas con
+- [x] `apps/audit/signals.py::AUDIT_MODELS` reemplaza las tuplas con
       strings por tuplas `(ModelClass, "module")`. Las clases se
       importan desde el registry de Django apps (`apps.core.models`
       `Estrato`, `GrupoSisben`, `Etnia`, `MunicipioIsla`,
@@ -34,81 +34,81 @@
       `apps.convocatories.models` `Convocatory`,
       `ConfiguracionConvocatoria`, `Hito`, `Cupo`,
       `ConvocatoriaVersion`).
-- [ ] `audit_save_receiver` y `audit_delete_receiver` comparan
+- [x] `audit_save_receiver` y `audit_delete_receiver` comparan
       `sender` con `is`-equality contra `AUDIT_MODELS`
       (`not any(sender is m[0] for m in AUDIT_MODELS)`).
-- [ ] `apps/audit/signals.py` importa
+- [x] `apps/audit/signals.py` importa
       `apps.core.middleware.get_request_actor` (o equivalente del
       contextvar) y lo pasa como `actor=...` a `log_audit_event(...)`
       cuando haya un valor; si está vacío, `actor=None` y se marca
       `actor_is_system=True` en metadata.
-- [ ] Los `try/except Exception: pass` que se tragan los errores de
+- [x] Los `try/except Exception: pass` que se tragan los errores de
       auditoría se reemplazan por una llamada a
       `apps.core.logging_config.logger.exception(...)` para que la
       falla quede registrada sin abortar la operación principal.
 
 ## 3. Audit actor middleware (extender RequestIDMiddleware)
 
-- [ ] `apps/core/logging_config.py` añade un contextvar
+- [x] `apps/core/logging_config.py` añade un contextvar
       `actor_var: ContextVar[Any]` (model instance o `None`) con
       `set_actor(user)` y `get_actor()`. El contextvar se limpia al
       salir del request.
-- [ ] `apps/core/middleware.py::RequestIDMiddleware.__call__` setea
+- [x] `apps/core/middleware.py::RequestIDMiddleware.__call__` setea
       `actor_var` con `request.user` cuando está autenticado
       (modelo completo, no sólo `id`); al salir del request,
       `actor_var.set(None)`.
-- [ ] Los handlers de auditoría leen `get_actor()` directamente desde
+- [x] Los handlers de auditoría leen `get_actor()` directamente desde
       `logging_config` (sin importar middleware), evitando ciclos de
       import.
 
 ## 4. Reemplazar 5 sites directos `AuditEvent.objects.create(...)`
 
-- [ ] `apps/legalization/signer.py::_log_signature_audit` usa
+- [x] `apps/legalization/signer.py::_log_signature_audit` usa
       `log_audit_event(...)` con `actor` (lookup por `actor_id`),
       `action="ELECTRONIC_SIGNATURE"`, `entity=document_type`,
       `module="legalization"`, payload vía kwarg soportado (p.ej.
       `changes={...}`). Eliminar el `try/except Exception: pass`.
-- [ ] `apps/accounts/services/notifications.py::_log_audit_event`
+- [x] `apps/accounts/services/notifications.py::_log_audit_event`
       reescrita como wrapper sobre `log_audit_event(...)` con
       `actor=user`, `module="accounts"`. Eliminar los dos
       `try/except Exception: pass` que se tragan errores.
-- [ ] `apps/convocatories/services/convocatoria_service.py::_log_transition`
+- [x] `apps/convocatories/services/convocatoria_service.py::_log_transition`
       usa `log_audit_event(...)` con `actor=actor` y `module="convocatories"`.
       Eliminar el `try/except Exception: pass`.
-- [ ] `apps/applications/services/wizard_service.py::_log_submission`
+- [x] `apps/applications/services/wizard_service.py::_log_submission`
       usa `log_audit_event(...)` con `actor=actor` y `module="applications"`.
       Eliminar el `try/except Exception: pass`.
-- [ ] `apps/audit/signals.py::audit_save_receiver` y
+- [x] `apps/audit/signals.py::audit_save_receiver` y
       `audit_delete_receiver` usan `log_audit_event(...)` con
       `actor=get_actor()` y `module=<audited model app label>`. Eliminar
       los `try/except Exception: pass`; en su lugar, log estructurado
       vía `apps.core.logging_config.logger.exception(...)`.
-- [ ] Verificación final: `grep -r "AuditEvent.objects.create" apps/`
+- [x] Verificación final: `grep -r "AuditEvent.objects.create" apps/`
       retorna 0 resultados.
 
 ## 5. Tighten AuditEventListView permission_classes
 
-- [ ] `apps/audit/views.py::AuditEventListView` y
+- [x] `apps/audit/views.py::AuditEventListView` y
       `AuditEventDetailView` cambian
       `permission_classes = [permissions.IsAuthenticated]` a
       `permission_classes = [IsAuditViewer]`.
-- [ ] Importar `IsAuditViewer` desde `apps.accounts.permissions`
+- [x] Importar `IsAuditViewer` desde `apps.accounts.permissions`
       (ya existe en `apps/accounts/permissions.py:230-248`).
-- [ ] `AuditChainVerifyView` mantiene `IsAdminUser` (sólo
+- [x] `AuditChainVerifyView` mantiene `IsAdminUser` (sólo
       verificación, no lectura general).
 
 ## 6. Tests (chain integrity, concurrency, signals auto-fire, view permissions)
 
-- [ ] Crear `apps/audit/tests/__init__.py` y `apps/audit/tests/conftest.py`
+- [x] Crear `apps/audit/tests/__init__.py` y `apps/audit/tests/conftest.py`
       con `pytest` conventions (fixtures `user`, `admin_user`,
       `aspirante_user`).
-- [ ] `apps/audit/tests/test_chain.py`:
+- [x] `apps/audit/tests/test_chain.py`:
   - [ ] Test que crea 3 eventos consecutivos vía `log_audit_event(...)`
         y verifica `current_hash[N] == sha256(previous_hash[N-1] +
         payload[N])` y `verify_chain()` retorna `is_valid=True`.
   - [ ] Test de hash determinístico: con la misma entrada
         `calculate_hash(...)` retorna el mismo hex.
-- [ ] `apps/audit/tests/test_concurrency.py`:
+- [x] `apps/audit/tests/test_concurrency.py`:
   - [ ] Lanza 2 hilos con `threading.Thread`, cada uno escribe N
         eventos dentro de `transaction.atomic`. Después verifica
         `verify_chain()` retorna `is_valid=True` y la cantidad de
@@ -117,14 +117,14 @@
   - [ ] Si el runner de tests no soporta `TransactionTestCase`, usar
         `django.test.TransactionTestCase` con
         `serialized_rollback=True`.
-- [ ] `apps/audit/tests/test_signals.py`:
+- [x] `apps/audit/tests/test_signals.py`:
   - [ ] Mockear `actor` vía `actor_var.set(user)` antes de guardar un
         `Role`; verificar que se crea un `AuditEvent` con
         `actor=<mocked user>` y `previous_hash` correcto.
   - [ ] Guardar un `Estrato` (catalog de `apps.core.models`);
         verificar que se crea un `AuditEvent` con `module="core"` y
         `entity="estrato"`.
-- [ ] `apps/audit/tests/test_views_permissions.py`:
+- [x] `apps/audit/tests/test_views_permissions.py`:
   - [ ] `R-ASPIRANTE` autenticado recibe `HTTP 403` en
         `GET /api/audit/events/`.
   - [ ] `R-ADMIN` autenticado recibe `HTTP 200`.
@@ -132,11 +132,11 @@
 
 ## 7. Verificación end-to-end
 
-- [ ] `python manage.py check` sin errores.
-- [ ] `python -m pytest apps/audit/ apps/legalization/ apps/accounts/
+- [x] `python manage.py check` sin errores.
+- [x] `python -m pytest apps/audit/ apps/legalization/ apps/accounts/
       apps/convocatories/ apps/applications/ -x --no-header -q` corre
       sin collection errors y los tests verdes se reportan.
-- [ ] `grep -r "AuditEvent.objects.create" apps/` retorna 0 matches.
+- [x] `grep -r "AuditEvent.objects.create" apps/` retorna 0 matches.
 
 ## Pruebas
 
