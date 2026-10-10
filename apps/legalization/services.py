@@ -58,10 +58,13 @@ class LegalizationService:
 
     @staticmethod
     def create_process_for_beneficiary(beneficiary, convocatoria):
-        """Create a legalization process and its three required documents.
+        """Create a legalization process and its four required documents.
 
         Idempotent: returns the existing process if one already exists for
         this (beneficiary, convocatoria) pair.
+
+        The four documents (CHG-303) are: PAGARE, CARTA_INSTRUCCIONES,
+        CONTRATO, ACTO_ADMINISTRATIVO.
 
         Args:
             beneficiary: CustomUser instance
@@ -85,10 +88,14 @@ class LegalizationService:
 
     @staticmethod
     def create_documents_for_beneficiary(beneficiary, convocatoria):
-        """Create or return all three legal documents for a beneficiary.
+        """Create or return all four legal documents for a beneficiary.
 
         Wrapper around create_process_for_beneficiary that returns the
-        three LegalDocument instances (PAGARE, CARTA_INSTRUCCIONES, CONTRATO).
+        four LegalDocument instances (PAGARE, CARTA_INSTRUCCIONES,
+        CONTRATO, ACTO_ADMINISTRATIVO — CHG-303). The 4th document is
+        the acto administrativo / resolución de otorgamiento, which is
+        required as the 4th normative attachment when the disbursement
+        order is sent to Tesorería.
 
         Args:
             beneficiary: CustomUser instance
@@ -137,6 +144,10 @@ class LegalizationService:
             LegalDocument.DocumentType.CARTA_INSTRUCCIONES:
                 "legalization/pdf/carta_instrucciones.html",
             LegalDocument.DocumentType.CONTRATO:
+                "legalization/pdf/contrato.html",
+            # CHG-303: ACTO_ADMINISTRATIVO uses the contrato template as
+            # a placeholder; Batch B provides a dedicated acto template.
+            LegalDocument.DocumentType.ACTO_ADMINISTRATIVO:
                 "legalization/pdf/contrato.html",
         }
         template_name = template_map.get(document.document_type)

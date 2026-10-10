@@ -49,6 +49,9 @@ class LegalDocument(models.Model):
         PAGARE = "PAGARE", "Pagaré"
         CARTA_INSTRUCCIONES = "CARTA_INSTRUCCIONES", "Carta de Instrucciones"
         CONTRATO = "CONTRATO", "Contrato"
+        # CHG-303: Acto administrativo (resolución/acta de otorgamiento).
+        # The 4th normative attachment sent with each treasury order.
+        ACTO_ADMINISTRATIVO = "ACTO_ADMINISTRATIVO", "Acto Administrativo"
 
     class Status(models.TextChoices):
         PENDIENTE = "PENDIENTE", "Pendiente"

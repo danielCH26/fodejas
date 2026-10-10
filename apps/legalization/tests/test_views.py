@@ -195,6 +195,7 @@ class TestLegalizationDetailView:
             LegalDocument.DocumentType.PAGARE,
             LegalDocument.DocumentType.CARTA_INSTRUCCIONES,
             LegalDocument.DocumentType.CONTRATO,
+            LegalDocument.DocumentType.ACTO_ADMINISTRATIVO,  # CHG-303
         }
 
     def test_detail_document_status_badges(self):

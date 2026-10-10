@@ -83,10 +83,11 @@ class TestCreateDocumentsForBeneficiary:
 
         docs = LegalizationService.create_documents_for_beneficiary(user, conv)
 
-        assert len(docs) == 3
+        assert len(docs) == 4  # CHG-303: +ACTO_ADMINISTRATIVO
         assert LegalDocument.DocumentType.PAGARE in docs
         assert LegalDocument.DocumentType.CARTA_INSTRUCCIONES in docs
         assert LegalDocument.DocumentType.CONTRATO in docs
+        assert LegalDocument.DocumentType.ACTO_ADMINISTRATIVO in docs  # CHG-303
         for doc in docs.values():
             assert doc.status == LegalDocument.Status.PENDIENTE
             assert doc.pre_sign_hash == ""
@@ -109,7 +110,7 @@ class TestCreateDocumentsForBeneficiary:
             LegalDocument.objects.filter(
                 process_id=first[LegalDocument.DocumentType.PAGARE].process_id
             ).count()
-            == 3
+            == 4  # CHG-303: +ACTO_ADMINISTRATIVO
         )
 
     def test_different_users_create_separate_processes(self):
@@ -291,10 +292,11 @@ class TestCompleteLegalization:
         conv = _make_convocatoria()
         docs = LegalizationService.create_documents_for_beneficiary(user, conv)
 
-        # Only sign two of three.
+        # Only sign three of four — ACTO_ADMINISTRATIVO stays PENDIENTE (CHG-303).
         _sign_document(docs[LegalDocument.DocumentType.PAGARE], actor=user)
         _sign_document(docs[LegalDocument.DocumentType.CARTA_INSTRUCCIONES], actor=user)
-        # CONTRATO still PENDIENTE.
+        _sign_document(docs[LegalDocument.DocumentType.CONTRATO], actor=user)
+        # ACTO_ADMINISTRATIVO still PENDIENTE.
 
         process = docs[LegalDocument.DocumentType.PAGARE].process
         with pytest.raises(ValueError, match="not FIRMADO"):
@@ -307,8 +309,12 @@ class TestCompleteLegalization:
 
         _sign_document(docs[LegalDocument.DocumentType.PAGARE], actor=user)
         _sign_document(docs[LegalDocument.DocumentType.CARTA_INSTRUCCIONES], actor=user)
-        docs[LegalDocument.DocumentType.CONTRATO].status = LegalDocument.Status.CANCELADO
-        docs[LegalDocument.DocumentType.CONTRATO].save()
+        _sign_document(docs[LegalDocument.DocumentType.CONTRATO], actor=user)
+        # ACTO_ADMINISTRATIVO is CANCELLED (CHG-303).
+        docs[LegalDocument.DocumentType.ACTO_ADMINISTRATIVO].status = (
+            LegalDocument.Status.CANCELADO
+        )
+        docs[LegalDocument.DocumentType.ACTO_ADMINISTRATIVO].save()
 
         process = docs[LegalDocument.DocumentType.PAGARE].process
         with pytest.raises(ValueError, match="not FIRMADO"):
