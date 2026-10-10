@@ -16,7 +16,7 @@ class LegalizationProcessAdmin(admin.ModelAdmin):
         "created_at",
         "completed_at",
     ]
-    list_filter = ["status", "created_at"]
+    list_filter = ["status", "beneficiary", "created_at"]
     search_fields = ["beneficiary__email", "convocatoria__nombre", "convocatoria__codigo"]
     readonly_fields = ["id", "created_at", "updated_at", "completed_at"]
     autocomplete_fields = ["beneficiary", "convocatoria"]
