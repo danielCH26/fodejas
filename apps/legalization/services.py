@@ -151,6 +151,7 @@ def sign_legal_document(
     document.pre_sign_hash = result.pre_sign_hash
     document.post_sign_hash = result.post_sign_hash
     document.signed_at = timezone.now()
+    document.status = LegalDocument.Status.FIRMADO
     document.changes = result.metadata
     document.save()
 
