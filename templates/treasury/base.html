@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{% block treasury_title %}Tesorería{% endblock %} - FODEJAS{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-wallet2 me-2"></i>Tesorería
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{% url 'treasury:disbursement_list' %}"
+                   class="list-group-item list-group-item-action
+                          {% if request.resolver_match.url_name == 'disbursement_list' %}active{% endif %}">
+                    <i class="bi bi-pen me-2"></i>Autorizaciones
+                </a>
+                <a href="{% url 'treasury:reconciliation' %}"
+                   class="list-group-item list-group-item-action
+                          {% if request.resolver_match.url_name == 'reconciliation' %}active{% endif %}">
+                    <i class="bi bi-cash-stack me-2"></i>Conciliación
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
+        {% block treasury_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

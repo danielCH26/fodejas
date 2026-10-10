@@ -35,13 +35,33 @@
 
 ## 4. Views
 
-- [ ] 4.1 Create authorization list view *(Batch B)*
-- [ ] 4.2 Create authorization detail view *(Batch B)*
-- [ ] 4.3 Create authorize action view *(Batch B)*
-- [ ] 4.4 Create treasury reconciliation view
+- [x] 4.1 Create authorization list view *(Batch B)*
+  *(`DisbursementAuthorizationListView` — role-gated: R-JUNTA+R-COORDINADOR;
+    shows PENDIENTE+AUTORIZADO rows; VENCIDO highlighted in badge;
+    list template: `treasury/disbursement_list.html`)*
+- [x] 4.2 Create authorization detail view *(Batch B)*
+  *(`DisbursementAuthorizationDetailView` — authorization with legalization
+    process ref, dual-signature state, 4 required attachment types,
+    treasury order info, payment proof; detail template:
+    `treasury/disbursement_detail.html`)*
+- [x] 4.3 Create authorize action view *(Batch B — HTMX)*
+  *(`AuthorizeDisbursementHTMXView` — GET shows confirm form, POST calls
+    `TreasuryService.authorize(user, role)`; surfaces self-signing and
+    duplicate-role errors inline; partials: `authorize_form.html`,
+    `signature_status.html`, `authorize_error.html`)*
+- [x] 4.4 Create treasury reconciliation view
   *(pre-existing: apps/treasury/views.py — TreasuryReconciliationView)*
-- [x] 4.5 Add URLs
-  *(pre-existing: reconciliation URL only; list/detail/authorize URLs are Batch B)*
+- [x] 4.5 Add URLs *(Batch B)*
+  *(`disbursement_list`, `disbursement_detail`, `authorize` routes under
+    app_name="treasury"; list at `/treasury/`)*
+- [x] 4.6 Menu entry *(Batch B)*
+  *(`templates/base.html` — R-JUNTA block: link to
+    `treasury:disbursement_list` with `<i class="bi bi-wallet2"></i>` icon)*
+- [x] 4.7 View tests *(Batch B)*
+  *(`test_views_disbursement.py`: 18 tests — list gating (R-JUNTA 200,
+    R-COORDINADOR 200, other 403, staff 200), detail context (process,
+    dual-signature state, attachments), authorize POST happy path,
+    self-sign rejection, duplicate-role rejection, URL routing)*
 
 ## 5. Integration
 
@@ -89,15 +109,31 @@
   amount > 0 validation.
 - Admin: `DisbursementAuthorizationAdmin` with status list_filter,
   list_display (dates, status, amount), search.
-- Full test suite: 46 treasury tests, all passing.
+- Full test suite: 46 treasury service/admin tests, all passing.
+- Batch B adds 18 view tests (all passing); treasury total: 65 tests.
 
-**Batch B scope** (views + templates — deferred):
-- 4.1: Authorization list view (GET)
-- 4.2: Authorization detail view (GET)
-- 4.3: Authorize action view (POST — triggers doble firma flow)
-- 4.5: URL patterns for list/detail/authorize (menu entry)
-- Views must enforce comprobante attachment in the confirm-payment form
-  (design.md D2: "Validación en UI" for falta comprobante)
+**Batch B scope** (views + templates — DONE):
+- 4.1: `DisbursementAuthorizationListView` — role-gated (R-JUNTA+R-COORDINADOR);
+  list of PENDIENTE+AUTORIZADO rows; `treasury/disbursement_list.html`
+- 4.2: `DisbursementAuthorizationDetailView` — authorization+process context,
+  dual-signature state, 4 required attachments, treasury order info,
+  payment proof; `treasury/disbursement_detail.html`
+- 4.3: `AuthorizeDisbursementHTMXView` — GET confirm form / POST signs;
+  HTMX partials: `authorize_form.html`, `signature_status.html`,
+  `authorize_error.html`
+- 4.5: URLs — list `/treasury/`, detail `/treasury/<uuid>/`,
+  authorize `/treasury/<uuid>/autorizar/`
+- 4.6: Menu entry — R-JUNTA block in `templates/base.html`
+- 4.7: 18 view tests — all passing
+
+**Batch B known simplifications**:
+- ACTO_ADMINISTRATIVO attachment in detail template links to a note saying
+  "acto admin pendiente de integrar con Gobernanza" — no governance acto
+  linking (outside CHG-303 scope per AGENTS.md §7).
+- Comprobante attachment in confirm-payment form enforced at reconciliation
+  view level (pre-existing); not re-implemented here.
+
+**Remaining for CHG-303**: nothing — all Batch B tasks complete.
 
 **Assumption re: 4th normative attachment**:
 The design.md D1 does not enumerate the 4 attachment types explicitly.
