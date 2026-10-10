@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.db import transaction
 from django.utils import timezone
 
+from apps.audit.services import log_audit_event
 from apps.condonation.models import Sanction, TerminationRequest
 
 # Valid causes that trigger automatic sanction per Art. 17
@@ -13,6 +14,23 @@ SANCTION_TRIGGER_CAUSES = [
     TerminationRequest.Cause.INFORMACION_FALSA,
     TerminationRequest.Cause.SANCION_DISCIPLINARIA,
 ]
+
+
+def _log_audit(actor, action, entity, entity_id, changes):
+    """Emit a CAP-022 audit event for a condonation state change.
+
+    No try/except: an audit failure rolls back the business
+    operation — the trail is part of the transaction (AGENTS.md §7,
+    CAP-022).
+    """
+    log_audit_event(
+        actor=actor,
+        action=action,
+        entity=entity,
+        entity_id=str(entity_id),
+        changes=changes,
+        module="condonation",
+    )
 
 
 def calculate_ipc_adjustment(
@@ -62,6 +80,13 @@ class TerminationService:
             description=description,
             requested_by=requested_by,
         )
+        _log_audit(
+            requested_by,
+            "CREATE",
+            "termination",
+            termination.id,
+            {"cause": cause, "status": termination.status},
+        )
 
         return termination
 
@@ -93,6 +118,14 @@ class TerminationService:
         if termination.cause in SANCTION_TRIGGER_CAUSES:
             SanctionService.create_sanction_from_termination(termination)
 
+        _log_audit(
+            reviewed_by,
+            "UPDATE",
+            "termination",
+            termination.id,
+            {"status": termination.status, "cause": termination.cause},
+        )
+
         return termination
 
     @staticmethod
@@ -118,6 +151,13 @@ class TerminationService:
         termination.reviewed_by = reviewed_by
         termination.reviewed_at = datetime.now(UTC)
         termination.save()
+        _log_audit(
+            reviewed_by,
+            "UPDATE",
+            "termination",
+            termination.id,
+            {"status": termination.status},
+        )
 
         return termination
 
@@ -149,6 +189,14 @@ class TerminationService:
         if hasattr(termination, "sanction"):
             sanction = termination.sanction
             SanctionService.condone_sanction(sanction.id, reviewed_by)
+
+        _log_audit(
+            reviewed_by,
+            "UPDATE",
+            "termination",
+            termination.id,
+            {"status": termination.status, "death_condonation": True},
+        )
 
         return termination
 
@@ -186,6 +234,18 @@ class SanctionService:
             total_amount=base_amount + ipc,
             status=Sanction.Status.PENDIENTE,
         )
+        _log_audit(
+            None,
+            "CREATE",
+            "sanction",
+            sanction.id,
+            {
+                "base_amount": str(sanction.base_amount),
+                "ipc_adjustment": str(sanction.ipc_adjustment),
+                "total_amount": str(sanction.total_amount),
+                "termination_cause": termination.cause,
+            },
+        )
 
         return sanction
 
@@ -212,6 +272,13 @@ class SanctionService:
         sanction.reviewed_by = reviewed_by
         sanction.reviewed_at = datetime.now(UTC)
         sanction.save()
+        _log_audit(
+            reviewed_by,
+            "UPDATE",
+            "sanction",
+            sanction.id,
+            {"status": sanction.status},
+        )
 
         return sanction
 
@@ -238,6 +305,13 @@ class SanctionService:
         sanction.reviewed_by = reviewed_by
         sanction.reviewed_at = datetime.now(UTC)
         sanction.save()
+        _log_audit(
+            reviewed_by,
+            "UPDATE",
+            "sanction",
+            sanction.id,
+            {"status": sanction.status},
+        )
 
         return sanction
 
@@ -280,6 +354,17 @@ class SanctionService:
         # CHG-802: 30 calendar days, Decreto 0372/2025 Art. 17.
         sanction.fecha_limite = timezone.now() + timedelta(days=30)
         sanction.save()
+        _log_audit(
+            None,
+            "UPDATE",
+            "sanction",
+            sanction.id,
+            {
+                "status": sanction.status,
+                "justification": justification,
+                "fecha_limite": sanction.fecha_limite.isoformat(),
+            },
+        )
 
         return sanction
 
@@ -300,6 +385,13 @@ class SanctionService:
             return sanction
         sanction.status = Sanction.Status.VENCIDO
         sanction.save(update_fields=["status", "updated_at"])
+        _log_audit(
+            None,
+            "UPDATE",
+            "sanction",
+            sanction.id,
+            {"status": sanction.status, "expired_by_sweep": True},
+        )
         return sanction
 
     @staticmethod
@@ -326,6 +418,13 @@ class SanctionService:
         sanction.reviewed_by = reviewed_by
         sanction.reviewed_at = datetime.now(UTC)
         sanction.save()
+        _log_audit(
+            reviewed_by,
+            "UPDATE",
+            "sanction",
+            sanction.id,
+            {"status": sanction.status, "justification_approved": True},
+        )
 
         return sanction
 
@@ -350,6 +449,13 @@ class SanctionService:
         sanction.reviewed_by = reviewed_by
         sanction.reviewed_at = datetime.now(UTC)
         sanction.save()
+        _log_audit(
+            reviewed_by,
+            "UPDATE",
+            "sanction",
+            sanction.id,
+            {"status": sanction.status},
+        )
 
         return sanction
 
@@ -378,5 +484,12 @@ class SanctionService:
         sanction.paid_at = datetime.now(UTC)
         sanction.reviewed_by = reviewed_by
         sanction.save()
+        _log_audit(
+            reviewed_by,
+            "UPDATE",
+            "sanction",
+            sanction.id,
+            {"status": sanction.status, "paid_at": sanction.paid_at.isoformat()},
+        )
 
         return sanction
