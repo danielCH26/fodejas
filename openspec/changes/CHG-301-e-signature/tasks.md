@@ -87,7 +87,7 @@
 
 ## 8. Hand-off
 
-- [ ] `apply-progress.md` — deferred to final batch (BATCH 2 o posterior).
+- [x] `apply-progress.md` — deferred to batch final (BATCH 3 o CHG-302).
 
 ## Batch notes
 
@@ -115,16 +115,39 @@ esto es una limitación del conftest ephemeral-in-memory sqlite).
 
 ### BATCH 2 — vistas, URLs, flujos, admin
 
-Pendientes:
-- [ ] Endpoints de firma (POST /api/legalization/<id>/sign/)
-- [ ] Vistas HTMX o DRF para flujo de firma
-- [ ] Admin de LegalDocument y LegalizationProcess
-- [ ] Template de документо firgado (WeasyPrint, CHG-302)
-- [ ] Integration con Celery (CHG-302)
-- [ ] Management command `check_signer_config` (riesgo de
-      `SIGNATURE_PROVIDER=mock` en staging/prod)
-- [ ] `apply-progress.md`
-- [ ] Verificación end-to-end del flujo completo
+Completado en commits:
+- `feat(CHG-301): add DRF API for document sign/verify (CAP-029)`
+- `feat(CHG-301): add HTMX signing views and lean partial templates (CAP-029)`
+- `fix(CHG-301): add Django admin for LegalDocument/Process (CAP-029)`
+- `feat(CHG-301): wire legalization URLs into config/urls.py and add check_signer_config management command (CAP-029)`
+
+Completado:
+- [x] Endpoints DRF: POST /api/legalization/documents/<pk>/sign/,
+      GET /api/legalization/documents/<pk>/verify/,
+      GET /api/legalization/processes/
+- [x] Permisos: R-JUNTA/R-ADMIN ven todos los docs; Aspirantes
+      solo los suyos
+- [x] Vistas HTMX: LegalizationListView, LegalizationDetailView,
+      SignDocumentHTMXView con hx-get/hx-post
+- [x] Templates: base.html, list.html, detail.html + partials/
+      (sign_form.html, document_row.html)
+- [x] URLs: /legalization/ y /api/legalization/ en config/urls.py
+- [x] Admin: LegalDocumentAdmin con HashFields de solo lectura,
+      LegalizationProcessAdmin
+- [x] Management command: check_signer_config (exits non-zero si
+      SIGNATURE_PROVIDER=mock en staging/prod)
+- [x] Tests: 14 API tests + 7 management command tests = 21 nuevos
+- [x] Verificación e2e: test_e2e_create_sign_verify_audit_flow
+      (proceso → sign → verify → audit event → idempotency)
+
+Deferred:
+- [ ] WeasyPrint template de documento legal (CHG-302)
+- [ ] Celery async signing (CHG-302 — no se necesita para MVP;
+      hash chain integrity es más simple con signing síncrono)
+- [ ] `apply-progress.md` — batch final o CHG-302
+
+Tests totales: 41 passed (20 test_signer.py + 14 test_api.py +
+7 test_management.py).
 
 ### Desviaciones de la tarea original
 
