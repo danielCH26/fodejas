@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carta de Instrucciones — FODEJAS</title>
+</head>
+<body>
+    <!-- Header -->
+    <div class="document-header">
+        <div class="logo-section">
+            <div class="logo-placeholder">FJ</div>
+            <div>
+                <p class="org-name">FODEJAS</p>
+                <p class="org-subtitle">Fondo para el Desarrollo Educativo de los Jóvenes<br>
+                del Archipiélago de San Andrés, Providencia y Santa Catalina</p>
+            </div>
+        </div>
+        <div class="meta-section">
+            <p><strong>Convocatoria:</strong> {{ convocatoria }}</p>
+            <p><strong>Fecha:</strong> {{ fecha_emision|date:"d de F de Y" }}</p>
+            <p><strong>Radicado:</strong> {{ radicado }}</p>
+        </div>
+    </div>
+
+    <h1 class="document-title">Carta de Instrucciones</h1>
+    <p class="document-subtitle">Plan de amortización y condiciones del crédito educativo</p>
+
+    <!-- Parties summary -->
+    <div class="section">
+        <div class="section-title">I. Identificación</div>
+        <table class="parties-table">
+            <thead>
+                <tr>
+                    <th>Campo</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Beneficiario(a)</strong></td>
+                    <td>{{ nombre_beneficiario|default:"[Nombre del Beneficiario]" }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Documento</strong></td>
+                    <td>C.C. {{ documento_beneficiario|default:"[documento]" }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Programa</strong></td>
+                    <td>{{ nombre_programa|default:"[Nombre del programa]" }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Institución</strong></td>
+                    <td>{{ nombre_institucion|default:"[Institución]" }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Monto aprobado</strong></td>
+                    <td>${{ monto_total|floatformat:0 }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Plazo</strong></td>
+                    <td>{{ duracion_semestres|default:"[X]" }} semestres</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Amortization table -->
+    <div class="section">
+        <div class="section-title">II. Plan de Amortización</div>
+        <p style="font-size:9pt; color:#555; margin-bottom:8px;">
+            Cuotas vencidas con posterioridad al período de beneficio académico
+            ( Decreto 0372/2025 Art. 12 ).
+        </p>
+        <table class="parties-table">
+            <thead>
+                <tr>
+                    <th>Cuota N°</th>
+                    <th>Semestre</th>
+                    <th>Fecha vencimiento</th>
+                    <th>Capital</th>
+                    <th>Intereses</th>
+                    <th>Total cuota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if cuotas %}
+                    {% for cuota in cuotas %}
+                    <tr>
+                        <td>{{ cuota.numero }}</td>
+                        <td>{{ cuota.semestre }}</td>
+                        <td>{{ cuota.fecha_vencimiento }}</td>
+                        <td>${{ cuota.capital|floatformat:0 }}</td>
+                        <td>${{ cuota.intereses|floatformat:0 }}</td>
+                        <td><strong>${{ cuota.total|floatformat:0 }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    {% for i in "xxxxx" %}
+                    <tr>
+                        <td>{{ forloop.counter|add:periodo_beneficio }}</td>
+                        <td>{{ forloop.counter|add:periodo_beneficio }}</td>
+                        <td>{{ fecha_emision|date:"d/m/Y" }}</td>
+                        <td>$0</td>
+                        <td>$0</td>
+                        <td><strong>Por definir</strong></td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Terms -->
+    <div class="section">
+        <div class="section-title">III. Condiciones del Crédito</div>
+
+        <p class="clause">
+            <span class="clause-number">1.</span>
+            <strong>Período de beneficio:</strong> Los primeros
+            <strong>{{ periodo_beneficio|default:"[X]" }} semestres</strong>
+            son de beneficio académico; el(la) beneficiario(a) no está obligado(a)
+            a pagar cuotas durante este período, salvo que abandone los estudios.
+            Este período de gracia aplica únicamente a capital.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">2.</span>
+            <strong>Inicio de amortización:</strong> El(La) beneficiario(a) comenzará
+            a pagar cuotas a partir del semestre siguiente a la culminación o abandono
+            del programa de estudios, o tras completar los {{ periodo_beneficio|default:"[X]" }}
+            semestres de beneficio, lo que ocurra primero.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">3.</span>
+            <strong>Forma de pago:</strong> Las cuotas se pagarán mediante consignación
+            a la cuenta que FODEJAS indique, indicando como referencia el radicado
+            <strong>{{ radicado }}</strong>.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">4.</span>
+            <strong>Incumplimiento:</strong> El incumplimiento de dos cuotas consecutivas
+            activa la cláusula de exigibilidad anticipada del Pagaré, pudiendo FODEJAS
+            exigir el saldo total adeudado.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">5.</span>
+            <strong>Comunicación:</strong> Cualquier cambio de domicilio, programa o
+            institución deberá comunicarse por escrito a FODEJAS dentro de los 15 días
+            siguientes al cambio.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">6.</span>
+            <strong>Certificación de estudios:</strong> El(La) beneficiario(a) debe
+            presentar certificación de matrícula y calificaciones cada semestre
+            dentro de los 30 días siguientes al cierre de cada período académico.
+        </p>
+
+        <div class="highlight-box">
+            <p style="margin:0; font-size:10pt;">
+                <strong>Nota:</strong> El(La) beneficiario(a) declara conocer y aceptar
+                las condiciones aquí descritas, las cuales complementan el Pagaré
+                firmado de manera simultánea. La firma electrónica del presente documento
+                constituye aceptación plena de estas instrucciones.
+                <span class="hash-info" style="display:block; margin-top:6px;">
+                    Hash SHA-256: {{ pre_sign_hash|default:"[hash]" }}
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Signature -->
+    <div class="signature-block">
+        <div class="signature-grid">
+            <div class="signature-field">
+                <div class="signature-line"></div>
+                <p class="signature-label">Beneficiario(a)</p>
+                <p style="font-size:8pt; color:#555;">C.C. {{ documento_beneficiario|default:"[documento]" }}</p>
+            </div>
+            <div class="signature-field">
+                <div class="signature-line"></div>
+                <p class="signature-label">Representante FODEJAS</p>
+                <p style="font-size:8pt; color:#555;">Secretaría de Educación</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="document-footer">
+        <span>FODEJAS — Fondo para el Desarrollo Educativo de los Jóvenes del Archipiélago</span>
+        <span>Página 1 de 1</span>
+        <span>Documento electrónico — Hash: {{ pre_sign_hash|default:"[hash]"|truncatechars:16 }}</span>
+    </div>
+</body>
+</html>

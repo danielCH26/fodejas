@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pagaré — FODEJAS</title>
+    <link rel="stylesheet" href="legal.css">
+    <style>
+        /* Inline CSS so WeasyPrint doesn't need filesystem access to assets */
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="document-header">
+        <div class="logo-section">
+            <div class="logo-placeholder">FJ</div>
+            <div>
+                <p class="org-name">FODEJAS</p>
+                <p class="org-subtitle">Fondo para el Desarrollo Educativo de los Jóvenes<br>
+                del Archipiélago de San Andrés, Providencia y Santa Catalina</p>
+            </div>
+        </div>
+        <div class="meta-section">
+            <p><strong>Convocatoria:</strong> {{ convocatoria }}</p>
+            <p><strong>Fecha de emisión:</strong> {{ fecha_emision|date:"d de F de Y" }}</p>
+            <p><strong>Valor:</strong> ${{ monto_total|floatformat:0 }}</p>
+            <p><strong>Radicado:</strong> {{ radicado }}</p>
+        </div>
+    </div>
+
+    <h1 class="document-title">PAGARÉ</h1>
+    <p class="document-subtitle">Documento de crédito educativo — Secretaría de Educación Departamental</p>
+
+    <!-- Parties -->
+    <div class="section">
+        <div class="section-title">I. Partes</div>
+        <table class="parties-table">
+            <thead>
+                <tr>
+                    <th>Rol</th>
+                    <th>Nombre</th>
+                    <th>Documento</th>
+                    <th>Dirección</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Acreedor</strong></td>
+                    <td>FODEJAS — Secretaría de Educación Departamental</td>
+                    <td>NIT: 000.000.000-0</td>
+                    <td>San Andrés, Isla</td>
+                </tr>
+                <tr>
+                    <td><strong>Deudor</strong></td>
+                    <td>{{ nombre_beneficiario|default:"[Nombre del Beneficiario]" }}</td>
+                    <td>C.C. {{ documento_beneficiario|default:"[Número de documento]" }}</td>
+                    <td>{{ direccion_beneficiario|default:"[Dirección]" }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Codeudor</strong></td>
+                    <td>{{ nombre_codeudor|default:"[Nombre del Codeudor]"|default:"N/A" }}</td>
+                    <td>{{ documento_codeudor|default:"N/A" }}</td>
+                    <td>{{ direccion_codeudor|default:"N/A" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Clauses -->
+    <div class="section">
+        <div class="section-title">II. Cláusulas</div>
+
+        <p class="clause">
+            <span class="clause-number">Primera.</span>
+            <strong>OBLIGACIÓN PRINCIPAL.</strong>
+            El(La) deudor(a) identificada en el cuadro anterior, se obliga a pagar a la
+            orden de FODEJAS, en su domicilio en la ciudad de San Andrés, la suma de
+            <strong>${{ monto_total|floatformat:0 }}</strong> (pesos colombianos), conforme
+            al calendario de amortización definido en la Carta de Instrucciones adjunta.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">Segunda.</span>
+            <strong>TASA DE INTERÉS.</strong>
+            El saldo insoluto del presente crédito devengará intereses a la tasa máxima
+            autorizada por la ley para operaciones de crédito educativo, liquidados desde
+            la fecha de legalización hasta la fecha de pago total.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">Tercera.</span>
+            <strong>PLAZO Y AMORTIZACIÓN.</strong>
+            El plazo del crédito es de hasta
+            <strong>{{ duracion_semestres|default:"[X]" }} semestres</strong>,
+            conforme al plan de pagos establecido en la Carta de Instrucciones
+            suscrita por las partes.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">Cuarta.</span>
+            <strong>OBLIGACIONES DEL DEUDOR.</strong> El(La) deudor(a) se obliga a:
+            (a) iniciar y mantener la matrícula en el programa de formación aprobado;
+            (b) presentar informes académicos cada semestre; (c) comunicar cualquier
+            cambio de programa, institución o domicilio en un plazo de 15 días; y
+            (d) honrar las cuotas del plan de pagos en los términos acordados.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">Quinta.</span>
+            <strong>EXIGIBILIDAD ANTICIPADA.</strong>
+            El acreedor podrá declarar vencida la obligación y exigir el pago total
+            inmediato en caso de: (a) incumplimiento de dos cuotas consecutivas;
+            (b) abandono del programa de estudios; (c) falseamiento de información;
+            (d) incumplimiento de obligaciones académicas.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">Sexta.</span>
+            <strong>ACELERACIÓN Y COBRO JUDICIAL.</strong>
+            En caso de incumplimiento, FODEJAS podrá iniciar proceso de cobro persuasivo
+            y, si es del caso, proceso ejecutivo. Los costos del cobro, incluyendo
+            honorarios de abogado y costas, serán a cargo del deudor.
+        </p>
+
+        <p class="clause">
+            <span class="clause-number">Séptima.</span>
+            <strong>FIRMA ELECTRÓNICA.</strong>
+            Las partes aceptan que la firma electrónica asociada al presente documento
+            equivale a la firma manuscrita, de conformidad con la Ley 527 de 1999 y
+            el Decreto 0372/2025. El hash de integridad del documento es:
+            <span class="hash-info">{{ pre_sign_hash|default:"[hash SHA-256 del PDF]" }}</span>
+        </p>
+    </div>
+
+    <!-- Signature block -->
+    <div class="signature-block">
+        <p class="centered">En señal de aceptación y conocimiento de las anteriores obligaciones,
+        las partes firman el presente pagaré en la ciudad de San Andrés, Isla,
+        el día <strong>{{ fecha_emision|date:"d" }}</strong> de
+        <strong>{{ fecha_emision|date:"F" }}</strong> de
+        <strong>{{ fecha_emision|date:"Y" }}</strong>.</p>
+
+        <div class="signature-grid">
+            <div class="signature-field">
+                <div class="signature-line"></div>
+                <p class="signature-label">Deudor(a)</p>
+                <p style="font-size:8pt; color:#555;">C.C. {{ documento_beneficiario|default:"[documento]" }}</p>
+            </div>
+            <div class="signature-field">
+                <div class="signature-line"></div>
+                <p class="signature-label">Codeudor(a)</p>
+                <p style="font-size:8pt; color:#555;">C.C. {{ documento_codeudor|default:"N/A" }}</p>
+            </div>
+            <div class="signature-field">
+                <div class="signature-line"></div>
+                <p class="signature-label">Representante FODEJAS</p>
+                <p style="font-size:8pt; color:#555;">Secretaría de Educación</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="document-footer">
+        <span>FODEJAS — Fondo para el Desarrollo Educativo de los Jóvenes del Archipiélago</span>
+        <span>Página 1 de 1</span>
+        <span>Documento electrónico — Hash: {{ pre_sign_hash|default:"[hash]"|truncatechars:16 }}</span>
+    </div>
+</body>
+</html>
