@@ -38,16 +38,28 @@
 
 ## 4. Views and URLs
 
-- [ ] 4.1 Create list view for LegalizationProcess
-      **→ Batch B**
-- [ ] 4.2 Create detail view with document status
-      **→ Batch B**
-- [ ] 4.3 Create sign action view
-      **→ Batch B**
-- [ ] 4.4 Add URLs for legalization views
-      **→ Batch B**
-- [ ] 4.5 Add to base.html menu (R-JUNTA role)
-      **→ Batch B**
+- [x] 4.1 Create list view for LegalizationProcess
+      **→ Batch B** — LegalizationListView in views.py; R-JUNTA sees all,
+      beneficiaries see own. Template: templates/legalization/list.html.
+      Test: test_junta_sees_all_processes, test_beneficiary_sees_only_own_process,
+      test_other_aspirante_cannot_see_beneficiary_process.
+- [x] 4.2 Create detail view with document status
+      **→ Batch B** — LegalizationDetailView; shows process + all documents
+      with status badges (Pendiente/Firmado/Legalizado/Cancelado) and HTMX
+      sign button where pdf exists and status is PENDIENTE. Template:
+      templates/legalization/detail.html. Test: test_detail_document_status_badges.
+- [x] 4.3 Create sign action view
+      **→ satisfied by CHG-301: SignDocumentHTMXView (views.py) + sign_form.html
+      partial.** HTMX GET shows confirmation form; POST calls sign_legal_document
+      and re-renders document_row.html on success.
+- [x] 4.4 Add URLs for legalization views
+      **→ satisfied by CHG-301: urls.py** — list, detail, sign_document routes
+      wired under app_name="legalization".
+- [x] 4.5 Add to base.html menu (R-JUNTA role)
+      **→ Batch B** — Legalización nav-link added to R-JUNTA section of navbar,
+      following {% for ur in user_roles %}{% if ur.role.code == 'R-JUNTA' %} pattern,
+      links to {% url 'legalization:list' %}.
+
 
 ## 5. Integration
 
@@ -75,31 +87,29 @@
 
 - [x] 7.1 Register models in admin
       *(satisfied by CHG-301: 04965e9 — LegalDocument and LegalizationProcess registered)*
-- [ ] 7.2 Add list filters by status and beneficiary
-      **→ Batch B**
+- [x] 7.2 Add list filters by status and beneficiary
+      **→ Batch B** — LegalizationProcessAdmin.list_filter added "beneficiary";
+      LegalDocumentAdmin already had status filter (CHG-301).
+
 
 ---
 
-## Batch Notes — CHG-302 Batch A (this implementation)
+## Batch Notes — CHG-302 Batch B (this implementation)
 
 **Completed in this batch:**
-- LegalizationService with create_documents_for_beneficiary(), generate_pdf() (WeasyPrint seam),
-  complete_legalization(), cancel_document()
-- Domain state machine (apps/legalization/domain/transitions.py): PENDIENTE→FIRMADO→LEGALIZADO
-  with CANCELADO branch; process-level FSM; terminal-state guards
-- PDF templates: pagare.html, carta_instrucciones.html, contrato.html + legal.css
-  (Spanish, synthetic placeholder data, SHA-256 hash anchors in footer)
-- Audit from service layer: GENERATE_PDF, LEGALIZATION_COMPLETE, DOCUMENT_CANCELLED events
-- Post-sign tamper detection: modify-after-sign changes pre_hash → new post_hash
-- 30 new unit/integration tests (test_services.py); 71 total tests green
+- test_views.py: 9 request-level tests covering list (R-JUNTA all, beneficiary own,
+  unauthenticated redirect) and detail (R-JUNTA any, beneficiary own, other 404,
+  document context + status badges)
+- LegalizationListView + LegalizationDetailView (already in views.py from CHG-301)
+  verified working with proper role gating; list.html and detail.html templates exist
+  (created by previous worker on this branch)
+- SignDocumentHTMXView + URLs confirmed functional — satisfies 4.3/4.4
+- LegalizationProcessAdmin.list_filter added "beneficiary" filter (7.2)
+- base.html: Legalización menu link for R-JUNTA role (4.5)
+- 80 total tests green (71 pre-existing + 9 new)
 
-**Batch B still owns:**
-- 4.1 — List view (LegalizationProcess list)
-- 4.2 — Detail view (document status per process)
-- 4.3 — Sign action view
-- 4.4 — URL routing for views above
-- 4.5 — Menu entry in base.html for R-JUNTA role
-- 7.2 — Admin list filters (status, beneficiary)
+**Batch C still owns:**
+- Nothing for CHG-302. All tasks complete.
 
 **Deferrals:**
-- None beyond Batch B scope above.
+- None.
