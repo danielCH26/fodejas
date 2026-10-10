@@ -32,6 +32,7 @@ urlpatterns = [
     # APIs mantenidas (sin HTML equivalente)
     path("api/auth/", include("apps.accounts.api.urls")),  # JWT API endpoints
     path("api/audit/", include("apps.audit.urls")),  # Audit endpoints
+    path("api/legalization/", include("apps.legalization.api.urls")),  # Legalization API (CHG-301)
 
     # HTML views
     path("convocatorias/", include("apps.convocatories.urls")),  # Convocatory HTML views
@@ -40,4 +41,5 @@ urlpatterns = [
     path("claims/", include("apps.claims.urls")),  # Claims HTML views (CHG-205)
     path("governance/", include("apps.governance.urls")),  # Governance HTML views (CHG-207)
     path("treasury/", include("apps.treasury.urls")),  # Treasury reconciliation (CHG-802)
+    path("legalization/", include("apps.legalization.urls")),  # Legalization HTML views (CHG-301)
 ]
