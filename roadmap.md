@@ -310,7 +310,8 @@ del listado definitivo.
       de excepción de Providencia Isla). (CHG-204)
 - [ ] Un aspirante puede presentar reclamación; la Junta la
       resuelve y notifica. (CHG-205)
-- [ ] Un aspirante puede apelar; la Oficina Jurídica resuelve. (CHG-206)
+- [x] Un aspirante puede apelar; la Oficina Jurídica resuelve. (CHG-206;
+      tests de flujo y permisos en apps/claims)
 - [ ] La Junta aprueba el listado definitivo y se emite el acto
       administrativo con su consecutivo. (CHG-207 — modelos,
       generador de consecutivos, ListadoDefinitivo views completados;
@@ -352,18 +353,23 @@ conciliación manual con Tesorería.
 
 ### 7.2 Entregables verificables
 
-- [ ] Un beneficiario puede firmar electrónicamente pagaré, carta
+- [x] Un beneficiario puede firmar electrónicamente pagaré, carta
       de instrucciones y contrato; los documentos se almacenan con
-      hash SHA-256.
-- [ ] El Presidente de la JA y el Secretario de Educación firman
+      hash SHA-256. (CHG-301 + CHG-302; render real de PDF por
+      validar en CI/contenedor por GTK ausente en el host dev.)
+- [x] El Presidente de la JA y el Secretario de Educación firman
       la autorización de pago, y la orden se radica en Tesorería
-      con los 4 adjuntos normativos (Art. 2 Decreto 0072/2026).
-- [ ] La Tesorería puede marcar una orden como pagada y adjuntar
+      con los 4 adjuntos normativos. (CHG-303; doble firma sin
+      autofirma + guard de adjuntos; supuesto ACTO_ADMINISTRATIVO
+      documentado para revisión.)
+- [x] La Tesorería puede marcar una orden como pagada y adjuntar
       el comprobante desde una vista de conciliación manual.
-- [ ] El sistema respeta el plazo de 5 días hábiles de Tesorería
-      y emite alertas si se vence.
+      (CHG-802 + CHG-303: TreasuryReconciliationView + tests.)
+- [x] El sistema respeta el plazo de 5 días hábiles de Tesorería
+      y emite alertas si se vence. (CHG-802: tesoreria_sweep_v5d
+      VENCIDO; canal de notificación pendiente, CAP-019 diferido.)
 - [ ] Las causales de terminación del convenio y de desembolsos
-      están modeladas y operativas.
+      están modeladas y operativas. (CHG-304: post-MVP.)
 
 ### 7.3 Criterio de salida
 

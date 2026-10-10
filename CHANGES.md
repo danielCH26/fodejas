@@ -6,6 +6,71 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+#### CHG-303: Autorización de Desembolsos (CAP-010)
+
+**Description**: Payment authorization with dual signatures and manual
+Treasury reconciliation on top of the CHG-802 sweeps.
+
+**Changes:**
+
+- Dual-signature enforcement in `TreasuryService.authorize`
+  (Presidente JA + Secretario de Educación; self-signing prevented in
+  both directions).
+- 4-normative-attachments guard in `send_to_treasury`
+  (`REQUIRED_ATTACHMENT_TYPES`; 4th type assumed ACTO_ADMINISTRATIVO —
+  governance integration pending).
+- Guard: legalization process must be LEGALIZADO before authorizing;
+  amount > 0 and immutable after authorization.
+- List/detail/authorize HTMX views with role gating; admin registration.
+- 64 tests (46 service + 18 views), including the VENCIDO 5-day sweep.
+
+#### CHG-302: Legalización del Crédito (CAP-009)
+
+**Description**: Credit legalization flow: per-beneficiary document
+creation, PDF generation, completion and cancellation.
+
+**Changes:**
+
+- `LegalizationService`: `create_documents_for_beneficiary`,
+  `generate_pdf` (WeasyPrint behind a renderer seam),
+  `complete_legalization`, `cancel_document`.
+- Domain FSM `apps/legalization/domain/transitions.py`
+  (PENDIENTE → FIRMADO → LEGALIZADO / CANCELADO, terminal guards).
+- Spanish legal PDF templates (pagaré, carta de instrucciones,
+  contrato) + shared `legal.css`.
+- Role-gated process list/detail views, R-JUNTA menu entry, admin
+  filters; post-sign tamper detection test.
+- 80 tests.
+
+#### CHG-301: Firma Electrónica (CAP-029)
+
+**Description**: Abstract electronic signature service with
+interchangeable providers and SHA-256 hash storage.
+
+**Changes:**
+
+- `sign_legal_document` service (idempotent, deterministic signers,
+  audit events from the service layer, pre/post hash verification).
+- DRF API `sign`/`verify` + HTMX signing views + admin +
+  `check_signer_config` management command (aborts mock provider
+  outside development).
+- 41 tests, including `test_e2e_create_sign_verify_audit_flow`.
+
+#### Estabilización de la suite de tests
+
+**Description**: Full suite green: 419 passed / 8 skipped / 0 failed.
+
+**Changes:**
+
+- Root cause of the 34 cascade teardown errors fixed: audit actor
+  contextvar leaked across tests; autouse fixture resets it at test
+  boundaries (`abdc9c4`).
+- MD5 password hasher for test runs (treasury app 117s → 10s).
+- ruff auto-fixes applied (1,440 issues); exposed and repaired two
+  latent NameError bugs (silent audit-log failure in applications
+  wizard; crash in claims `iniciar_revision`).
+- 35 ruff items accepted as documented debt (E402/C901/B017).
+
 #### CHG-112: Asignación de Roles a Usuarios
 
 **Description**: Implemented role assignment functionality with Django auth integration.
