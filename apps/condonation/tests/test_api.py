@@ -2,7 +2,7 @@
 
 import pytest
 from django.contrib.auth import get_user_model
-from django.urls import reverse
+
 from rest_framework.test import APIClient
 
 from apps.condonation.models import Sanction, TerminationRequest
@@ -72,9 +72,7 @@ class TestTerminationAPI:
         assert plain_client.get("/api/condonation/terminations/").status_code == 403
 
     def test_anonymous_is_unauthorized(self, anonymous_client):
-        assert (
-            anonymous_client.get("/api/condonation/terminations/").status_code == 401
-        )
+        assert anonymous_client.get("/api/condonation/terminations/").status_code == 401
 
     def test_create_through_custom_action(self, staff_client, legalized_process):
         response = staff_client.post(
@@ -97,9 +95,7 @@ class TestTerminationAPI:
         termination = TerminationService.create_termination(
             legalized_process, TerminationRequest.Cause.ABANDONO, None
         )
-        response = staff_client.get(
-            f"/api/condonation/terminations/{termination.id}/"
-        )
+        response = staff_client.get(f"/api/condonation/terminations/{termination.id}/")
         assert response.status_code == 200
         assert response.data["cause"] == TerminationRequest.Cause.ABANDONO
 
@@ -107,9 +103,7 @@ class TestTerminationAPI:
         termination = TerminationService.create_termination(
             legalized_process, TerminationRequest.Cause.RETIRO_VOLUNTARIO, None
         )
-        response = staff_client.post(
-            f"/api/condonation/terminations/{termination.id}/approve/"
-        )
+        response = staff_client.post(f"/api/condonation/terminations/{termination.id}/approve/")
         assert response.status_code == 200
         assert response.data["status"] == TerminationRequest.Status.TERMINADO
 
@@ -154,9 +148,7 @@ class TestSanctionAPI:
         assert response.status_code == 200
         assert response.data["status"] == Sanction.Status.EN_REVISION
 
-    def test_submit_justification_requires_authentication(
-        self, anonymous_client, pending_sanction
-    ):
+    def test_submit_justification_requires_authentication(self, anonymous_client, pending_sanction):
         response = anonymous_client.post(
             f"/api/condonation/sanctions/{pending_sanction.id}/submit_justification/",
             {"justification": Sanction.Justification.ACCIDENTE},

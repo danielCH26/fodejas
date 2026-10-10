@@ -193,9 +193,7 @@ class TestSanctionService:
                 termination, base_amount=Decimal("100.00")
             )
 
-    def test_submit_justification_starts_30_day_window(
-        self, reviewer, terminated_fraud_request
-    ):
+    def test_submit_justification_starts_30_day_window(self, reviewer, terminated_fraud_request):
         sanction = Sanction.objects.get(termination=terminated_fraud_request)
         SanctionService.approve_sanction(sanction.id, reviewer)
         before = timezone.now()
@@ -209,9 +207,7 @@ class TestSanctionService:
         assert before + timedelta(days=29, hours=23) <= result.fecha_limite
         assert result.fecha_limite <= after + timedelta(days=30)
 
-    def test_submit_justification_rejects_invalid_type(
-        self, reviewer, terminated_fraud_request
-    ):
+    def test_submit_justification_rejects_invalid_type(self, reviewer, terminated_fraud_request):
         sanction = Sanction.objects.get(termination=terminated_fraud_request)
         with pytest.raises(ValueError, match="Invalid justification"):
             SanctionService.submit_justification(sanction.id, "NO_EXISTE", "")
@@ -221,9 +217,7 @@ class TestSanctionService:
     ):
         sanction = Sanction.objects.get(termination=terminated_fraud_request)
         SanctionService.approve_sanction(sanction.id, reviewer)
-        SanctionService.submit_justification(
-            sanction.id, Sanction.Justification.ACCIDENTE, ""
-        )
+        SanctionService.submit_justification(sanction.id, Sanction.Justification.ACCIDENTE, "")
         Sanction.objects.filter(id=sanction.id).update(
             fecha_limite=timezone.now() - timedelta(days=1)
         )
@@ -240,9 +234,7 @@ class TestSanctionService:
         result = SanctionService.condone_sanction(sanction.id, reviewer)
         assert result.status == Sanction.Status.CONDONADA
 
-    def test_confirm_payment_requires_approved_sanction(
-        self, reviewer, terminated_fraud_request
-    ):
+    def test_confirm_payment_requires_approved_sanction(self, reviewer, terminated_fraud_request):
         sanction = Sanction.objects.get(termination=terminated_fraud_request)
         proof = SimpleUploadedFile("comprobante.pdf", b"%PDF-synthetic")
         with pytest.raises(ValueError, match="approved"):
@@ -261,16 +253,12 @@ class TestSanctionService:
 class TestAuditTrail:
     """Every state change must reach the CAP-022 chain (design.md)."""
 
-    def test_termination_lifecycle_writes_audit_events(
-        self, reviewer, legalized_process
-    ):
+    def test_termination_lifecycle_writes_audit_events(self, reviewer, legalized_process):
         termination = TerminationService.create_termination(
             legalized_process, TerminationRequest.Cause.INFORMACION_FALSA, reviewer
         )
         TerminationService.approve_termination(termination.id, reviewer)
-        events = AuditEvent.objects.filter(
-            module="condonation", entity="termination"
-        )
+        events = AuditEvent.objects.filter(module="condonation", entity="termination")
         actions = list(events.values_list("action", flat=True))
         assert "CREATE" in actions
         assert "UPDATE" in actions
@@ -285,7 +273,4 @@ class TestAuditTrail:
         SanctionService.confirm_payment(
             sanction.id, SimpleUploadedFile("comprobante.pdf", b"%PDF-synthetic"), reviewer
         )
-        assert (
-            AuditEvent.objects.filter(module="condonation", entity="sanction").count()
-            >= 3
-        )
+        assert AuditEvent.objects.filter(module="condonation", entity="sanction").count() >= 3
