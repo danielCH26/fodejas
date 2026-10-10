@@ -17,7 +17,6 @@ from apps.accounts.models import CustomUser, Role, UserRole
 from apps.convocatories.models import Convocatory
 from apps.legalization.models import LegalDocument, LegalizationProcess
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

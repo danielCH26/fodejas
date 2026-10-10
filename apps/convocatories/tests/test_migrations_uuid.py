@@ -7,7 +7,6 @@ import uuid
 
 import pytest
 
-
 CONVOCATORIES_BACKFILL = (
     "apps.convocatories.migrations.0003_backfill_uuids_convocatory"
 )

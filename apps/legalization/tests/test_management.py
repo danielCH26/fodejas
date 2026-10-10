@@ -1,7 +1,6 @@
 """Tests for check_signer_config management command (CHG-301)."""
 from __future__ import annotations
 
-import sys
 from io import StringIO
 from unittest.mock import patch
 

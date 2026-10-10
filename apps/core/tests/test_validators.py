@@ -8,7 +8,6 @@ from apps.core.migration_utils.validators import (
     validate_schema,
 )
 
-
 SAMPLE_SALT = "x" * 32
 
 

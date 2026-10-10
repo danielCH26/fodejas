@@ -11,10 +11,8 @@ Also tests the domain transitions module.
 import datetime
 import hashlib
 
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
-
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from apps.accounts.models import CustomUser, Role, UserRole
 from apps.audit.models import AuditEvent
@@ -22,7 +20,6 @@ from apps.convocatories.models import Convocatory
 from apps.legalization.domain import transitions as trans
 from apps.legalization.models import LegalDocument, LegalizationProcess
 from apps.legalization.services import LegalizationService, sign_legal_document
-
 
 # ---------------------------------------------------------------------------
 # Fixture helpers (mirrors test_signer.py style)
@@ -68,7 +65,7 @@ def _pdf_bytes(name=b"test.pdf") -> bytes:
 
 def _dt(year=2026, month=1, day=15):
     """Return a timezone-aware datetime for template contexts."""
-    return datetime.datetime(year, month, day, tzinfo=datetime.timezone.utc)
+    return datetime.datetime(year, month, day, tzinfo=datetime.UTC)
 
 
 # ---------------------------------------------------------------------------

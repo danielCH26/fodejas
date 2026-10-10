@@ -9,7 +9,6 @@ from django.test import SimpleTestCase
 
 from apps.accounts.permissions import HasRole
 
-
 HASROLE_PATH = Path(__file__).resolve().parents[2] / "accounts" / "permissions.py"
 
 
@@ -51,7 +50,7 @@ class HasRoleUniquenessTest(SimpleTestCase):
     def test_has_role_helper_call_signature_preserved(self):
         """Module-level helpers ``has_role`` / ``has_any_role`` accept a
         ``user`` argument (the equivalent of the deleted instance-method API)."""
-        from apps.accounts.permissions import has_role, has_any_role, get_user_roles
+        from apps.accounts.permissions import get_user_roles, has_any_role, has_role
 
         sig_has_role = inspect.signature(has_role)
         sig_has_any = inspect.signature(has_any_role)

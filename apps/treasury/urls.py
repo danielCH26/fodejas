@@ -8,7 +8,6 @@ from apps.treasury.views import (
     TreasuryReconciliationView,
 )
 
-
 app_name = "treasury"
 
 urlpatterns = [

@@ -10,7 +10,6 @@ from __future__ import annotations
 import threading
 
 import pytest
-from django.db import connections, transaction
 from django.test import TestCase
 
 from apps.accounts.models import CustomUser, Role

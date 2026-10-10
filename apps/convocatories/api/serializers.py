@@ -1,8 +1,8 @@
 """Serializers for Convocatory API."""
 from rest_framework import serializers
 
-from apps.convocatories.models import Convocatory
 from apps.convocatories.domain import Estado, get_transiciones_disponibles
+from apps.convocatories.models import Convocatory
 
 
 class ConvocatorySerializer(serializers.ModelSerializer):
@@ -53,6 +53,7 @@ class TransitionSerializer(serializers.Serializer):
     def validate(self, attrs):
         """Validate transition is allowed."""
         from django.core.exceptions import ValidationError
+
         from apps.convocatories.domain import validar_transicion
 
         estado_origen = self.instance.estado if self.instance else ""

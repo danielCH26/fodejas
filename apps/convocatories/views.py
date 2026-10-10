@@ -3,10 +3,10 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView
 
-from apps.accounts.permissions_mixin import PermissionMixin, AdminPermissionMixin
+from apps.accounts.permissions_mixin import AdminPermissionMixin, PermissionMixin
 from apps.convocatories.models import Convocatory
 from apps.convocatories.services.convocatoria_service import (
     transicionar_estado,

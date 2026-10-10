@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import hashlib
-from io import BytesIO
 from unittest.mock import patch
 
 import pytest
@@ -18,7 +17,6 @@ from apps.legalization.services import sign_legal_document
 from apps.legalization.signer import (
     LocalSigner,
     MockSigner,
-    SignatureResult,
     SignerFactory,
     sign_document,
     verify_document,

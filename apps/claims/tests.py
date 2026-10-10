@@ -1,19 +1,19 @@
 """Tests for claims app (CHG-205, CHG-206)."""
+from unittest.mock import Mock, patch
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from unittest.mock import Mock, patch
 
-from apps.claims.models import Reclamacion, ReclamacionHistorial, Apelacion, ApelacionHistorial
 from apps.claims.domain.transitions import (
-    is_valid_transition,
-    get_valid_transitions,
     can_transition_to,
     get_transition_label,
-    is_valid_apelacion_transition,
     get_valid_apelacion_transitions,
-    TRANSITIONS,
+    get_valid_transitions,
+    is_valid_apelacion_transition,
+    is_valid_transition,
 )
+from apps.claims.models import Apelacion, ApelacionHistorial, Reclamacion, ReclamacionHistorial
 
 User = get_user_model()
 
@@ -45,7 +45,6 @@ def user(db):
 @pytest.fixture
 def junta_user(db):
     """Create junta user."""
-    from apps.accounts.models import Role, UserRole
     user = User.objects.create_user(
         email="junta@test.co",
         documento="87654321",
@@ -199,7 +198,7 @@ class TestCrearReclamacion:
                 estado=Reclamacion.Estado.PRESENTADA,
             )
             with patch("apps.claims.models.ReclamacionHistorial.objects.create") as mock_historial:
-                result = crear_reclamacion(
+                crear_reclamacion(
                     solicitud=mock_solicitud,
                     tipo=Reclamacion.TipoReclamacion.PUNTAJE,
                     descripcion="Puntaje incorrecto",
@@ -232,7 +231,7 @@ class TestCambiarEstado:
         mock_reclamacion.save = Mock()
 
         with patch("apps.claims.models.ReclamacionHistorial.objects.create"):
-            result = cambiar_estado(
+            cambiar_estado(
                 mock_reclamacion,
                 Reclamacion.Estado.EN_REVISION,
                 observacion="Iniciando revisión",
@@ -355,45 +354,45 @@ class TestValidarApelacion:
     def test_validar_reclamacion_no_terminal(self, db, user, mock_solicitud):
         """Test validation fails if claim is not in terminal state."""
         from apps.claims.services.apelaciones import validar_apelacion
-        
+
         mock_reclamacion = Mock()
         mock_reclamacion.estado = Reclamacion.Estado.EN_REVISION
         mock_reclamacion.fecha_resolucion = None
         mock_reclamacion.solicitud.aspirante = user
-        
+
         is_valid, error = validar_apelacion(mock_reclamacion, user)
-        
+
         assert is_valid is False
         assert "resuelta o rechazada" in error
 
     def test_validar_plazo_vencido(self, db, user, mock_solicitud):
         """Test validation fails if 30-day window is expired."""
         from apps.claims.services.apelaciones import validar_apelacion
-        
+
         mock_reclamacion = Mock()
         mock_reclamacion.estado = Reclamacion.Estado.RESUELTA
         mock_reclamacion.fecha_resolucion = timezone.now() - timezone.timedelta(days=31)
         mock_reclamacion.solicitud.aspirante = user
-        
+
         is_valid, error = validar_apelacion(mock_reclamacion, user)
-        
+
         assert is_valid is False
         assert "30 días" in error
 
     def test_validar_no_titular(self, db, user, mock_solicitud):
         """Test validation fails if user is not the titular."""
         from apps.claims.services.apelaciones import validar_apelacion
-        
+
         other_user = Mock()
         other_user.id = 999
-        
+
         mock_reclamacion = Mock()
         mock_reclamacion.estado = Reclamacion.Estado.RESUELTA
         mock_reclamacion.fecha_resolucion = timezone.now()
         mock_reclamacion.solicitud.aspirante = other_user
-        
+
         is_valid, error = validar_apelacion(mock_reclamacion, user)
-        
+
         assert is_valid is False
         assert "aspirante" in error
 
@@ -414,11 +413,11 @@ class TestTransitionPermissions:
     def test_iniciar_analisis_requires_ofijur(self, db, user):
         """Test iniciar_analisis requires R-OFIJUR role."""
         from apps.claims.services.apelaciones import iniciar_analisis
-        
+
         mock_apelacion = Mock()
         mock_apelacion.estado = Apelacion.Estado.PRESENTADA
         mock_apelacion.save = Mock()
-        
+
         # Without OFIJUR role, should raise
         with pytest.raises(PermissionError):
             iniciar_analisis(mock_apelacion, user)
@@ -426,11 +425,11 @@ class TestTransitionPermissions:
     def test_confirmar_requires_ofijur(self, db, user):
         """Test confirmar requires R-OFIJUR role."""
         from apps.claims.services.apelaciones import confirmar_apelacion
-        
+
         mock_apelacion = Mock()
         mock_apelacion.estado = Apelacion.Estado.EN_ANALISIS
         mock_apelacion.save = Mock()
-        
+
         # Without OFIJUR role, should raise
         with pytest.raises(PermissionError):
             confirmar_apelacion(mock_apelacion, "Test response", user)
@@ -438,14 +437,14 @@ class TestTransitionPermissions:
     def test_confirmar_requires_respuesta(self, db, user):
         """Test confirmar requires respuesta."""
         from apps.claims.services.apelaciones import confirmar_apelacion
-        
+
         mock_apelacion = Mock()
         mock_apelacion.estado = Apelacion.Estado.EN_ANALISIS
         mock_apelacion.save = Mock()
-        
+
         # User with OFIJUR role (simulated via superuser)
         user.is_superuser = True
-        
+
         # Without respuesta, should raise
         with pytest.raises(ValueError, match="respuesta"):
             confirmar_apelacion(mock_apelacion, "", user)
@@ -461,13 +460,13 @@ class TestApelacionIntegration:
             Apelacion.Estado.PRESENTADA,
             Apelacion.Estado.EN_ANALISIS
         )
-        
+
         # EN_ANALISIS -> CONFIRMADA
         assert is_valid_apelacion_transition(
             Apelacion.Estado.EN_ANALISIS,
             Apelacion.Estado.CONFIRMADA
         )
-        
+
         # CONFIRMADA is terminal
         assert get_valid_apelacion_transitions(Apelacion.Estado.CONFIRMADA) == []
 
@@ -478,12 +477,12 @@ class TestApelacionIntegration:
             Apelacion.Estado.PRESENTADA,
             Apelacion.Estado.EN_ANALISIS
         )
-        
+
         # EN_ANALISIS -> REVOCADA
         assert is_valid_apelacion_transition(
             Apelacion.Estado.EN_ANALISIS,
             Apelacion.Estado.REVOCADA
         )
-        
+
         # REVOCADA is terminal
         assert get_valid_apelacion_transitions(Apelacion.Estado.REVOCADA) == []

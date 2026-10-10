@@ -14,7 +14,6 @@ CHG-303 gap fills:
   c) Guard 5.1: ``create_authorization`` already requires LEGALIZADO.
   d) Audit 5.2: every service operation emits an audit event.
 """
-from datetime import UTC, datetime
 
 from django.db import transaction
 from django.utils import timezone

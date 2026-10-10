@@ -1,7 +1,6 @@
 """Hash chain integrity tests (CHG-801 / AUD-001, AUD-003)."""
 from __future__ import annotations
 
-import hashlib
 import uuid
 
 import pytest

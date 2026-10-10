@@ -2,8 +2,10 @@
 from django.utils import timezone
 
 from apps.claims.domain.transitions import (
-    is_valid_transition as validar_transicion,
     is_valid_apelacion_transition as validar_transicion_apelacion,
+)
+from apps.claims.domain.transitions import (
+    is_valid_transition as validar_transicion,
 )
 
 
@@ -21,11 +23,11 @@ def crear_reclamacion(solicitud, tipo, descripcion, evidencia=None, actor=None):
         Reclamacion instance
     """
     from apps.claims.models import Reclamacion, ReclamacionHistorial
-    
+
     # Verify user owns the solicitud
     if actor and actor != solicitud.aspirante:
         raise PermissionError("Solo el aspirante puede presentar reclamaciones")
-    
+
     # Create the claim
     reclamacion = Reclamacion.objects.create(
         solicitud=solicitud,
@@ -33,7 +35,7 @@ def crear_reclamacion(solicitud, tipo, descripcion, evidencia=None, actor=None):
         descripcion=descripcion,
         evidencia=evidencia,
     )
-    
+
     # Create initial history entry
     ReclamacionHistorial.objects.create(
         reclamacion=reclamacion,
@@ -42,7 +44,7 @@ def crear_reclamacion(solicitud, tipo, descripcion, evidencia=None, actor=None):
         observacion="Reclamación presentada",
         actor=actor,
     )
-    
+
     return reclamacion
 
 
@@ -59,20 +61,20 @@ def cambiar_estado(reclamacion, nuevo_estado, observacion="", actor=None):
         Reclamacion instance
     """
     from apps.claims.models import Reclamacion, ReclamacionHistorial
-    
+
     estado_anterior = reclamacion.estado
-    
+
     # Validate transition
     transicion_valida = validar_transicion(estado_anterior, nuevo_estado)
     if not transicion_valida:
         raise ValueError(
             f"Transición inválida: {estado_anterior} → {nuevo_estado}"
         )
-    
+
     # Update claim
     reclamacion.estado = nuevo_estado
     reclamacion.save()
-    
+
     # Create history entry
     ReclamacionHistorial.objects.create(
         reclamacion=reclamacion,
@@ -81,7 +83,7 @@ def cambiar_estado(reclamacion, nuevo_estado, observacion="", actor=None):
         observacion=observacion,
         actor=actor,
     )
-    
+
     return reclamacion
 
 
@@ -108,31 +110,31 @@ def resolver_reclamacion(reclamacion, respuesta, aceptar=True, actor=None):
         Reclamacion instance
     """
     from apps.claims.models import Reclamacion
-    
+
     if actor and not actor.is_superuser:
         # Check if user has R-JUNTA role
-        from apps.accounts.models import UserRole, Role
+        from apps.accounts.models import Role, UserRole
         junta_role = Role.objects.filter(code="R-JUNTA").first()
         if junta_role and not UserRole.objects.filter(user=actor, role=junta_role).exists():
             raise PermissionError("Solo R-JUNTA puede resolver reclamaciones")
-    
+
     nuevo_estado = (
-        Reclamacion.Estado.RESUELTA if aceptar 
+        Reclamacion.Estado.RESUELTA if aceptar
         else Reclamacion.Estado.RECHAZADA
     )
-    
+
     observacion = (
-        "Reclamación aceptada" if aceptar 
+        "Reclamación aceptada" if aceptar
         else "Reclamación rechazada"
     )
-    
+
     # Update claim
     reclamacion.estado = nuevo_estado
     reclamacion.respuesta = respuesta
     reclamacion.resuelto_por = actor
     reclamacion.fecha_resolucion = timezone.now()
     reclamacion.save()
-    
+
     # Create history entry
     from apps.claims.models import ReclamacionHistorial
     ReclamacionHistorial.objects.create(
@@ -142,5 +144,5 @@ def resolver_reclamacion(reclamacion, respuesta, aceptar=True, actor=None):
         observacion=observacion,
         actor=actor,
     )
-    
+
     return reclamacion

@@ -12,8 +12,8 @@ from apps.legalization.signer import verify_document
 
 from .serializers import (
     LegalDocumentSerializer,
-    LegalizationProcessSerializer,
     LegalDocumentSignResultSerializer,
+    LegalizationProcessSerializer,
 )
 
 
@@ -94,7 +94,7 @@ class LegalDocumentViewSet(viewsets.ReadOnlyModelViewSet):
             )
 
         try:
-            result = sign_legal_document(document, actor=user)
+            sign_legal_document(document, actor=user)
         except ValueError as exc:
             return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -5,7 +5,6 @@ from decimal import Decimal
 import pytest
 from django.test import TestCase
 
-from apps.condonation.models import Sanction, TerminationRequest
 from apps.condonation.services import (
     SanctionService,
     TerminationService,

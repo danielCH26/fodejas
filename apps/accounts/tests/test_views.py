@@ -73,7 +73,7 @@ class RegisterViewTests(TestCase):
 
     def test_register_success_creates_user(self):
         """Test that successful registration creates a user."""
-        response = self.client.post(
+        self.client.post(
             self.url,
             {
                 "email": "new@example.com",
@@ -130,7 +130,7 @@ class RegisterViewTests(TestCase):
 
     def test_authenticated_user_redirected_from_register(self):
         """Test that authenticated user is redirected from register."""
-        user = User.objects.create_user(
+        User.objects.create_user(
             email="auth@example.com",
             password="Auth123!",
             documento="55555555",

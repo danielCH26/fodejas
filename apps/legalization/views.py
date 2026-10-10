@@ -1,12 +1,8 @@
 """HTMX views for the legalization signature workflow (CHG-301, CAP-029)."""
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from django.urls import reverse
-from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_POST
-from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic import DetailView, TemplateView
 
 from apps.accounts.permissions import has_any_role
 from apps.legalization.models import LegalDocument, LegalizationProcess

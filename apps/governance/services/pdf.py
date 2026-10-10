@@ -1,18 +1,19 @@
 """Generación de PDF para actos administrativos (CHG-207)."""
 import hashlib
+
 from django.template.loader import get_template
 
 
 def generar_pdf_acto(acto) -> bytes:
     """
     Genera PDF del acto administrativo usando WeasyPrint.
-    
+
     Args:
         acto: Instancia de ActoAdministrativo
-    
+
     Returns:
         Bytes del PDF generado
-    
+
     Raises:
         ImportError: Si WeasyPrint no está instalado
     """
@@ -43,10 +44,10 @@ def generar_pdf_acto(acto) -> bytes:
 def guardar_pdf_acto(acto) -> str:
     """
     Genera y guarda el PDF de un acto administrativo.
-    
+
     Args:
         acto: Instancia de ActoAdministrativo
-    
+
     Returns:
         Hash SHA-256 del PDF generado
     """

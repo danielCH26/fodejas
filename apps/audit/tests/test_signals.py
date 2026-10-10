@@ -8,10 +8,8 @@ handlers must read the actor from the
 from __future__ import annotations
 
 import pytest
-from django.contrib.auth import get_user_model
 
 from apps.audit.models import AuditEvent
-from apps.audit.services import verify_chain
 from apps.core.logging_config import set_actor
 
 
@@ -27,7 +25,7 @@ class TestRoleSignal:
 
         from apps.accounts.models import Role
 
-        role = Role.objects.create(
+        Role.objects.create(
             code="R-TEST-SIGNAL",
             name="Test Signal",
             type="interno",
@@ -50,7 +48,7 @@ class TestRoleSignal:
 
         from apps.accounts.models import Role
 
-        role = Role.objects.create(
+        Role.objects.create(
             code="R-TEST-SYSTEM",
             name="Test System",
             type="interno",
@@ -79,7 +77,7 @@ class TestEstratoSignal:
 
         from apps.core.models import Estrato
 
-        estrato = Estrato.objects.create(
+        Estrato.objects.create(
             codigo="estrato-test-signal",
             nombre="Estrato Test Signal",
             descripcion="Synthetic estrato for signal test.",

@@ -1,7 +1,7 @@
 """Tests for role assignment services."""
-import pytest
 from django.contrib.auth.models import Group
 from django.test import TestCase
+
 from apps.accounts.models import CustomUser, Role, UserRole
 
 
@@ -17,7 +17,7 @@ class AssignRoleToUserTests(TestCase):
             first_name="Test",
             last_name="User"
         )
-        
+
         # Create a role with a group
         group = Group.objects.create(name="R-TEST")
         role = Role.objects.create(
@@ -26,21 +26,21 @@ class AssignRoleToUserTests(TestCase):
             type="interno",
             group=group
         )
-        
+
         # When: we call assign_role_to_user
         # The function doesn't exist yet - this will fail (RED phase)
         from apps.accounts.services.assignment import assign_role_to_user
         result = assign_role_to_user(user, role)
-        
+
         # Then: a UserRole should be created
         self.assertIsNotNone(result)
         self.assertIsInstance(result, UserRole)
         self.assertEqual(result.user, user)
         self.assertEqual(result.role, role)
-        
+
         # And: the user should be added to the role's group
         self.assertTrue(user.groups.filter(id=group.id).exists())
-        
+
         # And: the UserRole should be saved in the database
         self.assertTrue(UserRole.objects.filter(user=user, role=role).exists())
 
@@ -53,7 +53,7 @@ class AssignRoleToUserTests(TestCase):
             first_name="Scope",
             last_name="User"
         )
-        
+
         group = Group.objects.create(name="R-SCOPE")
         role = Role.objects.create(
             code="R-SCOPE",
@@ -61,17 +61,17 @@ class AssignRoleToUserTests(TestCase):
             type="externo",
             group=group
         )
-        
+
         convocation_scope = "CONV-2025-001"
-        
+
         # When: we call assign_role_to_user with convocation scope
         from apps.accounts.services.assignment import assign_role_to_user
         result = assign_role_to_user(user, role, convocation_scope)
-        
+
         # Then: UserRole should be created with convocation scope
         self.assertIsNotNone(result)
         self.assertEqual(result.convocation_scope_id, convocation_scope)
-        
+
         # And: user should still be added to the group
         self.assertTrue(user.groups.filter(id=group.id).exists())
 
@@ -84,14 +84,14 @@ class AssignRoleToUserTests(TestCase):
             first_name="No",
             last_name="Group"
         )
-        
+
         role = Role.objects.create(
             code="R-NO-GROUP",
             name="No Group Role",
             type="externo",
             # No group assigned
         )
-        
+
         # When/Then: calling assign_role_to_user should raise an error
         from apps.accounts.services.assignment import assign_role_to_user
         with self.assertRaises(ValueError):
@@ -106,7 +106,7 @@ class AssignRoleToUserTests(TestCase):
             first_name="Duplicate",
             last_name="User"
         )
-        
+
         group = Group.objects.create(name="R-DUP")
         role = Role.objects.create(
             code="R-DUP",
@@ -114,12 +114,12 @@ class AssignRoleToUserTests(TestCase):
             type="interno",
             group=group
         )
-        
+
         # First assignment should succeed
         from apps.accounts.services.assignment import assign_role_to_user
         result1 = assign_role_to_user(user, role)
         self.assertIsNotNone(result1)
-        
+
         # When/Then: second assignment should raise IntegrityError
         # Note: Django's create() might raise IntegrityError or let the database raise it
         # We'll test that an exception is raised
@@ -143,7 +143,7 @@ class RevokeRoleFromUserTests(TestCase):
             first_name="Revoke",
             last_name="User"
         )
-        
+
         group = Group.objects.create(name="R-REVOKE")
         role = Role.objects.create(
             code="R-REVOKE",
@@ -151,22 +151,22 @@ class RevokeRoleFromUserTests(TestCase):
             type="interno",
             group=group
         )
-        
+
         # Assign the role first
         from apps.accounts.services.assignment import assign_role_to_user
         user_role = assign_role_to_user(user, role)
-        
+
         # Verify user is in the group
         self.assertTrue(user.groups.filter(id=group.id).exists())
-        
+
         # When: we call revoke_role_from_user
         # The function doesn't exist yet - this will fail (RED phase)
         from apps.accounts.services.assignment import revoke_role_from_user
         revoke_role_from_user(user_role)
-        
+
         # Then: user should be removed from the group
         self.assertFalse(user.groups.filter(id=group.id).exists())
-        
+
         # And: UserRole should be deleted
         with self.assertRaises(UserRole.DoesNotExist):
             UserRole.objects.get(id=user_role.id)
@@ -180,14 +180,14 @@ class RevokeRoleFromUserTests(TestCase):
             first_name="Audit",
             last_name="User"
         )
-        
+
         admin_user = CustomUser.objects.create(
             email="admin@example.com",
             documento="444444444",
             first_name="Admin",
             last_name="User"
         )
-        
+
         group = Group.objects.create(name="R-AUDIT")
         role = Role.objects.create(
             code="R-AUDIT",
@@ -195,15 +195,15 @@ class RevokeRoleFromUserTests(TestCase):
             type="interno",
             group=group
         )
-        
+
         # Assign the role first
         from apps.accounts.services.assignment import assign_role_to_user
         user_role = assign_role_to_user(user, role, actor=admin_user)
-        
+
         # When: we call revoke_role_from_user with an actor
         from apps.accounts.services.assignment import revoke_role_from_user
         revoke_role_from_user(user_role, actor=admin_user)
-        
+
         # Then: UserRole should be deleted
         with self.assertRaises(UserRole.DoesNotExist):
             UserRole.objects.get(id=user_role.id)

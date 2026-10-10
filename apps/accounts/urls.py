@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from apps.audit.views import AuditChainVerifyHtmlView, AuditDashboardView, AuditEventDetailView
+
 from . import accounts_views as views
 
 urlpatterns = [

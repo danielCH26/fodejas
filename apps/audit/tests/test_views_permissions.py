@@ -12,8 +12,6 @@ still testing the production permission contract.
 """
 from __future__ import annotations
 
-import uuid
-
 import pytest
 from rest_framework.test import APIRequestFactory
 
@@ -72,7 +70,7 @@ class TestAuditApiPermissions:
         import importlib.util
 
         source_path = importlib.util.find_spec("apps.audit.views").origin
-        with open(source_path, "r", encoding="utf-8") as f:
+        with open(source_path, encoding="utf-8") as f:
             tree = ast.parse(f.read())
 
         # Collect every ClassDef in document order with its lineno

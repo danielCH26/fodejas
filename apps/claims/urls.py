@@ -2,17 +2,17 @@
 from django.urls import path
 
 from apps.claims.views import (
+    ApelacionAdminListView,
+    ApelacionCreateView,
+    ApelacionDetailView,
+    ApelacionListView,
+    ApelacionTransitionView,
     ReclamacionAdminListView,
     ReclamacionCreateView,
     ReclamacionDetailView,
     ReclamacionListView,
     ReclamacionResolveView,
     ReclamacionUpdateView,
-    ApelacionListView,
-    ApelacionCreateView,
-    ApelacionDetailView,
-    ApelacionTransitionView,
-    ApelacionAdminListView,
 )
 
 app_name = "claims"
@@ -23,11 +23,11 @@ urlpatterns = [
     path("crear/<uuid:solicitud_uuid>/", ReclamacionCreateView.as_view(), name="create"),
     path("<uuid:pk>/", ReclamacionDetailView.as_view(), name="detail"),
     path("<uuid:pk>/editar/", ReclamacionUpdateView.as_view(), name="edit"),
-    
+
     # Admin/Junta views
     path("admin/", ReclamacionAdminListView.as_view(), name="admin_list"),
     path("admin/<uuid:pk>/resolver/", ReclamacionResolveView.as_view(), name="resolve"),
-    
+
     # Apelacion views (CHG-206)
     path("apelaciones/", ApelacionListView.as_view(), name="apelacion_list"),
     path("apelaciones/crear/<uuid:reclamacion_uuid>/", ApelacionCreateView.as_view(), name="apelacion_create"),

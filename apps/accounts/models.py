@@ -7,7 +7,6 @@ from django.core.validators import MinLengthValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from dateutil.relativedelta import relativedelta
 
 
 def _add_working_days(start, days: int):
@@ -322,7 +321,7 @@ class RolePermission(models.Model):
 
 class Consentimiento(models.Model):
     """Consentimiento para tratamiento de datos personales (Ley 1581/2012)."""
-    
+
     TIPO_CHOICES = [
         ("tratamiento_datos", _("Tratamiento de Datos")),
         ("transferencia", _("Transferencia Internacional")),
@@ -405,14 +404,14 @@ class Consentimiento(models.Model):
 
 class SolicitudHabeasData(models.Model):
     """Solicitud ARCO (Acceso, Rectificación, Cancelación, Oposición) según Ley 1581/2012."""
-    
+
     TIPO_CHOICES = [
         ("consulta", _("Consulta")),
         ("rectificacion", _("Rectificación")),
         ("actualizacion", _("Actualización")),
         ("supresion", _("Supresión")),
     ]
-    
+
     ESTADO_CHOICES = [
         ("radicada", _("Radicada")),
         ("en_tramite", _("En Trámite")),
@@ -549,14 +548,14 @@ class SolicitudHabeasData(models.Model):
 
 class Notification(models.Model):
     """In-app notification for users."""
-    
+
     TIPO_CHOICES = [
         ("info", _("Info")),
         ("warning", _("Advertencia")),
         ("success", _("Éxito")),
         ("error", _("Error")),
     ]
-    
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     recipient = models.ForeignKey(
         CustomUser,
@@ -616,7 +615,7 @@ class Notification(models.Model):
         default=1,
         help_text=_("Número de veces que se repitió el mismo evento en el mismo día"),
     )
-    
+
     class Meta:
         verbose_name = _("notificación")
         verbose_name_plural = _("notificaciones")
@@ -630,10 +629,10 @@ class Notification(models.Model):
                 name="unique_notification_per_day",
             ),
         ]
-    
+
     def __str__(self):
         return f"{self.event} → {self.recipient.email}"
-    
+
     @property
     def leido(self):
         """Derived property indicating if notification has been read."""

@@ -32,7 +32,7 @@ class TestConvocatory:
     def test_convocatory_codigo_unique(self):
         """Test codigo field must be unique."""
         # RED: This test expects unique constraint
-        convocatory1 = Convocatory.objects.create(
+        Convocatory.objects.create(
             codigo="DUPLICATE",
             nombre="Convocatoria 1",
             tipo=Convocatory.Tipo.PUBLICA,
@@ -41,7 +41,7 @@ class TestConvocatory:
 
         # Creating second with same codigo should raise IntegrityError
         with pytest.raises(IntegrityError):
-            convocatory2 = Convocatory.objects.create(
+            Convocatory.objects.create(
                 codigo="DUPLICATE",
                 nombre="Convocatoria 2",
                 tipo=Convocatory.Tipo.PUBLICA,
@@ -295,7 +295,7 @@ class TestConvocatoriaVersion:
             periodo="2026-1",
         )
 
-        version1 = ConvocatoriaVersion.objects.create(
+        ConvocatoriaVersion.objects.create(
             convocatoria=convocatory,
             version=1,
             schema_version="1.0.0",
@@ -304,7 +304,7 @@ class TestConvocatoriaVersion:
 
         # Creating second with same convocatory and version should raise IntegrityError
         with pytest.raises(IntegrityError):
-            version2 = ConvocatoriaVersion.objects.create(
+            ConvocatoriaVersion.objects.create(
                 convocatoria=convocatory,
                 version=1,  # Same version!
                 schema_version="1.0.0",

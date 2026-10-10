@@ -2,18 +2,18 @@
 from django.urls import path
 
 from apps.accounts.views.admin_views import (
-    UserListView,
-    UserCreateView,
-    UserUpdateView,
-    UserDetailView,
-    UserToggleActiveView,
-    UserRoleAssignView,
-    UserRoleRevokeView,
-    UserRoleHistoryView,
-    RoleListView,
     RoleCreateView,
     RoleDetailView,
+    RoleListView,
     RoleUpdateView,
+    UserCreateView,
+    UserDetailView,
+    UserListView,
+    UserRoleAssignView,
+    UserRoleHistoryView,
+    UserRoleRevokeView,
+    UserToggleActiveView,
+    UserUpdateView,
 )
 
 app_name = "accounts_admin"

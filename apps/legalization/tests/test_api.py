@@ -1,12 +1,8 @@
 """Tests for legalization API endpoints (CHG-301, CAP-029)."""
 from __future__ import annotations
 
-from io import BytesIO
-from unittest.mock import patch
-
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -15,7 +11,6 @@ from apps.accounts.models import CustomUser, Role, UserRole
 from apps.audit.models import AuditEvent
 from apps.convocatories.models import Convocatory
 from apps.legalization.models import LegalDocument, LegalizationProcess
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -79,7 +74,6 @@ def _api_client(user, force=False):
         force: If True, use force_authenticate (no JWT needed).
                Useful when JWT token creation has side-effects in test context.
     """
-    from rest_framework.test import APIRequestFactory
 
     if force:
         client = APIClient()
@@ -154,7 +148,7 @@ class TestSignEndpoint:
     def test_sign_creates_audit_event(self):
         """A sign request creates exactly one ELECTRONIC_SIGNATURE audit event."""
         client = _api_client(self.aspirante)
-        r = client.post(self.url)
+        client.post(self.url)
         self.doc.refresh_from_db()
         events = AuditEvent.objects.filter(action="ELECTRONIC_SIGNATURE")
         assert events.count() == 1

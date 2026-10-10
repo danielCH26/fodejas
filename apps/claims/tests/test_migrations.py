@@ -2,6 +2,7 @@
 from django.db import connection
 from django.db.migrations.loader import MigrationLoader
 from django.test import TestCase
+
 from apps.accounts.models import Role
 
 

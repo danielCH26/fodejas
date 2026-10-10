@@ -23,7 +23,6 @@ from django.views import View
 
 from apps.accounts.permissions import has_any_role
 from apps.audit.services import log_audit_event
-from apps.legalization.models import LegalDocument
 from apps.treasury.models import DisbursementAuthorization
 from apps.treasury.services import TreasuryService
 

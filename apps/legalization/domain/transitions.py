@@ -10,7 +10,6 @@ tamper detection lives in the service layer, not here.
 """
 from apps.legalization.models import LegalDocument, LegalizationProcess
 
-
 # -------------------------------------------------------------------
 # Document-level transitions  (LegalDocument.Status)
 # -------------------------------------------------------------------

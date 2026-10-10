@@ -3,11 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from datetime import UTC, datetime
-from io import BytesIO
-from pathlib import Path
 
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -15,15 +11,12 @@ from django.utils import timezone
 from apps.audit.services import log_audit_event
 from apps.legalization.domain.transitions import (
     is_document_terminal,
-    is_process_terminal,
     is_valid_document_transition,
-    is_valid_process_transition,
 )
 from apps.legalization.models import LegalDocument, LegalizationProcess
 from apps.legalization.signer import (
     SignatureResult,
     SignerFactory,
-    sign_document as sign_bytes,
 )
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,6 @@
 """HTML views for governance app (CHG-207 + CHG-208)."""
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -12,10 +11,9 @@ from django.views.generic import (
     FormView,
     ListView,
     TemplateView,
-    UpdateView,
 )
 
-from apps.accounts.permissions_mixin import PermissionMixin, JuntaPermissionMixin
+from apps.accounts.permissions_mixin import JuntaPermissionMixin, PermissionMixin
 from apps.convocatories.models import Convocatory
 from apps.governance.domain.transitions import crear_modificatorio, firmar_acto
 from apps.governance.models import ActoAdministrativo, ListadoDefinitivo

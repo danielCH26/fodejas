@@ -2,9 +2,16 @@
 from django.contrib import admin
 
 from .models import (
-    Estrato, GrupoSisben, Etnia, MunicipioIsla, NivelFormacion,
-    ModalidadApoyo, TipoIes, TipoDocumento, EstadoDocumento,
-    CausalTerminacionConvenio
+    CausalTerminacionConvenio,
+    EstadoDocumento,
+    Estrato,
+    Etnia,
+    GrupoSisben,
+    ModalidadApoyo,
+    MunicipioIsla,
+    NivelFormacion,
+    TipoDocumento,
+    TipoIes,
 )
 
 

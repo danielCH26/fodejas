@@ -4,14 +4,14 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import (
-    CustomUser,
-    Role,
-    Permission,
-    UserRole,
-    RolePermission,
     Consentimiento,
-    SolicitudHabeasData,
+    CustomUser,
     Notification,
+    Permission,
+    Role,
+    RolePermission,
+    SolicitudHabeasData,
+    UserRole,
 )
 
 
@@ -119,7 +119,7 @@ class ConsentimientoAdmin(admin.ModelAdmin):
     search_fields = ("titular__email", "version_etiqueta")
     readonly_fields = ("hash_texto", "otorgado_en")
     ordering = ("-otorgado_en",)
-    
+
     def titular_email(self, obj):
         """Mask email for privacy."""
         email = obj.titular.email
@@ -131,7 +131,7 @@ class ConsentimientoAdmin(admin.ModelAdmin):
                 masked_local = "***"
             return f"{masked_local}@{domain}"
         return "***@***"
-    
+
     titular_email.short_description = _("Titular")
     titular_email.admin_order_field = "titular__email"
 
@@ -151,9 +151,9 @@ class SolicitudHabeasDataAdmin(admin.ModelAdmin):
     readonly_fields = ("fecha_radicacion", "fecha_limite", "suprimido_en")
     date_hierarchy = "fecha_radicacion"
     ordering = ("-fecha_radicacion",)
-    
+
     actions = ["responder", "rechazar"]
-    
+
     def titular_email(self, obj):
         """Mask email for privacy."""
         email = obj.titular.email
@@ -165,22 +165,22 @@ class SolicitudHabeasDataAdmin(admin.ModelAdmin):
                 masked_local = "***"
             return f"{masked_local}@{domain}"
         return "***@***"
-    
+
     titular_email.short_description = _("Titular")
     titular_email.admin_order_field = "titular__email"
-    
+
     def responder(self, request, queryset):
         """Mark selected requests as resolved."""
         # This will be implemented when the transicionar service is created
         pass
-    
+
     responder.short_description = _("Marcar como resueltas")
-    
+
     def rechazar(self, request, queryset):
         """Mark selected requests as rejected."""
         # This will be implemented when the transicionar service is created
         pass
-    
+
     rechazar.short_description = _("Marcar como rechazadas")
 
 
@@ -191,7 +191,7 @@ admin.site.register(SolicitudHabeasData, SolicitudHabeasDataAdmin)
 
 class NotificationAdmin(admin.ModelAdmin):
     """Admin configuration for Notification."""
-    
+
     list_display = (
         "recipient_email",
         "event",
@@ -205,9 +205,9 @@ class NotificationAdmin(admin.ModelAdmin):
     readonly_fields = ("payload", "created_at", "dispatched_at", "repeat_count")
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
-    
+
     actions = ["marcar_como_leida", "reenviar_a_audit"]
-    
+
     def recipient_email(self, obj):
         """Mask email for privacy."""
         email = obj.recipient.email
@@ -219,56 +219,57 @@ class NotificationAdmin(admin.ModelAdmin):
                 masked_local = "***"
             return f"{masked_local}@{domain}"
         return "***@***"
-    
+
     recipient_email.short_description = _("Destinatario")
     recipient_email.admin_order_field = "recipient__email"
-    
+
     def leido(self, obj):
         """Display leido status."""
         return obj.leido
-    
+
     leido.short_description = _("Leído")
     leido.boolean = True
     leido.admin_order_field = "read_at"
-    
+
     def has_permission(self, request):
         """Only allow R-ADMIN and R-COORD roles."""
         if not request.user.is_authenticated:
             return False
-        
+
         # Check if user has R-ADMIN or R-COORD role
         from apps.accounts.models import UserRole
         return UserRole.objects.filter(
             user=request.user,
             role__code__in=["R-ADMIN", "R-COORD"]
         ).exists()
-    
+
     def has_module_permission(self, request):
         """Check module permission."""
         return self.has_permission(request)
-    
+
     def has_view_permission(self, request, obj=None):
         """Check view permission."""
         return self.has_permission(request)
-    
+
     def has_add_permission(self, request):
         """Notifications are created by system only."""
         return False
-    
+
     def has_change_permission(self, request, obj=None):
         """Check change permission."""
         return self.has_permission(request)
-    
+
     def has_delete_permission(self, request, obj=None):
         """Check delete permission."""
         return self.has_permission(request)
-    
+
     def marcar_como_leida(self, request, queryset):
         """Mark selected notifications as read."""
         import logging
         import uuid
 
         from django.utils import timezone
+
         from apps.audit.services import log_audit_event
 
         logger = logging.getLogger(__name__)
@@ -300,16 +301,16 @@ class NotificationAdmin(admin.ModelAdmin):
             logger.exception("audit: notif.batch_read audit log failed")
 
         self.message_user(request, f"{updated} notificaciones marcadas como leídas.")
-    
+
     marcar_como_leida.short_description = _("Marcar como leídas")
-    
+
     def reenviar_a_audit(self, request, queryset):
         """Re-dispatch selected notifications to audit."""
         from apps.accounts.services.notifications import get_notifiers
-        
+
         notifiers = get_notifiers()
         dispatched = 0
-        
+
         for notification in queryset:
             for notifier in notifiers:
                 if hasattr(notifier, '_dispatch_notification'):
@@ -318,9 +319,9 @@ class NotificationAdmin(admin.ModelAdmin):
                         dispatched += 1
                     except Exception:
                         pass  # Skip failures
-        
+
         self.message_user(request, f"{dispatched} notificaciones reenviadas a auditoría.")
-    
+
     reenviar_a_audit.short_description = _("Reenviar a auditoría")
 
 

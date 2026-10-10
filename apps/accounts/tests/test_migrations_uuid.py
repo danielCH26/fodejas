@@ -10,7 +10,6 @@ import uuid
 
 import pytest
 
-
 ACCOUNTS_BACKFILL = "apps.accounts.migrations.0008_backfill_uuids_customuser_role"
 CONVOCATORIES_BACKFILL = (
     "apps.convocatories.migrations.0003_backfill_uuids_convocatory"

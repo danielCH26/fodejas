@@ -7,7 +7,6 @@ from django.test import TestCase
 from apps.academic_tracking.services import (
     AcademicTrackingService,
     calculate_cumulative_average,
-    calculate_semester_average,
     get_status_from_average,
 )
 
@@ -51,7 +50,6 @@ class AcademicTrackingServiceTest(TestCase):
 
     def test_add_grade_not_found(self):
         """Test adding grade to non-existent record."""
-        from apps.academic_tracking.models import AcademicRecord
 
         with self.assertRaises(ValueError) as ctx:
             AcademicTrackingService.add_grade(

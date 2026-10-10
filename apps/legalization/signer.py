@@ -13,7 +13,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from django.conf import settings
@@ -94,7 +94,7 @@ class MockSigner(ElectronicSigner):
         # makes the signer deterministic (required for reproducible dev
         # and test workflows — design.md D1 / CHG-301 proposal §1).
         # The real UTC timestamp is still stored in metadata for audit.
-        EPOCH = datetime(2000, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+        EPOCH = datetime(2000, 1, 1, 0, 0, 0, tzinfo=UTC)
         metadata = {
             "provider": "mock",
             "algorithm": "SHA-256",
@@ -149,7 +149,7 @@ class LocalSigner(ElectronicSigner):
         # Same deterministic-epoch approach as MockSigner: the blob
         # uses a fixed timestamp so post_sign_hash is deterministic.
         # Real timestamp lives in metadata for audit.
-        EPOCH = datetime(2000, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+        EPOCH = datetime(2000, 1, 1, 0, 0, 0, tzinfo=UTC)
         metadata = {
             "provider": "local",
             "algorithm": "SHA-256-RFC6234",

@@ -20,7 +20,6 @@ from apps.legalization.models import LegalDocument, LegalizationProcess
 from apps.treasury.models import DisbursementAuthorization
 from apps.treasury.services import TreasuryService
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -308,7 +307,7 @@ class TestAuthorizeView:
     def test_president_signs_successfully(self, four_doc_process):
         """First signature (president) transitions auth to PENDIENTE with 1 sig."""
         president = _make_user(role_codes=["R-JUNTA"])
-        secretary = _make_user(
+        _make_user(
             email="sec3@example.test", role_codes=["R-COORDINADOR"]
         )
         auth = DisbursementAuthorization.objects.create(

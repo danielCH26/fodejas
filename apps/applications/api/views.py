@@ -1,18 +1,17 @@
 """API views for applications."""
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from apps.applications.models import Anexo, Solicitud
+from apps.accounts.permissions import IsAdminOrHasRole
 from apps.applications.api.serializers import (
-    AnexoSerializer,
-    SolicitudSerializer,
     SolicitudCreateSerializer,
+    SolicitudSerializer,
     SolicitudSubmitSerializer,
 )
+from apps.applications.models import Solicitud
 from apps.applications.services import save_draft, submit
-from apps.accounts.permissions import HasRole, HasAnyRole, IsAdminOrHasRole
 
 
 class SolicitudViewSet(viewsets.ModelViewSet):
@@ -43,15 +42,15 @@ class SolicitudViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Filter based on user roles."""
         user = self.request.user
-        
+
         # Admin and revisor can see all
         if user.is_superuser or user.is_staff:
             return Solicitud.objects.all()
-        
+
         # Check for internal roles
         if user.user_roles.filter(role__code__in=['R-ADMIN', 'R-REVISOR', 'R-COMITE', 'R-COORDINADOR']).exists():
             return Solicitud.objects.all()
-        
+
         # Aspirantes see only their own
         return Solicitud.objects.filter(aspirante=user)
 

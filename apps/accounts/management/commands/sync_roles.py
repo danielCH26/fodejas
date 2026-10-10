@@ -1,8 +1,8 @@
 """Management command to sync roles and permissions with Django auth system."""
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import Group
-from apps.accounts.models import Role, Permission, RolePermission
-from apps.accounts.services.sync import sync_role_to_group, sync_permission_to_auth_perm
+
+from apps.accounts.models import Permission, Role, RolePermission
+from apps.accounts.services.sync import sync_permission_to_auth_perm, sync_role_to_group
 
 
 class Command(BaseCommand):
@@ -72,7 +72,7 @@ class Command(BaseCommand):
         # Sync role permissions to group permissions
         self.stdout.write("\n=== Syncing Role Permissions to Groups ===")
         role_perms = RolePermission.objects.select_related("role__group", "permission__auth_permission")
-        
+
         for rp in role_perms:
             if rp.role.group is None:
                 if verbosity > 1:
@@ -80,7 +80,7 @@ class Command(BaseCommand):
                         f"  SKIP: Role '{rp.role.name}' has no group yet"
                     )
                 continue
-            
+
             if rp.permission.auth_permission is None:
                 if verbosity > 1:
                     self.stdout.write(

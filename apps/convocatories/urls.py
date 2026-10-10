@@ -1,5 +1,6 @@
 """URL configuration for convocatories app."""
 from django.urls import path
+
 from .views import (
     ConvocatoryCreateView,
     ConvocatoryDetailView,

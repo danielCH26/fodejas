@@ -3,7 +3,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, permissions
 from rest_framework.response import Response
 
-from apps.accounts.permissions import IsAuditAdmin, IsAuditViewer
+from apps.accounts.permissions import IsAuditViewer
+
 from .models import AuditEvent
 from .serializers import AuditChainVerifySerializer, AuditEventSerializer
 from .services import verify_chain
@@ -78,7 +79,6 @@ from django.core.paginator import Paginator
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, TemplateView
 
-from apps.accounts.permissions_mixin import PermissionMixin
 from apps.audit import selectors
 
 

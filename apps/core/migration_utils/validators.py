@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import csv
 import re
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 # Patterns that indicate raw PII in a column that SHOULD be anonymized.
 # The validation intentionally errs on the side of caution: any match

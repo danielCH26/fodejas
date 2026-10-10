@@ -2,8 +2,6 @@
 import logging
 
 from django.db import transaction
-from django.utils import timezone
-
 
 logger = logging.getLogger(__name__)
 
@@ -55,13 +53,13 @@ def generar_listado_definitivo(convocatoria, acto, ranking_data):
 def obtener_ranking_final(convocatoria):
     """
     Obtiene el ranking final de solicitudes para una convocatoria.
-    
+
     Ordena por puntaje total (mayor a menor).
     Aplica regla de Providencia Isla si aplica.
-    
+
     Args:
         convocatoria: Instancia de Convocatory
-    
+
     Returns:
         Lista de dicts con información de cada solicitud
     """

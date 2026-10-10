@@ -7,14 +7,13 @@ from decimal import Decimal
 
 import pytest
 from django.contrib.auth import get_user_model
-from django.db import OperationalError, connection, transaction
+from django.db import connection, transaction
 from django.test import TestCase, skipIfDBFeature
 
 from apps.applications.models import Solicitud
 from apps.convocatories.models import Convocatory
 from apps.scoring.models import Evaluacion, PuntajeTotal
 from apps.scoring.services.scoring_service import calcular_puntaje_total
-
 
 User = get_user_model()
 
@@ -115,7 +114,6 @@ class ScoringAtomicTest(TestCase):
         detects this implicitly: a failure inside the function rolls back any
         outer transaction. We assert by reading the wrapping closer.
         """
-        from django.db import transaction as dj_transaction
 
         # ``calcular_puntaje_total`` reads the wrapped callable; with
         # ``@transaction.atomic`` applied, it is no longer the bare function.

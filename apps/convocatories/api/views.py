@@ -1,16 +1,16 @@
 """API views for Convocatory."""
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from apps.convocatories.models import Convocatory
+from apps.accounts.permissions import IsAdminOrHasRole
 from apps.convocatories.api.serializers import (
     ConvocatorySerializer,
     TransitionSerializer,
 )
+from apps.convocatories.models import Convocatory
 from apps.convocatories.services import convocatoria_service
-from apps.accounts.permissions import HasRole, HasAnyRole, IsAdminOrHasRole
 
 
 class ConvocatoryViewSet(viewsets.ModelViewSet):

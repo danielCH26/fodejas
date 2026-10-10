@@ -19,14 +19,14 @@ class CatalogoDominio(models.Model):
     orden = models.PositiveSmallIntegerField(default=0)
     activo = models.BooleanField(default=True)
     metadatos = models.JSONField(default=dict, blank=True)
-    
+
     objects = models.Manager()      # all rows
     activos = ActivosManager()      # activo=True only
-    
+
     class Meta:
         abstract = True
         ordering = ["orden", "nombre"]
-    
+
     def __str__(self):
         return self.nombre
 

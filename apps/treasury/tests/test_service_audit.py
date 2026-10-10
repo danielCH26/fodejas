@@ -17,12 +17,10 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
 from apps.audit.models import AuditEvent
-from apps.convocatories.models import Convocatory
 from apps.legalization.models import LegalDocument, LegalizationProcess
 from apps.legalization.services import LegalizationService
 from apps.treasury.models import DisbursementAuthorization
 from apps.treasury.services import TreasuryService
-
 
 # ---------------------------------------------------------------------------
 # Fixture helpers
@@ -40,6 +38,7 @@ def _sign_all_docs(process, actor):
 @pytest.fixture
 def president_user(db):
     from django.contrib.auth import get_user_model
+
     from apps.accounts.models import Role, UserRole
 
     User = get_user_model()
@@ -61,6 +60,7 @@ def president_user(db):
 @pytest.fixture
 def secretary_user(db):
     from django.contrib.auth import get_user_model
+
     from apps.accounts.models import Role, UserRole
 
     User = get_user_model()
@@ -510,7 +510,7 @@ class TestReconciliationPermission:
     def test_tesorero_can_list_ordenado(self, auth_factory, user_factory, tesorero_role):
         from apps.accounts.models import UserRole
 
-        auth = auth_factory(status=DisbursementAuthorization.Status.ORDENADO)
+        auth_factory(status=DisbursementAuthorization.Status.ORDENADO)
         user = user_factory()
         UserRole.objects.create(user=user, role=tesorero_role)
         # Permission is checked by the view, not the service.

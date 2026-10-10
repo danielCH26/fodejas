@@ -88,7 +88,7 @@ def habeas_alert_v30d() -> int:
         fecha_limite__gt=now,
     ).values_list("id", flat=True)
 
-    for sol_id in qs:
+    for _sol_id in qs:
         # The alert is a notification only; idempotency comes
         # from the audit-log sentinel pattern in CHG-801. We do
         # not mutate the row here, so concurrent alerts are safe.

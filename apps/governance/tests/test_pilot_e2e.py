@@ -10,10 +10,8 @@ This is the deliverable that closes the gap between roadmap §6.2
 """
 from __future__ import annotations
 
-from django.test import TestCase
-from django.urls import reverse
-
 import pytest
+from django.test import TestCase
 
 from apps.accounts.models import CustomUser, Role, UserRole
 from apps.applications.models import Solicitud

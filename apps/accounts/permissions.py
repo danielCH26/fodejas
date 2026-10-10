@@ -3,8 +3,6 @@ from django.db import models
 from rest_framework import permissions
 from rest_framework.permissions import BasePermission
 
-from apps.accounts.models import Role, UserRole
-
 
 class IsAdminRole(BasePermission):
     """
@@ -32,7 +30,7 @@ class IsAdminRole(BasePermission):
 class HasRole(permissions.BasePermission):
     """
     Permission class that checks if user has a specific role.
-    
+
     Usage:
         permission_classes = [HasRole('R-ADMIN')]
     """
@@ -43,18 +41,18 @@ class HasRole(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        
+
         if self.role_code is None:
             # If no role specified, just check if user has any role
             return request.user.user_roles.exists()
-        
+
         return request.user.user_roles.filter(role__code=self.role_code).exists()
 
 
 class HasAnyRole(permissions.BasePermission):
     """
     Permission class that checks if user has any of the specified roles.
-    
+
     Usage:
         permission_classes = [HasAnyRole(['R-ADMIN', 'R-COMITE'])]
     """
@@ -71,7 +69,7 @@ class HasAnyRole(permissions.BasePermission):
 class HasAllRoles(permissions.BasePermission):
     """
     Permission class that checks if user has all of the specified roles.
-    
+
     Usage:
         permission_classes = [HasAllRoles(['R-COMITE', 'R-TESORERO'])]
     """
@@ -82,7 +80,7 @@ class HasAllRoles(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        
+
         user_roles = set(request.user.user_roles.values_list('role__code', flat=True))
         return all(rc in user_roles for rc in self.role_codes)
 
@@ -90,7 +88,7 @@ class HasAllRoles(permissions.BasePermission):
 class IsAdminOrHasRole(permissions.BasePermission):
     """
     Permission that allows admin users OR users with specific role.
-    
+
     Usage:
         permission_classes = [IsAdminOrHasRole('R-REVISOR')]
     """
@@ -101,24 +99,24 @@ class IsAdminOrHasRole(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        
+
         # Superusers and staff have full access
         if request.user.is_superuser or request.user.is_staff:
             return True
-        
+
         if self.role_code is None:
             return request.user.user_roles.exists()
-        
+
         return request.user.user_roles.filter(role__code=self.role_code).exists()
 
 
 class HasRoleForConvocation(permissions.BasePermission):
     """
     Permission that checks if user has role for a specific convocation.
-    
+
     Usage:
         permission_classes = [HasRoleForConvocation('R-REVISOR')]
-        
+
     The convocation_id is read from view.kwargs or request.query_params.
     """
 
@@ -128,30 +126,30 @@ class HasRoleForConvocation(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        
+
         # Admin users bypass this check
         if request.user.is_superuser or request.user.is_staff:
             return True
-        
+
         # Get convocation_id from various sources
         convocation_id = (
             view.kwargs.get('convocation_id') or
             view.kwargs.get('pk') or
             request.query_params.get('convocation_id')
         )
-        
+
         if convocation_id is None:
             # No convocation specified - check for global role
             return request.user.user_roles.filter(
                 role__code=self.role_code,
                 convocation_scope_id__isnull=True
             ).exists()
-        
+
         # Check for role in this convocation OR global role
         return request.user.user_roles.filter(
             role__code=self.role_code
         ).filter(
-            models.Q(convocation_scope_id=convocation_id) | 
+            models.Q(convocation_scope_id=convocation_id) |
             models.Q(convocation_scope_id__isnull=True)
         ).exists()
 
@@ -201,13 +199,13 @@ def is_external_user(user):
 class IsAuditViewer(permissions.BasePermission):
     """
     Permission that allows R-ADMIN or R-CONTROL to view audit events.
-    
+
     Usage:
         permission_classes = [IsAuditViewer]
     """
-    
+
     AUDIT_VIEWER_ROLES = ['R-ADMIN', 'R-CONTROL']
-    
+
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
@@ -222,11 +220,11 @@ class IsAuditViewer(permissions.BasePermission):
 class IsAuditAdmin(permissions.BasePermission):
     """
     Permission that allows only R-ADMIN to access audit administration.
-    
+
     Usage:
         permission_classes = [IsAuditAdmin]
     """
-    
+
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False

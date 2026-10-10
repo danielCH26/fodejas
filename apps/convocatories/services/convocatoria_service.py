@@ -4,7 +4,6 @@ This module implements the business logic for publishing, closing,
 and canceling convocation, integrating with audit and notifications.
 """
 from django.db import transaction
-from django.utils import timezone
 
 from apps.convocatories.domain import (
     Estado,
@@ -34,7 +33,7 @@ def publicar(convocatoria, actor) -> None:
         ValidationError: If validation fails
     """
     from django.core.exceptions import ValidationError
-    from apps.convocatories.models import ConfiguracionConvocatoria
+
 
     # Validate current state
     if convocatoria.estado != Estado.BORRADOR:

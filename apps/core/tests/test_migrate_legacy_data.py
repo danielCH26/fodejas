@@ -9,16 +9,14 @@ Verifies:
 import csv
 from pathlib import Path
 
+import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
-
-import pytest
 
 from apps.accounts.models import CustomUser
 from apps.applications.models import Solicitud
 from apps.convocatories.models import Convocatory
 from apps.governance.models import ActoAdministrativo, ListadoDefinitivo
-
 
 SALT = "x" * 32
 

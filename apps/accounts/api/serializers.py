@@ -1,15 +1,15 @@
 """Serializers for accounts API."""
-from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
-from apps.accounts.models import Consentimiento, SolicitudHabeasData, Notification
+from apps.accounts.models import Consentimiento, Notification, SolicitudHabeasData
 
 
 class ConsentimientoSerializer(serializers.ModelSerializer):
     """Serializer for Consentimiento model."""
-    
+
     titular_email = serializers.EmailField(source="titular.email", read_only=True)
-    
+
     class Meta:
         model = Consentimiento
         fields = [
@@ -37,10 +37,10 @@ class ConsentimientoSerializer(serializers.ModelSerializer):
 
 class SolicitudHabeasDataSerializer(serializers.ModelSerializer):
     """Serializer for SolicitudHabeasData model."""
-    
+
     titular_email = serializers.EmailField(source="titular.email", read_only=True)
     dias_restantes = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = SolicitudHabeasData
         fields = [
@@ -74,7 +74,7 @@ class SolicitudHabeasDataSerializer(serializers.ModelSerializer):
             "suprimido_en",
             "dias_restantes",
         ]
-    
+
     def get_dias_restantes(self, obj):
         """Calculate remaining days until deadline."""
         from django.utils import timezone
@@ -86,23 +86,25 @@ class SolicitudHabeasDataSerializer(serializers.ModelSerializer):
 
 class SolicitudHabeasDataCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating SolicitudHabeasData."""
-    
+
     class Meta:
         model = SolicitudHabeasData
         fields = [
             "tipo",
             "descripcion",
         ]
-    
+
     def validate(self, attrs):
         """Validate the request."""
         request = self.context.get("request")
         if request and request.user.is_authenticated:
             # Check if user has an active request of the same type
-            from apps.accounts.models import SolicitudHabeasData
-            from django.utils import timezone
             from datetime import timedelta
-            
+
+            from django.utils import timezone
+
+            from apps.accounts.models import SolicitudHabeasData
+
             # Check for duplicate request in the last week
             one_week_ago = timezone.now() - timedelta(days=7)
             duplicate = SolicitudHabeasData.objects.filter(
@@ -110,13 +112,13 @@ class SolicitudHabeasDataCreateSerializer(serializers.ModelSerializer):
                 tipo=attrs.get("tipo"),
                 fecha_radicacion__gte=one_week_ago,
             ).exists()
-            
+
             if duplicate:
                 raise serializers.ValidationError(
                     _("Ya tienes una solicitud de este tipo en la última semana.")
                 )
         return attrs
-    
+
     def create(self, validated_data):
         """Create a new solicitud."""
         request = self.context.get("request")
@@ -131,7 +133,7 @@ class SolicitudHabeasDataCreateSerializer(serializers.ModelSerializer):
 
 class SolicitudHabeasDataUpdateSerializer(serializers.ModelSerializer):
     """Serializer for updating SolicitudHabeasData (admin only)."""
-    
+
     class Meta:
         model = SolicitudHabeasData
         fields = [
@@ -140,32 +142,32 @@ class SolicitudHabeasDataUpdateSerializer(serializers.ModelSerializer):
             "motivo_rechazo",
             "evidencia_url",
         ]
-    
+
     def validate(self, attrs):
         """Validate state transitions and required fields."""
         estado = attrs.get("estado")
         respuesta = attrs.get("respuesta")
         motivo_rechazo = attrs.get("motivo_rechazo")
-        
+
         if estado == "resuelta" and not respuesta:
             raise serializers.ValidationError({
                 "respuesta": _("La respuesta es obligatoria para marcar como resuelta.")
             })
-        
+
         if estado == "rechazada" and not motivo_rechazo:
             raise serializers.ValidationError({
                 "motivo_rechazo": _("El motivo es obligatorio para marcar como rechazada.")
             })
-        
+
         return attrs
 
 
 class NotificationSerializer(serializers.ModelSerializer):
     """Serializer for Notification model."""
-    
+
     leido = serializers.BooleanField(source="leido", read_only=True)
     recipient_email = serializers.EmailField(source="recipient.email", read_only=True)
-    
+
     class Meta:
         model = Notification
         fields = [

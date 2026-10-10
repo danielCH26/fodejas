@@ -5,8 +5,6 @@ el placeholder de CAP-017 está en su lugar. Sin DB, sin PII.
 """
 import os
 
-import pytest
-
 REPO_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 )

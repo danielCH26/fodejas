@@ -18,7 +18,6 @@ returns 400 ``RequestDataTooBig`` before the view runs.
 from __future__ import annotations
 
 import pytest
-from django.http import HttpResponseBadRequest
 from django.test import Client, override_settings
 
 

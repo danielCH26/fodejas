@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import os
-import sys
+
 import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from apps.core.models import CatalogoDominio, ActivosManager
+from apps.core.models import ActivosManager, CatalogoDominio
 
 print(f"CatalogoDominio: {CatalogoDominio}")
 print(f"CatalogoDominio.__dict__.keys(): {list(CatalogoDominio.__dict__.keys())}")

@@ -13,23 +13,19 @@ into the container at run time.
 from __future__ import annotations
 
 import csv
-import sys
 from pathlib import Path
 
-from django.apps import apps
 from django.core.management.base import BaseCommand, CommandError
 
 from apps.core.migration_utils.anonymize import (
     anonymize_hash,
     anonymize_json,
-    anonymize_optional,
 )
 from apps.core.migration_utils.validators import (
     validate_fk_resolution,
     validate_no_pii,
     validate_schema,
 )
-
 
 CONVOCATORIA_HEADERS = [
     "codigo",
@@ -203,13 +199,13 @@ class Command(BaseCommand):
             return
 
         # 4. Persist (idempotent). Imported lazily to keep --dry-run fast.
+
+
         from apps.accounts.models import CustomUser, Role, UserRole
         from apps.applications.models import Solicitud
         from apps.convocatories.models import Convocatory
         from apps.core.models import ModalidadApoyo
         from apps.governance.models import ActoAdministrativo, ListadoDefinitivo
-        from django.utils import timezone as djtz
-        from datetime import datetime
 
         with self._atomic():
             for row in convocatorias:
@@ -260,7 +256,7 @@ class Command(BaseCommand):
 
         # FK resolution.
         convocatoria_codes = {r["codigo"].strip() for r in convocatorias}
-        usuario_doc_hashes = {r["documento_hash"].strip() for r in usuarios}
+        {r["documento_hash"].strip() for r in usuarios}
         acto_numeros = {r["numero"].strip() for r in actos}
 
         errors.extend(validate_fk_resolution(solicitudes, "convocatoria_codigo",

@@ -1,10 +1,14 @@
 """Views for accounts app."""
 from django.contrib import messages
-from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
     LoginView as BaseLoginView,
+)
+from django.contrib.auth.views import (
     LogoutView as BaseLogoutView,
+)
+from django.contrib.auth.views import (
     PasswordResetCompleteView,
     PasswordResetConfirmView,
     PasswordResetDoneView,
@@ -13,13 +17,12 @@ from django.contrib.auth.views import (
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from rest_framework import permissions, status
-from rest_framework.views import APIView
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
+from rest_framework import permissions
+from rest_framework.views import APIView
 
-from .permissions_mixin import PermissionMixin
 from .forms import (
     FodejasLoginForm,
     FodejasPasswordResetForm,
@@ -27,6 +30,7 @@ from .forms import (
     FodejasSetPasswordForm,
 )
 from .models import Role, UserRole
+from .permissions_mixin import PermissionMixin
 
 User = get_user_model()
 

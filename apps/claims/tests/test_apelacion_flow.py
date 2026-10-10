@@ -5,10 +5,9 @@ transicionar a EN_ANALISIS → confirmar (o revocar).
 """
 from __future__ import annotations
 
-from django.utils import timezone
-
 import pytest
 from django.test import TestCase
+from django.utils import timezone
 
 from apps.accounts.models import CustomUser, Role, UserRole
 from apps.applications.models import Solicitud

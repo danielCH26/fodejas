@@ -1,9 +1,10 @@
 """Tests for sync services."""
-import pytest
-from django.contrib.auth.models import Group, Permission as AuthPermission
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission as AuthPermission
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
-from apps.accounts.models import Role, Permission
+
+from apps.accounts.models import Permission, Role
 
 
 class SyncRoleToGroupTests(TestCase):
@@ -19,18 +20,18 @@ class SyncRoleToGroupTests(TestCase):
             description="Test role for sync"
         )
         # No group exists yet
-        
+
         # When: we call sync_role_to_group
         # The function doesn't exist yet - this will fail
         from apps.accounts.services.sync import sync_role_to_group
         result = sync_role_to_group(role)
-        
+
         # Then: a group should be created and linked to the role
         self.assertIsNotNone(result)
         self.assertEqual(result.name, "R-TEST")
         role.refresh_from_db()
         self.assertEqual(role.group, result)
-    
+
     def test_sync_role_to_group_returns_existing_group(self):
         """Test that sync returns existing group when role already has one."""
         # Given: a role with an existing group
@@ -42,15 +43,15 @@ class SyncRoleToGroupTests(TestCase):
             description="Role with existing group",
             group=group
         )
-        
+
         # When: we call sync_role_to_group
         from apps.accounts.services.sync import sync_role_to_group
         result = sync_role_to_group(role)
-        
+
         # Then: the existing group should be returned
         self.assertEqual(result, group)
         self.assertEqual(result.name, "R-EXISTING")
-    
+
     def test_sync_role_to_group_handles_group_name_conflict(self):
         """Test that sync handles case where group name already exists in auth.Group."""
         # Given: a group with the same name already exists
@@ -61,11 +62,11 @@ class SyncRoleToGroupTests(TestCase):
             type="interno",
             description="Role with name conflict"
         )
-        
+
         # When: we call sync_role_to_group
         from apps.accounts.services.sync import sync_role_to_group
         result = sync_role_to_group(role)
-        
+
         # Then: should return the existing group and link it to role
         self.assertEqual(result, existing_group)
         role.refresh_from_db()
@@ -84,19 +85,19 @@ class SyncPermissionToAuthPermTests(TestCase):
             convocation_scope_id=None,
             stage=None
         )
-        
+
         # When: we call sync_permission_to_auth_perm
         # The function doesn't exist yet - this will fail
         from apps.accounts.services.sync import sync_permission_to_auth_perm
         result = sync_permission_to_auth_perm(permission)
-        
+
         # Then: an auth.Permission should be created and linked
         self.assertIsNotNone(result)
         self.assertEqual(result.codename, "add_solicitud")
         self.assertEqual(result.content_type.app_label, "applications")
         permission.refresh_from_db()
         self.assertEqual(permission.auth_permission, result)
-    
+
     def test_sync_permission_to_auth_perm_returns_existing_auth_permission(self):
         """Test that sync returns existing auth.Permission when already linked."""
         # Given: a custom permission with existing auth_permission
@@ -113,14 +114,14 @@ class SyncPermissionToAuthPermTests(TestCase):
             stage=None,
             auth_permission=auth_perm
         )
-        
+
         # When: we call sync_permission_to_auth_perm
         from apps.accounts.services.sync import sync_permission_to_auth_perm
         result = sync_permission_to_auth_perm(permission)
-        
+
         # Then: existing auth_permission should be returned
         self.assertEqual(result, auth_perm)
-    
+
     def test_sync_permission_to_auth_perm_handles_scope_and_stage(self):
         """Test that sync handles permissions with convocation scope and stage."""
         # Given: a scoped permission
@@ -130,11 +131,11 @@ class SyncPermissionToAuthPermTests(TestCase):
             convocation_scope_id="CONV-2025-001",
             stage="revision"
         )
-        
+
         # When: we call sync_permission_to_auth_perm
         from apps.accounts.services.sync import sync_permission_to_auth_perm
         result = sync_permission_to_auth_perm(permission)
-        
+
         # Then: auth.Permission should be created
         self.assertIsNotNone(result)
         # Note: auth.Permission doesn't store scope/stage, so codename
