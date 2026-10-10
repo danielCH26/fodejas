@@ -58,3 +58,24 @@ def django_db_modify_db_settings(
             "check_same_thread": False,
         },
     }
+
+
+@pytest.fixture(autouse=True)
+def _reset_actor_contextvar():
+    """Reset the audit actor contextvar at every test boundary.
+
+    Root cause of the cascade teardown errors: ``set_actor(user)``
+    leaks across tests in the same thread. A later test whose
+    fixtures/signals fire ``log_audit_event`` then inserts an
+    ``AuditEvent`` with ``actor_id`` pointing at a user that was
+    rolled back (TestCase) or truncated (TransactionTestCase) —
+    the orphan row trips ``check_constraints()`` at teardown and
+    ``FOREIGN KEY constraint failed`` at setup of the next test.
+    Resetting at both boundaries guarantees no test inherits
+    another test's actor. Production code is unaffected.
+    """
+    from apps.core.logging_config import set_actor
+
+    set_actor(None)
+    yield
+    set_actor(None)
