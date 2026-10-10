@@ -42,6 +42,13 @@ def django_db_modify_db_settings(
     """
     from django.conf import settings
 
+    # Keep FileField uploads out of the repository: route media to a
+    # session temp dir (upload-path tests would otherwise litter the
+    # working tree, e.g. condonation/payments/comprobante_*.pdf).
+    import tempfile
+
+    settings.MEDIA_ROOT = tempfile.mkdtemp(prefix="fodejas-test-media-")
+
     # Speed: tests create many users via fixtures; default PBKDF2
     # (720k iterations) dominated runtime. MD5 is test-only.
     settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
