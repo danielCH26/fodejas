@@ -2,17 +2,27 @@
 
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from apps.condonation.models import Sanction, TerminationRequest
+from apps.condonation.serializers import (
+    SanctionSerializer,
+    TerminationRequestSerializer,
+)
 from apps.condonation.services import SanctionService, TerminationService
 
 
+# Condonation data is sensitive (per-beneficiary debts). Until a
+# role matrix is defined for CAP-015/016 the ViewSets require staff
+# membership; the justification submission action is the only
+# beneficiary-facing one and only requires authentication.
 class TerminationRequestViewSet(viewsets.ModelViewSet):
     """ViewSet for termination requests."""
 
     queryset = TerminationRequest.objects.all()
-    serializer_class = None  # TODO: Add serializers
+    serializer_class = TerminationRequestSerializer
+    permission_classes = [IsAdminUser]
 
     def create(self, request, *args, **kwargs):
         """Create a new termination request."""
@@ -72,7 +82,8 @@ class SanctionViewSet(viewsets.ModelViewSet):
     """ViewSet for sanctions."""
 
     queryset = Sanction.objects.all()
-    serializer_class = None  # TODO: Add serializers
+    serializer_class = SanctionSerializer
+    permission_classes = [IsAdminUser]
 
     @action(detail=True, methods=["post"])
     def approve(self, request, pk=None):
@@ -92,7 +103,7 @@ class SanctionViewSet(viewsets.ModelViewSet):
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def submit_justification(self, request, pk=None):
         """Submit justification for exception."""
         justification = request.data.get("justification")
