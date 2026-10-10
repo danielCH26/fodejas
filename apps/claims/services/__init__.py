@@ -1,25 +1,23 @@
 """Services for claims (CHG-205) and appeals (CHG-206)."""
+
 from django.utils import timezone
 
-from apps.claims.models import Reclamacion
-from apps.claims.domain.transitions import (
-    is_valid_apelacion_transition as validar_transicion_apelacion,
-)
 from apps.claims.domain.transitions import (
     is_valid_transition as validar_transicion,
 )
+from apps.claims.models import Reclamacion
 
 
 def crear_reclamacion(solicitud, tipo, descripcion, evidencia=None, actor=None):
     """Create a new claim for a solicitud.
-    
+
     Args:
         solicitud: The Solicitud object to claim
         tipo: Reclamacion.TipoReclamacion value
         descripcion: Text explaining the claim
         evidencia: Optional file attachment
         actor: User creating the claim
-    
+
     Returns:
         Reclamacion instance
     """
@@ -51,26 +49,24 @@ def crear_reclamacion(solicitud, tipo, descripcion, evidencia=None, actor=None):
 
 def cambiar_estado(reclamacion, nuevo_estado, observacion="", actor=None):
     """Change the state of a claim with validation.
-    
+
     Args:
         reclamacion: Reclamacion instance
         nuevo_estado: Reclamacion.Estado value
         observacion: Optional observation
         actor: User performing the action
-    
+
     Returns:
         Reclamacion instance
     """
-    from apps.claims.models import Reclamacion, ReclamacionHistorial
+    from apps.claims.models import ReclamacionHistorial
 
     estado_anterior = reclamacion.estado
 
     # Validate transition
     transicion_valida = validar_transicion(estado_anterior, nuevo_estado)
     if not transicion_valida:
-        raise ValueError(
-            f"Transición inválida: {estado_anterior} → {nuevo_estado}"
-        )
+        raise ValueError(f"Transición inválida: {estado_anterior} → {nuevo_estado}")
 
     # Update claim
     reclamacion.estado = nuevo_estado
@@ -100,13 +96,13 @@ def iniciar_revision(reclamacion, actor):
 
 def resolver_reclamacion(reclamacion, respuesta, aceptar=True, actor=None):
     """Resolve a claim (Junta action).
-    
+
     Args:
         reclamacion: Reclamacion instance
         respuesta: Text with the resolution explanation
         aceptar: If True, accept the claim; if False, reject it
         actor: User resolving (must be R-JUNTA)
-    
+
     Returns:
         Reclamacion instance
     """
@@ -115,19 +111,14 @@ def resolver_reclamacion(reclamacion, respuesta, aceptar=True, actor=None):
     if actor and not actor.is_superuser:
         # Check if user has R-JUNTA role
         from apps.accounts.models import Role, UserRole
+
         junta_role = Role.objects.filter(code="R-JUNTA").first()
         if junta_role and not UserRole.objects.filter(user=actor, role=junta_role).exists():
             raise PermissionError("Solo R-JUNTA puede resolver reclamaciones")
 
-    nuevo_estado = (
-        Reclamacion.Estado.RESUELTA if aceptar
-        else Reclamacion.Estado.RECHAZADA
-    )
+    nuevo_estado = Reclamacion.Estado.RESUELTA if aceptar else Reclamacion.Estado.RECHAZADA
 
-    observacion = (
-        "Reclamación aceptada" if aceptar
-        else "Reclamación rechazada"
-    )
+    observacion = "Reclamación aceptada" if aceptar else "Reclamación rechazada"
 
     # Update claim
     reclamacion.estado = nuevo_estado
@@ -138,6 +129,7 @@ def resolver_reclamacion(reclamacion, respuesta, aceptar=True, actor=None):
 
     # Create history entry
     from apps.claims.models import ReclamacionHistorial
+
     ReclamacionHistorial.objects.create(
         reclamacion=reclamacion,
         estado_anterior=Reclamacion.Estado.EN_REVISION,

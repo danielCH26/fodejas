@@ -1,4 +1,5 @@
 """Serializers for Convocatory API."""
+
 from rest_framework import serializers
 
 from apps.convocatories.domain import Estado, get_transiciones_disponibles
@@ -62,14 +63,12 @@ class TransitionSerializer(serializers.Serializer):
         es_valida, error_code = validar_transicion(estado_origen, estado_destino)
 
         if not es_valida:
-            raise ValidationError({
-                "destino": f"Transición no permitida: {estado_origen} → {estado_destino}"
-            })
+            raise ValidationError(
+                {"destino": f"Transición no permitida: {estado_origen} → {estado_destino}"}
+            )
 
         # Require motivo for CANCELADA
         if estado_destino == Estado.CANCELADA and not attrs.get("motivo"):
-            raise ValidationError({
-                "motivo": "El motivo es requerido para cancelar"
-            })
+            raise ValidationError({"motivo": "El motivo es requerido para cancelar"})
 
         return attrs

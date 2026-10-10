@@ -158,7 +158,7 @@ apps\audit\tests\test_chain.py .......                                  [ 41%]
 apps\audit\tests\test_concurrency.py ss                                [ 52%]   <- 2 skipped on SQLite
 apps\audit\tests\test_signals.py ...                                   [ 70%]
 apps\audit\tests\test_views_permissions.py ..                          [ 82%]
-                                                                       
+
 15 passed, 2 skipped, 4 errors in 4.02s
 ```
 

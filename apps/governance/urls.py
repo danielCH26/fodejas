@@ -1,4 +1,5 @@
 """URL configuration for governance HTML views."""
+
 from django.urls import path
 
 from apps.governance.views import (
@@ -29,11 +30,9 @@ urlpatterns = [
         ActoModificatorioCreateView.as_view(),
         name="acto_modificatorio_create",
     ),
-
     # Listados definitivos
     path("listados/crear/", ListadoDefinitivoCreateView.as_view(), name="listado_create"),
     path("listados/<uuid:pk>/", ListadoDefinitivoDetailView.as_view(), name="listado_detail"),
-
     # Portal público
     path("resultados/", ListadoPublicoView.as_view(), name="resultados_publicos"),
 ]

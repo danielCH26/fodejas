@@ -4,15 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('audit', '0002_initial'),
+        ("audit", "0002_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='auditevent',
-            name='action',
-            field=models.CharField(choices=[('CREATE', 'Create'), ('UPDATE', 'Update'), ('DELETE', 'Delete'), ('LOGIN', 'Login'), ('LOGOUT', 'Logout'), ('ACCESS', 'Access'), ('ELECTRONIC_SIGNATURE', 'Electronic Signature')], max_length=20),
+            model_name="auditevent",
+            name="action",
+            field=models.CharField(
+                choices=[
+                    ("CREATE", "Create"),
+                    ("UPDATE", "Update"),
+                    ("DELETE", "Delete"),
+                    ("LOGIN", "Login"),
+                    ("LOGOUT", "Logout"),
+                    ("ACCESS", "Access"),
+                    ("ELECTRONIC_SIGNATURE", "Electronic Signature"),
+                ],
+                max_length=20,
+            ),
         ),
     ]

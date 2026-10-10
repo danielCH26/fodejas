@@ -3,6 +3,7 @@
 Tests for the 30-working-day ARCO deadline (Ley 1581/2012 +
 Decreto 1377/2013).
 """
+
 from __future__ import annotations
 
 from datetime import timedelta

@@ -1,4 +1,5 @@
 """Admin views for user and role management."""
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -29,7 +30,7 @@ class BaseAdminView(LoginRequiredMixin, TemplateView):
             return redirect(self.login_url)
 
         # Check for R-ADMIN role
-        has_admin_role = request.user.user_roles.filter(role__code='R-ADMIN').exists()
+        has_admin_role = request.user.user_roles.filter(role__code="R-ADMIN").exists()
         is_superuser = request.user.is_superuser or request.user.is_staff
 
         if not (has_admin_role or is_superuser):
@@ -64,10 +65,10 @@ class UserListView(BaseAdminView):
         # Apply filters
         if search:
             users = users.filter(
-                Q(email__icontains=search) |
-                Q(documento__icontains=search) |
-                Q(first_name__icontains=search) |
-                Q(last_name__icontains=search)
+                Q(email__icontains=search)
+                | Q(documento__icontains=search)
+                | Q(first_name__icontains=search)
+                | Q(last_name__icontains=search)
             )
 
         if role_filter:
@@ -131,6 +132,7 @@ class UserCreateView(BaseAdminView):
 
         # Generate temporary password
         import secrets
+
         temp_password = secrets.token_urlsafe(8)
 
         # Create user
@@ -172,9 +174,7 @@ class UserDetailView(BaseAdminView):
         user_roles = UserRole.objects.filter(user=user).select_related("role")
 
         # Get recent audit events for this user
-        recent_logs = AuditEvent.objects.filter(
-            actor=user
-        ).order_by("-timestamp")[:10]
+        recent_logs = AuditEvent.objects.filter(actor=user).order_by("-timestamp")[:10]
 
         context["view_user"] = user
         context["user_roles"] = user_roles
@@ -532,12 +532,16 @@ class UserRoleHistoryView(BaseAdminView):
 
         # Get audit events for role assignments/revocations
 
-        role_events = AuditEvent.objects.filter(
-            entity="UserRole",
-        ).filter(
-            # Filter events related to this user
-            details__contains=str(user.id)
-        ).order_by("-timestamp")[:50]
+        role_events = (
+            AuditEvent.objects.filter(
+                entity="UserRole",
+            )
+            .filter(
+                # Filter events related to this user
+                details__contains=str(user.id)
+            )
+            .order_by("-timestamp")[:50]
+        )
 
         context["view_user"] = user
         context["role_events"] = role_events

@@ -1,4 +1,5 @@
 """Service for FUI wizard operations."""
+
 from django.db import transaction
 from django.utils import timezone
 
@@ -41,13 +42,15 @@ def save_draft(solicitud, step: int, data: dict) -> None:
         solicitud.datos_socioeconomicos = data
 
     solicitud.current_step = step
-    solicitud.save(update_fields=[
-        "datos_personales",
-        "datos_academicos",
-        "datos_socioeconomicos",
-        "current_step",
-        "updated_at",
-    ])
+    solicitud.save(
+        update_fields=[
+            "datos_personales",
+            "datos_academicos",
+            "datos_socioeconomicos",
+            "current_step",
+            "updated_at",
+        ]
+    )
 
 
 def submit(solicitud, consentimiento: bool, actor) -> None:

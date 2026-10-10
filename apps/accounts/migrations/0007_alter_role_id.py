@@ -10,15 +10,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0006_alter_customuser_id'),
+        ("accounts", "0006_alter_customuser_id"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='role',
-            name='id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
+            model_name="role",
+            name="id",
+            field=models.UUIDField(
+                default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+            ),
         ),
     ]

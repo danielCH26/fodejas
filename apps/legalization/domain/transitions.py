@@ -8,6 +8,7 @@ Implements the FSM defined in design.md D3:
 Every transition is validated before execution.  Post-sign hash
 tamper detection lives in the service layer, not here.
 """
+
 from apps.legalization.models import LegalDocument, LegalizationProcess
 
 # -------------------------------------------------------------------

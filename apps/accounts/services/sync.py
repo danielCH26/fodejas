@@ -1,4 +1,5 @@
 """Sync services for role and permission integration with Django auth system."""
+
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import Permission as AuthPermission
 from django.contrib.contenttypes.models import ContentType
@@ -65,7 +66,7 @@ def sync_permission_to_auth_perm(permission: Permission) -> AuthPermission:
     # For simplicity, we'll use the Permission model itself.
     content_type, _ = ContentType.objects.get_or_create(
         app_label=permission.app_label,
-        model="permission"  # Using lowercase model name
+        model="permission",  # Using lowercase model name
     )
 
     # Create a name for the permission
@@ -74,9 +75,7 @@ def sync_permission_to_auth_perm(permission: Permission) -> AuthPermission:
 
     # Get or create auth.Permission
     auth_perm, created = AuthPermission.objects.get_or_create(
-        content_type=content_type,
-        codename=permission.action,
-        defaults={"name": name}
+        content_type=content_type, codename=permission.action, defaults={"name": name}
     )
 
     # Link auth_permission to permission

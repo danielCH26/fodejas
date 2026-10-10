@@ -1,4 +1,5 @@
 """URLs for the legalization API (CHG-301, CAP-029)."""
+
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 

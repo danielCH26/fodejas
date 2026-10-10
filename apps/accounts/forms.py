@@ -1,4 +1,5 @@
 """Forms for accounts app."""
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import (
@@ -119,18 +120,14 @@ class FodejasRegistrationForm(UserCreationForm):
         """Validate email is unique."""
         email = self.cleaned_data.get("email")
         if User.objects.filter(email__iexact=email).exists():
-            raise forms.ValidationError(
-                "Ya existe una cuenta con este correo electrónico."
-            )
+            raise forms.ValidationError("Ya existe una cuenta con este correo electrónico.")
         return email
 
     def clean_documento(self):
         """Validate documento is unique."""
         documento = self.cleaned_data.get("documento")
         if User.objects.filter(documento=documento).exists():
-            raise forms.ValidationError(
-                "Ya existe una cuenta con este número de documento."
-            )
+            raise forms.ValidationError("Ya existe una cuenta con este número de documento.")
         return documento
 
 
@@ -182,5 +179,7 @@ class UserRoleForm(forms.Form):
     convocation_scope = forms.IntegerField(
         label="Convocatoria (opcional)",
         required=False,
-        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "ID de convocatoria"}),
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "placeholder": "ID de convocatoria"}
+        ),
     )

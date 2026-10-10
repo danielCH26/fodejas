@@ -1,4 +1,5 @@
 """Django admin for Legalization models (CHG-301, CAP-029)."""
+
 from django.contrib import admin
 
 from apps.legalization.models import LegalDocument, LegalizationProcess

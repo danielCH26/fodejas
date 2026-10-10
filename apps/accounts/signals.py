@@ -17,6 +17,7 @@ If a future change needs to add signals that are NOT audit-related
 (e.g. cache invalidation on role assignment), they belong in a
 separate module — do NOT re-introduce audit receivers here.
 """
+
 # Intentionally empty: see the docstring above for context.
 # Previously this file contained ``log_user_change``,
 # ``log_role_change``, ``log_user_role_change`` and

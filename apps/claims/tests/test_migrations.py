@@ -1,4 +1,5 @@
 """Tests for CHG-206 migrations."""
+
 from django.db import connection
 from django.db.migrations.loader import MigrationLoader
 from django.test import TestCase

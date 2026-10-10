@@ -1,4 +1,5 @@
 """HTML views for claims (CHG-205)."""
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
@@ -49,9 +50,9 @@ class ReclamacionListView(LoginRequiredMixin, PermissionMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Reclamacion.objects.filter(
-            solicitud__aspirante=self.request.user
-        ).select_related("solicitud", "solicitud__convocatoria")
+        return Reclamacion.objects.filter(solicitud__aspirante=self.request.user).select_related(
+            "solicitud", "solicitud__convocatoria"
+        )
 
 
 class ReclamacionCreateView(LoginRequiredMixin, CreateView):
@@ -75,9 +76,7 @@ class ReclamacionCreateView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         solicitud_uuid = self.kwargs.get("solicitud_uuid")
         if solicitud_uuid:
-            context["solicitud"] = get_object_or_404(
-                Solicitud, uuid=solicitud_uuid
-            )
+            context["solicitud"] = get_object_or_404(Solicitud, uuid=solicitud_uuid)
         return context
 
     def form_valid(self, form):
@@ -87,8 +86,7 @@ class ReclamacionCreateView(LoginRequiredMixin, CreateView):
         # Verify ownership
         if solicitud.aspirante != self.request.user:
             messages.error(
-                self.request,
-                "Solo puedes presentar reclamaciones para tus propias postulaciones."
+                self.request, "Solo puedes presentar reclamaciones para tus propias postulaciones."
             )
             return redirect("claims:list")
 
@@ -97,10 +95,7 @@ class ReclamacionCreateView(LoginRequiredMixin, CreateView):
             Solicitud.Estado.VERIFICADA,
             Solicitud.Estado.RADICADA,
         ]:
-            messages.error(
-                self.request,
-                "No puedes presentar reclamación para esta postulación."
-            )
+            messages.error(self.request, "No puedes presentar reclamación para esta postulación.")
             return redirect("claims:list")
 
         # Create the claim
@@ -112,14 +107,8 @@ class ReclamacionCreateView(LoginRequiredMixin, CreateView):
                 evidencia=form.cleaned_data.get("evidencia"),
                 actor=self.request.user,
             )
-            messages.success(
-                self.request,
-                "Reclamación presentada exitosamente."
-            )
-            return redirect(reverse_lazy(
-                "claims:detail",
-                kwargs={"pk": reclamacion.uuid}
-            ))
+            messages.success(self.request, "Reclamación presentada exitosamente.")
+            return redirect(reverse_lazy("claims:detail", kwargs={"pk": reclamacion.uuid}))
         except Exception as e:
             messages.error(self.request, str(e))
             return redirect("claims:list")
@@ -145,15 +134,14 @@ class ReclamacionDetailView(LoginRequiredMixin, DetailView):
         user = self.request.user
 
         # Owner, junta, or admin
-        if (user == obj.solicitud.aspirante or
-            user.is_superuser or
-            self._has_junta_role(user)):
+        if user == obj.solicitud.aspirante or user.is_superuser or self._has_junta_role(user):
             return obj
 
         raise PermissionError("No tienes permiso para ver esta reclamación")
 
     def _has_junta_role(self, user):
         from apps.accounts.models import Role
+
         junta = Role.objects.filter(code="R-JUNTA").first()
         return bool(junta and user.userrole_set.filter(role=junta).exists())
 
@@ -178,10 +166,7 @@ class ReclamacionUpdateView(LoginRequiredMixin, UpdateView):
 
         # Must be in PRESENTADA state
         if obj.estado != Reclamacion.Estado.PRESENTADA:
-            messages.error(
-                self.request,
-                "Solo puedes editar reclamaciones en estado PRESENTADA."
-            )
+            messages.error(self.request, "Solo puedes editar reclamaciones en estado PRESENTADA.")
             return redirect("claims:detail", pk=obj.uuid)
 
         return obj
@@ -202,10 +187,7 @@ class ReclamacionAdminListView(LoginRequiredMixin, TemplateView):
         # Check permissions
         user = self.request.user
         if not (user.is_superuser or self._has_junta_role(user)):
-            messages.error(
-                self.request,
-                "Solo R-JUNTA puede acceder a esta página."
-            )
+            messages.error(self.request, "Solo R-JUNTA puede acceder a esta página.")
             return context
 
         context["reclamaciones"] = Reclamacion.objects.select_related(
@@ -218,6 +200,7 @@ class ReclamacionAdminListView(LoginRequiredMixin, TemplateView):
 
     def _has_junta_role(self, user):
         from apps.accounts.models import Role
+
         junta = Role.objects.filter(code="R-JUNTA").first()
         return bool(junta and user.userrole_set.filter(role=junta).exists())
 
@@ -227,8 +210,7 @@ class ReclamacionResolveView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         reclamacion = get_object_or_404(
-            Reclamacion.objects.select_related("solicitud"),
-            uuid=kwargs.get("pk")
+            Reclamacion.objects.select_related("solicitud"), uuid=kwargs.get("pk")
         )
 
         # Check permissions
@@ -239,10 +221,7 @@ class ReclamacionResolveView(LoginRequiredMixin, View):
 
         # Must be in EN_REVISION state
         if reclamacion.estado != Reclamacion.Estado.EN_REVISION:
-            messages.error(
-                request,
-                "Solo puedes resolver reclamaciones en revisión."
-            )
+            messages.error(request, "Solo puedes resolver reclamaciones en revisión.")
             return redirect("claims:admin_detail", pk=reclamacion.uuid)
 
         # Get action
@@ -263,8 +242,7 @@ class ReclamacionResolveView(LoginRequiredMixin, View):
                 actor=user,
             )
             messages.success(
-                request,
-                f"Reclamación {'aceptada' if aceptar else 'rechazada'} exitosamente."
+                request, f"Reclamación {'aceptada' if aceptar else 'rechazada'} exitosamente."
             )
         except Exception as e:
             messages.error(request, str(e))
@@ -273,6 +251,7 @@ class ReclamacionResolveView(LoginRequiredMixin, View):
 
     def _has_junta_role(self, user):
         from apps.accounts.models import Role
+
         junta = Role.objects.filter(code="R-JUNTA").first()
         return bool(junta and user.userrole_set.filter(role=junta).exists())
 
@@ -305,6 +284,7 @@ class ApelacionPermissionMixin:
 
     def _has_ofijur_role(self, user):
         from apps.accounts.models import Role
+
         ofijur = Role.objects.filter(code="R-OFIJUR").first()
         return bool(ofijur and user.userrole_set.filter(role=ofijur).exists())
 
@@ -329,16 +309,19 @@ class ApelacionListView(LoginRequiredMixin, ListView):
             ).order_by("-created_at")
 
         # Otherwise, show only user's appeals
-        return Apelacion.objects.filter(
-            reclamacion__solicitud__aspirante=user
-        ).select_related(
-            "reclamacion",
-            "reclamacion__solicitud",
-            "reclamacion__solicitud__convocatoria",
-        ).order_by("-created_at")
+        return (
+            Apelacion.objects.filter(reclamacion__solicitud__aspirante=user)
+            .select_related(
+                "reclamacion",
+                "reclamacion__solicitud",
+                "reclamacion__solicitud__convocatoria",
+            )
+            .order_by("-created_at")
+        )
 
     def _has_ofijur_role(self, user):
         from apps.accounts.models import Role
+
         ofijur = Role.objects.filter(code="R-OFIJUR").first()
         return bool(ofijur and user.userrole_set.filter(role=ofijur).exists())
 
@@ -365,9 +348,8 @@ class ApelacionCreateView(LoginRequiredMixin, CreateView):
         reclamacion_uuid = self.kwargs.get("reclamacion_uuid")
         if reclamacion_uuid:
             from apps.claims.models import Reclamacion
-            context["reclamacion"] = get_object_or_404(
-                Reclamacion, uuid=reclamacion_uuid
-            )
+
+            context["reclamacion"] = get_object_or_404(Reclamacion, uuid=reclamacion_uuid)
         return context
 
     def form_valid(self, form):
@@ -377,8 +359,7 @@ class ApelacionCreateView(LoginRequiredMixin, CreateView):
         # Verify ownership and preconditions
         if reclamacion.solicitud.aspirante != self.request.user:
             messages.error(
-                self.request,
-                "Solo puedes presentar apelaciones para tus propias reclamaciones."
+                self.request, "Solo puedes presentar apelaciones para tus propias reclamaciones."
             )
             return redirect("claims:list")
 
@@ -424,6 +405,7 @@ class ApelacionDetailView(LoginRequiredMixin, ApelacionPermissionMixin, DetailVi
 
     def _has_ofijur_role(self, user):
         from apps.accounts.models import Role
+
         ofijur = Role.objects.filter(code="R-OFIJUR").first()
         return bool(ofijur and user.userrole_set.filter(role=ofijur).exists())
 
@@ -434,7 +416,7 @@ class ApelacionTransitionView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         apelacion = get_object_or_404(
             Apelacion.objects.select_related("reclamacion", "reclamacion__solicitud"),
-            uuid=kwargs.get("pk")
+            uuid=kwargs.get("pk"),
         )
 
         # Check OFIJUR permissions
@@ -486,6 +468,7 @@ class ApelacionTransitionView(LoginRequiredMixin, View):
 
     def _has_ofijur_role(self, user):
         from apps.accounts.models import Role
+
         ofijur = Role.objects.filter(code="R-OFIJUR").first()
         return bool(ofijur and user.userrole_set.filter(role=ofijur).exists())
 
@@ -501,10 +484,7 @@ class ApelacionAdminListView(LoginRequiredMixin, TemplateView):
         # Check OFIJUR permissions
         user = self.request.user
         if not (user.is_superuser or self._has_ofijur_role(user)):
-            messages.error(
-                self.request,
-                "Solo R-OFIJUR puede acceder a esta página."
-            )
+            messages.error(self.request, "Solo R-OFIJUR puede acceder a esta página.")
             return context
 
         context["apelaciones"] = Apelacion.objects.select_related(
@@ -518,5 +498,6 @@ class ApelacionAdminListView(LoginRequiredMixin, TemplateView):
 
     def _has_ofijur_role(self, user):
         from apps.accounts.models import Role
+
         ofijur = Role.objects.filter(code="R-OFIJUR").first()
         return bool(ofijur and user.userrole_set.filter(role=ofijur).exists())

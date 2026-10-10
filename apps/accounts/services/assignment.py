@@ -1,4 +1,5 @@
 """Role assignment services."""
+
 import uuid
 
 from django.db import transaction
@@ -10,10 +11,7 @@ from .permissions import invalidate_user_permissions_cache
 
 
 def assign_role_to_user(
-    user: CustomUser,
-    role: Role,
-    convocation_scope: str = None,
-    actor: CustomUser = None
+    user: CustomUser, role: Role, convocation_scope: str = None, actor: CustomUser = None
 ) -> UserRole:
     """
     Assign a role to a user.
@@ -37,9 +35,7 @@ def assign_role_to_user(
     with transaction.atomic():
         # Create UserRole instance
         user_role = UserRole.objects.create(
-            user=user,
-            role=role,
-            convocation_scope_id=convocation_scope
+            user=user, role=role, convocation_scope_id=convocation_scope
         )
 
         # Add user to the role's Django group (this gives them the permissions)
@@ -58,9 +54,9 @@ def assign_role_to_user(
                 "after": {
                     "user_id": str(user.id),
                     "role_id": str(role.id),
-                    "convocation_scope": convocation_scope
-                }
-            }
+                    "convocation_scope": convocation_scope,
+                },
+            },
         )
 
         # Invalidate permissions cache since user's groups have changed
@@ -102,10 +98,10 @@ def revoke_role_from_user(user_role: UserRole, actor: CustomUser = None):
                 "before": {
                     "user_id": str(user.id),
                     "role_id": str(role.id),
-                    "convocation_scope": user_role.convocation_scope_id
+                    "convocation_scope": user_role.convocation_scope_id,
                 },
-                "after": None
-            }
+                "after": None,
+            },
         )
 
         # Invalidate permissions cache since user's groups have changed

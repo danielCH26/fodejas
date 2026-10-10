@@ -3,6 +3,7 @@
 ``select_for_update()``. Two interleaved calls against the same
 ``Solicitud`` produce a consistent ``PuntajeTotal``.
 """
+
 from decimal import Decimal
 
 import pytest
@@ -103,7 +104,9 @@ class ScoringAtomicTest(TestCase):
             + Decimal("0.20") * puntaje.puntaje_excelencia
         )
         # ``puntaje_total`` must equal the weighted sum to within rounding.
-        self.assertEqual(puntaje.puntaje_total.quantize(Decimal("0.01")), weights.quantize(Decimal("0.01")))
+        self.assertEqual(
+            puntaje.puntaje_total.quantize(Decimal("0.01")), weights.quantize(Decimal("0.01"))
+        )
         # The components themselves must be intact (not overwritten with zero).
         self.assertEqual(puntaje.puntaje_socioeconomico, Decimal("60.00"))
         self.assertEqual(puntaje.puntaje_academico, Decimal("50.00"))

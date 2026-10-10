@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('treasury', '0003_add_treasury_order_attachments'),
+        ("treasury", "0003_add_treasury_order_attachments"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='disbursementauthorization',
-            name='treasury_order_attachments',
+            model_name="disbursementauthorization",
+            name="treasury_order_attachments",
             field=models.JSONField(blank=True, default=list, null=True),
         ),
     ]

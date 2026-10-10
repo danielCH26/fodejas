@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Admin - FODEJAS{% endblock %}</title>
-    
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
-    
+
     <style>
         .sidebar {
             min-height: 100vh;
@@ -53,7 +53,7 @@
                         <i class="bi bi-shield-check"></i>
                         Administración
                     </h5>
-                    
+
                     <ul class="nav flex-column mb-auto">
                         <li class="nav-item">
                             <a class="nav-link {% if admin_section == 'dashboard' %}active{% endif %}" href="{% url 'accounts:dashboard' %}">
@@ -61,23 +61,23 @@
                                 Dashboard
                             </a>
                         </li>
-                        
+
                         <li class="nav-item">
                             <a class="nav-link {% if admin_section == 'users' %}active{% endif %}" href="{% url 'accounts_admin:user_list' %}">
                                 <i class="bi bi-people"></i>
                                 Gestión de Usuarios
                             </a>
                         </li>
-                        
+
                         <li class="nav-item">
                             <a class="nav-link {% if admin_section == 'roles' %}active{% endif %}" href="{% url 'accounts_admin:role_list' %}">
                                 <i class="bi bi-shield-check"></i>
                                 Gestión de Roles
                             </a>
                         </li>
-                        
+
                         <hr class="my-2">
-                        
+
                         <li class="nav-item">
                             <a class="nav-link text-danger" href="{% url 'accounts:logout' %}">
                                 <i class="bi bi-box-arrow-right"></i>
@@ -87,7 +87,7 @@
                     </ul>
                 </div>
             </div>
-            
+
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="admin-header">
@@ -104,7 +104,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Messages -->
                 {% if messages %}
                     <div class="mb-3">
@@ -116,7 +116,7 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-                
+
                 <!-- Content -->
                 <div class="content-area">
                     {% block admin_content %}
@@ -125,10 +125,10 @@
             </main>
         </div>
     </div>
-    
+
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- HTMX Scripts -->
     <script>
         // Auto-dismiss alerts after 5 seconds

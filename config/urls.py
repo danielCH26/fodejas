@@ -33,7 +33,6 @@ urlpatterns = [
     path("api/auth/", include("apps.accounts.api.urls")),  # JWT API endpoints
     path("api/audit/", include("apps.audit.urls")),  # Audit endpoints
     path("api/legalization/", include("apps.legalization.api.urls")),  # Legalization API (CHG-301)
-
     # HTML views
     path("convocatorias/", include("apps.convocatories.urls")),  # Convocatory HTML views
     path("applications/", include("apps.applications.urls")),  # Applications HTML views

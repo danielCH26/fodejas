@@ -1,4 +1,5 @@
 """Domain layer for convocatories app."""
+
 from .transitions import (
     TRANSICIONES_PERMITIDAS,
     Estado,

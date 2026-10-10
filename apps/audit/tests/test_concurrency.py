@@ -16,6 +16,7 @@ because they would always raise ``OperationalError("database
 table is locked")``. They pass on PostgreSQL, which is the
 production target.
 """
+
 from __future__ import annotations
 
 import threading
@@ -87,9 +88,7 @@ def test_concurrent_writes_serialize_through_lock():
 
     # The chain must validate after concurrent commits.
     result = verify_chain()
-    assert result["is_valid"] is True, (
-        f"chain broken under concurrency: {result}"
-    )
+    assert result["is_valid"] is True, f"chain broken under concurrency: {result}"
     assert result["break_point"] is None
 
 
@@ -136,7 +135,5 @@ def test_concurrent_writes_no_unique_collision():
         t.join(timeout=30)
 
     assert AuditEvent.objects.count() == 2 * n
-    distinct_hashes = (
-        AuditEvent.objects.values_list("current_hash", flat=True).distinct().count()
-    )
+    distinct_hashes = AuditEvent.objects.values_list("current_hash", flat=True).distinct().count()
     assert distinct_hashes == 2 * n

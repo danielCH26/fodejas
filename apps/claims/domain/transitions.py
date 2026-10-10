@@ -1,4 +1,5 @@
 """State transitions for claims (CHG-205) and appeals (CHG-206)."""
+
 from apps.claims.models import Apelacion, Reclamacion
 
 # Transition matrix: estado_actual -> [estados_validos]

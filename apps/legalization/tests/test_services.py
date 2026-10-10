@@ -8,6 +8,7 @@ Tests the workflow methods:
 
 Also tests the domain transitions module.
 """
+
 import datetime
 import hashlib
 
@@ -25,8 +26,10 @@ from apps.legalization.services import LegalizationService, sign_legal_document
 # Fixture helpers (mirrors test_signer.py style)
 # ---------------------------------------------------------------------------
 
+
 def _make_user(email=None, role_codes=("R-JUNTA",)):
     import uuid as _u
+
     email = email or f"{_u.uuid4().hex}@example.com"
     user = CustomUser.objects.create(
         email=email,
@@ -40,9 +43,7 @@ def _make_user(email=None, role_codes=("R-JUNTA",)):
             code=code,
             defaults={"name": code, "type": "interno", "description": code},
         )
-        UserRole.objects.get_or_create(
-            user=user, role=role, convocation_scope_id=None
-        )
+        UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
     return user
 
 
@@ -71,6 +72,7 @@ def _dt(year=2026, month=1, day=15):
 # ---------------------------------------------------------------------------
 # LegalizationService — create_documents_for_beneficiary
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestCreateDocumentsForBeneficiary:
@@ -128,6 +130,7 @@ class TestCreateDocumentsForBeneficiary:
 # LegalizationService — generate_pdf (seam strategy)
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestGeneratePdf:
     def _base_context(self, conv):
@@ -156,12 +159,16 @@ class TestGeneratePdf:
         with pytest.MonkeyPatch.context() as mp:
             mp.setattr("apps.legalization.services._WASYPRINT_AVAILABLE", True)
             import apps.legalization.services as svc
+
             original_wh = svc._WeasyHTML
+
             class FakeWeasyHTML:
                 def __init__(self, string=None, **kw):
                     pass
+
                 def write_pdf(self):
                     return fake_pdf
+
             svc._WeasyHTML = FakeWeasyHTML
             try:
                 return LegalizationService.generate_pdf(doc, context)
@@ -204,9 +211,7 @@ class TestGeneratePdf:
             entity_id=str(doc.id),
         )
         assert events.exists()
-        assert events.first().changes["pre_sign_hash"] == hashlib.sha256(
-            _pdf_bytes()
-        ).hexdigest()
+        assert events.first().changes["pre_sign_hash"] == hashlib.sha256(_pdf_bytes()).hexdigest()
 
     def test_raises_for_unknown_document_type(self):
         """A document with a bogus document_type is rejected before WeasyPrint."""
@@ -229,6 +234,7 @@ class TestGeneratePdf:
         with pytest.MonkeyPatch.context() as mp:
             mp.setattr("apps.legalization.services._WASYPRINT_AVAILABLE", False)
             import apps.legalization.services as svc
+
             original_wh = svc._WeasyHTML
             svc._WeasyHTML = None
             try:
@@ -252,6 +258,7 @@ class TestGeneratePdf:
 # ---------------------------------------------------------------------------
 # LegalizationService — complete_legalization
 # ---------------------------------------------------------------------------
+
 
 def _sign_document(document, actor=None):
     """Helper: attach a fake PDF and call sign_legal_document."""
@@ -308,9 +315,7 @@ class TestCompleteLegalization:
         _sign_document(docs[LegalDocument.DocumentType.CARTA_INSTRUCCIONES], actor=user)
         _sign_document(docs[LegalDocument.DocumentType.CONTRATO], actor=user)
         # ACTO_ADMINISTRATIVO is CANCELLED (CHG-303).
-        docs[LegalDocument.DocumentType.ACTO_ADMINISTRATIVO].status = (
-            LegalDocument.Status.CANCELADO
-        )
+        docs[LegalDocument.DocumentType.ACTO_ADMINISTRATIVO].status = LegalDocument.Status.CANCELADO
         docs[LegalDocument.DocumentType.ACTO_ADMINISTRATIVO].save()
 
         process = docs[LegalDocument.DocumentType.PAGARE].process
@@ -379,6 +384,7 @@ class TestCompleteLegalization:
 # ---------------------------------------------------------------------------
 # LegalizationService — cancel_document
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestCancelDocument:
@@ -449,6 +455,7 @@ class TestCancelDocument:
 # Domain transitions
 # ---------------------------------------------------------------------------
 
+
 class TestDocumentTransitions:
     def test_pendiente_can_transition_to_firmado_and_cancelled(self):
         assert trans.is_valid_document_transition(
@@ -487,17 +494,13 @@ class TestDocumentTransitions:
         assert not trans.is_document_terminal(LegalDocument.Status.FIRMADO)
 
     def test_get_valid_document_transitions(self):
-        assert (
+        assert LegalDocument.Status.FIRMADO in trans.get_valid_document_transitions(
+            LegalDocument.Status.PENDIENTE
+        )
+        assert LegalDocument.Status.LEGALIZADO in trans.get_valid_document_transitions(
             LegalDocument.Status.FIRMADO
-            in trans.get_valid_document_transitions(LegalDocument.Status.PENDIENTE)
         )
-        assert (
-            LegalDocument.Status.LEGALIZADO
-            in trans.get_valid_document_transitions(LegalDocument.Status.FIRMADO)
-        )
-        assert trans.get_valid_document_transitions(
-            LegalDocument.Status.LEGALIZADO
-        ) == set()
+        assert trans.get_valid_document_transitions(LegalDocument.Status.LEGALIZADO) == set()
 
 
 class TestProcessTransitions:
@@ -523,20 +526,16 @@ class TestProcessTransitions:
         assert not trans.is_process_terminal(LegalizationProcess.Status.EN_PROCESO)
 
     def test_get_valid_process_transitions(self):
-        assert (
-            LegalizationProcess.Status.EN_PROCESO
-            in trans.get_valid_process_transitions(
-                LegalizationProcess.Status.PENDIENTE
-            )
+        assert LegalizationProcess.Status.EN_PROCESO in trans.get_valid_process_transitions(
+            LegalizationProcess.Status.PENDIENTE
         )
-        assert trans.get_valid_process_transitions(
-            LegalizationProcess.Status.LEGALIZADO
-        ) == set()
+        assert trans.get_valid_process_transitions(LegalizationProcess.Status.LEGALIZADO) == set()
 
 
 # ---------------------------------------------------------------------------
 # Post-sign hash tamper detection (D3 / tasks.md 5.3)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestPostSignTamperDetection:
@@ -559,6 +558,7 @@ class TestPostSignTamperDetection:
         with pytest.MonkeyPatch.context() as mp:
             mp.setattr("apps.legalization.services._WASYPRINT_AVAILABLE", True)
             import apps.legalization.services as svc
+
             original_wh = svc._WeasyHTML
 
             class FakeWeasyHTML:

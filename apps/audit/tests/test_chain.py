@@ -1,4 +1,5 @@
 """Hash chain integrity tests (CHG-801 / AUD-001, AUD-003)."""
+
 from __future__ import annotations
 
 import uuid
@@ -100,9 +101,7 @@ class TestChainLinkage:
         pre_count = AuditEvent.objects.count()
         if pre_count:
             AuditEvent.objects.all().delete()
-        assert AuditEvent.objects.count() == 0, (
-            "chain not empty after delete"
-        )
+        assert AuditEvent.objects.count() == 0, "chain not empty after delete"
 
         # Force distinct timestamps on SQLite (which stores
         # datetimes to microsecond precision).

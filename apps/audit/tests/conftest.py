@@ -2,6 +2,7 @@
 
 Uses synthetic data only (no PII) per AGENTS.md §6 regla 1.
 """
+
 from __future__ import annotations
 
 import uuid

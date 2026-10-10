@@ -8,6 +8,7 @@ Single test that exercises the full Fase 2 happy path:
 This is the deliverable that closes the gap between roadmap §6.2
 "Entregables verificables" and the actual code.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -38,9 +39,7 @@ def _make_user(email, codes):
             code=code,
             defaults={"name": code, "type": "interno", "description": code},
         )
-        UserRole.objects.get_or_create(
-            user=user, role=role, convocation_scope_id=None
-        )
+        UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
     return user
 
 
@@ -78,7 +77,8 @@ class TestPilotE2E(TestCase):
         self.ofijur = _make_user("ofijur_e2e", ["R-OFIJUR"])
         self.convocatoria = _make_convocatoria()
         self.solicitud = _make_solicitud(
-            self.convocatoria, aspirante=self.aspirante,
+            self.convocatoria,
+            aspirante=self.aspirante,
         )
 
     def test_full_pilot_flow_with_workflow_signing(self):
@@ -132,9 +132,7 @@ class TestPilotE2E(TestCase):
         )
         # Generar el listado definitivo solo si hay ranking.
         if ranking:
-            listado = generar_listado_definitivo(
-                self.convocatoria, acto, ranking
-            )
+            listado = generar_listado_definitivo(self.convocatoria, acto, ranking)
             self.assertIsInstance(listado, ListadoDefinitivo)
             self.assertEqual(listado.acto_id, acto.id)
 

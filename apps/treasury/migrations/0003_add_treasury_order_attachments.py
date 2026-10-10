@@ -12,11 +12,11 @@ hash as evidence of integrity at the time the order was dispatched.
 Batch B (views) populates the ACTO_ADMINISTRATIVO attachment via
 the authorize-action form.
 """
+
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("treasury", "0002_add_treasury_received_at_and_vencido"),
     ]

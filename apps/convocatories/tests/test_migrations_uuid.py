@@ -3,13 +3,12 @@
 Mirrors apps/accounts/tests/test_migrations_uuid.py for the Convocatory
 model. Kept separate to keep per-app test scope clear.
 """
+
 import uuid
 
 import pytest
 
-CONVOCATORIES_BACKFILL = (
-    "apps.convocatories.migrations.0003_backfill_uuids_convocatory"
-)
+CONVOCATORIES_BACKFILL = "apps.convocatories.migrations.0003_backfill_uuids_convocatory"
 
 
 @pytest.fixture
@@ -25,9 +24,9 @@ class TestConvocatoryBackfillIdempotency:
 
         Convocatory = global_apps.get_model("convocatories", "Convocatory")
         pk_internal_type = Convocatory._meta.pk.get_internal_type()
-        assert pk_internal_type == "UUIDField", (
-            "Test pre-condition: Convocatory PK must already be UUIDField."
-        )
+        assert (
+            pk_internal_type == "UUIDField"
+        ), "Test pre-condition: Convocatory PK must already be UUIDField."
 
         result = convocatory_backfill_module.backfill_convocatory_uuid(
             global_apps, schema_editor=None
@@ -49,10 +48,7 @@ class TestConvocatoryBackfillNamespace:
 
 class TestConvocatoryMigrationShape:
     def test_depends_on_0002(self, convocatory_backfill_module):
-        deps = [
-            (a, n)
-            for a, n in convocatory_backfill_module.Migration.dependencies
-        ]
+        deps = list(convocatory_backfill_module.Migration.dependencies)
         assert ("convocatories", "0002_alter_convocatory_id") in deps
 
     def test_data_only(self, convocatory_backfill_module):

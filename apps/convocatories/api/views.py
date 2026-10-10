@@ -1,4 +1,5 @@
 """API views for Convocatory."""
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -33,13 +34,17 @@ class ConvocatoryViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         elif self.action in ["create"]:
             # Only admins and coordinators can create
-            return [IsAdminOrHasRole('R-ADMIN'), IsAdminOrHasRole('R-COORDINADOR')]
+            return [IsAdminOrHasRole("R-ADMIN"), IsAdminOrHasRole("R-COORDINADOR")]
         elif self.action in ["update", "partial_update", "destroy"]:
             # Only admins and coordinators can modify
-            return [IsAdminOrHasRole('R-ADMIN'), IsAdminOrHasRole('R-COORDINADOR')]
+            return [IsAdminOrHasRole("R-ADMIN"), IsAdminOrHasRole("R-COORDINADOR")]
         elif self.action in ["transicionar"]:
             # Only admins, coordinators and committee can transition
-            return [IsAdminOrHasRole('R-ADMIN'), IsAdminOrHasRole('R-COORDINADOR'), IsAdminOrHasRole('R-COMITE')]
+            return [
+                IsAdminOrHasRole("R-ADMIN"),
+                IsAdminOrHasRole("R-COORDINADOR"),
+                IsAdminOrHasRole("R-COMITE"),
+            ]
         return [IsAuthenticated()]
 
     def get_serializer_class(self):

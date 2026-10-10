@@ -1,4 +1,5 @@
 """Tests for scoring service."""
+
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -26,7 +27,7 @@ class ScoringServiceTest(TestCase):
             documento="12345678",
             first_name="Aspirante",
             last_name="Test",
-            password="testpass123"
+            password="testpass123",
         )
         self.convocatoria = Convocatory.objects.create(
             nombre="Test Convocatoria",
@@ -106,14 +107,14 @@ class RankingTest(TestCase):
             documento="11111111",
             first_name="Aspirante",
             last_name="Uno",
-            password="testpass123"
+            password="testpass123",
         )
         self.user2 = User.objects.create_user(
             email="aspirante2@example.com",
             documento="22222222",
             first_name="Aspirante",
             last_name="Dos",
-            password="testpass123"
+            password="testpass123",
         )
 
         self.convocatoria = Convocatory.objects.create(

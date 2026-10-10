@@ -6,11 +6,11 @@ sweep tasks (``exoneracion_sweep_v30d`` and
 ``VENCIDO`` (set by the sweep when the 30-calendar-day window has
 elapsed without a justification decision).
 """
+
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("condonation", "0001_initial"),
     ]

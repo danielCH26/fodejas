@@ -1,6 +1,7 @@
 """Tests for AUD-005 fix: governance listado uses real ``PuntajeTotal`` fields
 and transitions ``Convocatory`` to ``DEFINITIVA``.
 """
+
 from decimal import Decimal
 from unittest.mock import MagicMock
 

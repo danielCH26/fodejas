@@ -1,4 +1,5 @@
 """HTML views for applications."""
+
 import hashlib
 
 from django.contrib import messages
@@ -25,8 +26,7 @@ class ApplicationApplyView(LoginRequiredMixin, PermissionMixin, View):
 
         # Check if user already has an application for this convocation
         existing = Solicitud.objects.filter(
-            convocatoria=convocatoria,
-            aspirante=request.user
+            convocatoria=convocatoria, aspirante=request.user
         ).first()
 
         if existing:
@@ -59,11 +59,11 @@ class ApplicationListView(LoginRequiredMixin, PermissionMixin, ListView):
 
     def get_queryset(self):
         """Return only the authenticated user's applications."""
-        return Solicitud.objects.filter(
-            aspirante=self.request.user
-        ).select_related(
-            "convocatoria"
-        ).order_by("-created_at")
+        return (
+            Solicitud.objects.filter(aspirante=self.request.user)
+            .select_related("convocatoria")
+            .order_by("-created_at")
+        )
 
 
 class ApplicationDetailView(LoginRequiredMixin, PermissionMixin, DetailView):
@@ -77,10 +77,10 @@ class ApplicationDetailView(LoginRequiredMixin, PermissionMixin, DetailView):
         """Get application by UUID and ensure user ownership."""
         uuid = self.kwargs.get("pk")
         return get_object_or_404(
-            Solicitud.objects.filter(aspirante=self.request.user).select_related(
-                "convocatoria"
-            ).prefetch_related("anexos"),
-            uuid=uuid
+            Solicitud.objects.filter(aspirante=self.request.user)
+            .select_related("convocatoria")
+            .prefetch_related("anexos"),
+            uuid=uuid,
         )
 
     def get_context_data(self, **kwargs):
@@ -89,13 +89,14 @@ class ApplicationDetailView(LoginRequiredMixin, PermissionMixin, DetailView):
 
         # Get scoring info if available
         try:
-            if hasattr(solicitud, 'puntaje_total'):
+            if hasattr(solicitud, "puntaje_total"):
                 context["puntaje_total"] = solicitud.puntaje_total
         except Exception:
             pass
 
         # Check if user can present a claim (results published)
         from apps.scoring.models import PuntajeTotal
+
         has_score = PuntajeTotal.objects.filter(solicitud=solicitud).exists()
         context["resultados_publicados"] = has_score
 
@@ -114,8 +115,7 @@ class ApplicationWizardView(LoginRequiredMixin, PermissionMixin, TemplateView):
         # Get application by UUID
         uuid = self.kwargs.get("pk")
         application = get_object_or_404(
-            Solicitud.objects.filter(aspirante=self.request.user),
-            uuid=uuid
+            Solicitud.objects.filter(aspirante=self.request.user), uuid=uuid
         )
 
         context["application"] = application
@@ -161,8 +161,7 @@ class ApplicationWizardView(LoginRequiredMixin, PermissionMixin, TemplateView):
         """Handle wizard step save via HTMX or form POST."""
         uuid = self.kwargs.get("pk")
         application = get_object_or_404(
-            Solicitud.objects.filter(aspirante=self.request.user),
-            uuid=uuid
+            Solicitud.objects.filter(aspirante=self.request.user), uuid=uuid
         )
 
         step = int(request.POST.get("step", application.current_step))
@@ -196,7 +195,12 @@ class ApplicationWizardView(LoginRequiredMixin, PermissionMixin, TemplateView):
             try:
                 submit(application, consentimiento, request.user)
                 messages.success(request, f"Solicitud radicada: {application.radicado}")
-                return JsonResponse({"success": True, "redirect": reverse_lazy("applications:detail", args=[application.uuid])})
+                return JsonResponse(
+                    {
+                        "success": True,
+                        "redirect": reverse_lazy("applications:detail", args=[application.uuid]),
+                    }
+                )
             except WizardError as e:
                 messages.error(request, str(e))
                 return JsonResponse({"success": False, "error": str(e)}, status=400)
@@ -230,8 +234,7 @@ class ApplicationWizardStepView(LoginRequiredMixin, PermissionMixin, TemplateVie
         # Get application by UUID
         uuid = self.kwargs.get("pk")
         application = get_object_or_404(
-            Solicitud.objects.filter(aspirante=self.request.user),
-            uuid=uuid
+            Solicitud.objects.filter(aspirante=self.request.user), uuid=uuid
         )
 
         step = int(self.kwargs.get("step", application.current_step))
@@ -293,8 +296,7 @@ class ApplicationUploadView(LoginRequiredMixin, View):
         """Handle file upload via AJAX."""
         uuid = kwargs.get("pk")
         application = get_object_or_404(
-            Solicitud.objects.filter(aspirante=self.request.user),
-            uuid=uuid
+            Solicitud.objects.filter(aspirante=self.request.user), uuid=uuid
         )
 
         # Check file
@@ -308,7 +310,9 @@ class ApplicationUploadView(LoginRequiredMixin, View):
 
         # Validate type
         if uploaded_file.content_type not in self.ALLOWED_TYPES:
-            return JsonResponse({"success": False, "error": "Invalid file type. PDF, JPG, PNG only."}, status=400)
+            return JsonResponse(
+                {"success": False, "error": "Invalid file type. PDF, JPG, PNG only."}, status=400
+            )
 
         # Get file type from form
         file_type = request.POST.get("file_type", "otro")
@@ -331,13 +335,15 @@ class ApplicationUploadView(LoginRequiredMixin, View):
             sha256=sha256,
         )
 
-        return JsonResponse({
-            "success": True,
-            "anexo_id": anexo.id,
-            "nombre": anexo.nombre_original,
-            "tipo": anexo.get_tipo_anexo_display(),
-            "url": anexo.archivo.url,
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "anexo_id": anexo.id,
+                "nombre": anexo.nombre_original,
+                "tipo": anexo.get_tipo_anexo_display(),
+                "url": anexo.archivo.url,
+            }
+        )
 
 
 # =============================================================================
@@ -372,12 +378,13 @@ class RequirementReviewListView(LoginRequiredMixin, ReviewerPermissionMixin, Lis
     def get_queryset(self):
         """Return solicitudes in verification state."""
         # Only show solicitudes that need review
-        return Solicitud.objects.filter(
-            estado__in=[Solicitud.Estado.RADICADA, Solicitud.Estado.EN_VERIFICACION]
-        ).select_related(
-            "convocatoria",
-            "aspirante"
-        ).order_by("-created_at")
+        return (
+            Solicitud.objects.filter(
+                estado__in=[Solicitud.Estado.RADICADA, Solicitud.Estado.EN_VERIFICACION]
+            )
+            .select_related("convocatoria", "aspirante")
+            .order_by("-created_at")
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -421,7 +428,7 @@ class RequirementReviewDetailView(LoginRequiredMixin, ReviewerPermissionMixin, D
                         requisito_code=req.get("code", ""),
                         defaults={
                             "requisito_nombre": req.get("name", ""),
-                        }
+                        },
                     )
             except Exception:
                 # If no config, create default requisitos
@@ -438,7 +445,7 @@ class RequirementReviewDetailView(LoginRequiredMixin, ReviewerPermissionMixin, D
                     RequisitoValidacion.objects.get_or_create(
                         solicitud=solicitud,
                         requisito_code=req["code"],
-                        defaults={"requisito_nombre": req["name"]}
+                        defaults={"requisito_nombre": req["name"]},
                     )
 
         # Get validaciones
@@ -507,11 +514,13 @@ class RequirementVerifyView(LoginRequiredMixin, UpdateView):
             solicitud.estado = Solicitud.Estado.VERIFICADA
             solicitud.save()
 
-        return JsonResponse({
-            "success": True,
-            "validacion_id": validacion.id,
-            "estado": validacion.estado,
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "validacion_id": validacion.id,
+                "estado": validacion.estado,
+            }
+        )
 
 
 class RequirementApproveView(LoginRequiredMixin, View):
@@ -522,9 +531,7 @@ class RequirementApproveView(LoginRequiredMixin, View):
         solicitud = get_object_or_404(Solicitud, uuid=uuid)
 
         # Mark all as verified
-        solicitud.validaciones.filter(
-            estado=RequisitoValidacion.Estado.PENDIENTE
-        ).update(
+        solicitud.validaciones.filter(estado=RequisitoValidacion.Estado.PENDIENTE).update(
             estado=RequisitoValidacion.Estado.VERIFICADO,
             validado_por=request.user,
             fecha_validacion=timezone.now(),
@@ -537,6 +544,7 @@ class RequirementApproveView(LoginRequiredMixin, View):
         # Send notification to applicant
         try:
             from apps.accounts.services.notifications import InAppNotifier
+
             notifier = InAppNotifier()
             notifier.notify(
                 user=solicitud.aspirante,
@@ -544,17 +552,19 @@ class RequirementApproveView(LoginRequiredMixin, View):
                 payload={
                     "radicado": solicitud.radicado,
                     "convocatoria": solicitud.convocatoria.nombre,
-                }
+                },
             )
         except Exception:
             pass  # Notification failure should not block
 
         messages.success(request, "Solicitud aprobada - todos los requisitos verificados")
 
-        return JsonResponse({
-            "success": True,
-            "redirect": reverse("applications:review_list"),
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "redirect": reverse("applications:review_list"),
+            }
+        )
 
 
 class RequirementRejectView(LoginRequiredMixin, View):
@@ -571,6 +581,7 @@ class RequirementRejectView(LoginRequiredMixin, View):
         # Send notification to applicant
         try:
             from apps.accounts.services.notifications import InAppNotifier
+
             notifier = InAppNotifier()
             notifier.notify(
                 user=solicitud.aspirante,
@@ -578,17 +589,19 @@ class RequirementRejectView(LoginRequiredMixin, View):
                 payload={
                     "radicado": solicitud.radicado,
                     "convocatoria": solicitud.convocatoria.nombre,
-                }
+                },
             )
         except Exception:
             pass  # Notification failure should not block
 
         messages.error(request, "Solicitud rechazada")
 
-        return JsonResponse({
-            "success": True,
-            "redirect": reverse("applications:review_list"),
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "redirect": reverse("applications:review_list"),
+            }
+        )
 
 
 class RequirementHistoryView(LoginRequiredMixin, DetailView):

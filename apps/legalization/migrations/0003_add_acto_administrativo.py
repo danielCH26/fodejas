@@ -6,11 +6,11 @@ administrativo / resolución de otorgamiento).
 
 Tracked in: openspec/changes/chg-303-disbursement/tasks.md §Batch notes.
 """
+
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("legalization", "0002_add_changes_field"),
     ]

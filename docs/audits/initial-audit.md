@@ -311,10 +311,10 @@ None.
   ```python
   class CanCreateApelacion(BasePermission):
       """Check if user can create an appeal for a specific claim."""
-      
+
       def has_object_permission(self, request, view, obj):
           from apps.claims.services.apelaciones import can_apelar
-          
+
           can_create, _ = can_apelar(obj, request.user)
           return can_create
   ```

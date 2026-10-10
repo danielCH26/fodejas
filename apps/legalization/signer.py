@@ -207,9 +207,7 @@ class SignerFactory:
             ValueError: If provider_name is not registered.
         """
         if provider_name is None:
-            provider_name = getattr(
-                settings, "SIGNATURE_PROVIDER", "mock"
-            )
+            provider_name = getattr(settings, "SIGNATURE_PROVIDER", "mock")
 
         provider_class = cls._providers.get(provider_name)
         if provider_class is None:
@@ -255,9 +253,7 @@ def _log_signature_audit(
             actor=actor,
             action="ELECTRONIC_SIGNATURE",
             entity=document_type,
-            entity_id=hashlib.md5(
-                f"{document_type}:{result.pre_sign_hash}".encode()
-            ).hexdigest(),
+            entity_id=hashlib.md5(f"{document_type}:{result.pre_sign_hash}".encode()).hexdigest(),
             changes={
                 "pre_sign_hash": result.pre_sign_hash,
                 "post_sign_hash": result.post_sign_hash,

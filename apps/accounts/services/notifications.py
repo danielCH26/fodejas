@@ -1,4 +1,5 @@
 """Notification services for accounts app."""
+
 import logging
 from typing import Protocol
 
@@ -175,7 +176,9 @@ class InAppNotifier:
 
         return titulo, mensaje
 
-    def _log_audit_event(self, action: str, entity: str, entity_id, user: CustomUser, changes: dict = None):
+    def _log_audit_event(
+        self, action: str, entity: str, entity_id, user: CustomUser, changes: dict = None
+    ):
         """Log an audit event via ``apps.audit.services.log_audit_event``.
 
         The helper computes ``previous_hash`` and ``current_hash``

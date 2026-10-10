@@ -1,13 +1,13 @@
 <div id="wizard-step-1">
     <p class="text-muted mb-4">Ingresa tu información personal básica.</p>
-    
+
     <form id="step-1-form">
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="nombre" class="form-label">Nombre Completo *</label>
-                <input type="text" 
-                       class="form-control" 
-                       id="nombre" 
+                <input type="text"
+                       class="form-control"
+                       id="nombre"
                        name="nombre"
                        value="{{ application.datos_personales.nombre|default:'' }}"
                        required>
@@ -24,60 +24,60 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="numero_documento" class="form-label">Número de Documento *</label>
-                <input type="text" 
-                       class="form-control" 
-                       id="numero_documento" 
+                <input type="text"
+                       class="form-control"
+                       id="numero_documento"
                        name="numero_documento"
                        value="{{ application.datos_personales.numero_documento|default:'' }}"
                        required>
             </div>
             <div class="col-md-6 mb-3">
                 <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento *</label>
-                <input type="date" 
-                       class="form-control" 
-                       id="fecha_nacimiento" 
+                <input type="date"
+                       class="form-control"
+                       id="fecha_nacimiento"
                        name="fecha_nacimiento"
                        value="{{ application.datos_personales.fecha_nacimiento|default:'' }}"
                        required>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="telefono" class="form-label">Teléfono *</label>
-                <input type="tel" 
-                       class="form-control" 
-                       id="telefono" 
+                <input type="tel"
+                       class="form-control"
+                       id="telefono"
                        name="telefono"
                        value="{{ application.datos_personales.telefono|default:'' }}"
                        required>
             </div>
             <div class="col-md-6 mb-3">
                 <label for="email_alternativo" class="form-label">Email Alternativo</label>
-                <input type="email" 
-                       class="form-control" 
-                       id="email_alternativo" 
+                <input type="email"
+                       class="form-control"
+                       id="email_alternativo"
                        name="email_alternativo"
                        value="{{ application.datos_personales.email_alternativo|default:'' }}">
                 <div class="form-text">Para notificaciones adicionales</div>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-12 mb-3">
                 <label for="direccion" class="form-label">Dirección de Residencia *</label>
-                <textarea class="form-control" 
-                          id="direccion" 
-                          name="direccion" 
-                          rows="2" 
+                <textarea class="form-control"
+                          id="direccion"
+                          name="direccion"
+                          rows="2"
                           required>{{ application.datos_personales.direccion|default:'' }}</textarea>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="municipio" class="form-label">Municipio/Isla *</label>
@@ -100,10 +100,10 @@
             </div>
         </div>
     </form>
-    
+
     <div class="alert alert-info mt-4">
         <i class="bi bi-info-circle me-2"></i>
-        <strong>Información importante:</strong> Todos los campos marcados con * son obligatorios. 
+        <strong>Información importante:</strong> Todos los campos marcados con * son obligatorios.
         Asegúrate de que la información sea verídica y coincida con tus documentos oficiales.
     </div>
 </div>
@@ -115,14 +115,14 @@
             saveStepData(1);
         }
     });
-    
+
     function saveStepData(step) {
         const form = document.getElementById('step-1-form');
         if (!form) return;
-        
+
         const formData = new FormData(form);
         formData.append('step', step);
-        
+
         // Send save request to wizard view
         fetch('{% url "applications:wizard" application.uuid %}', {
             method: 'POST',

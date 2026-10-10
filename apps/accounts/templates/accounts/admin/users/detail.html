@@ -71,7 +71,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Roles -->
     <div class="col-md-6 mb-4">
         <div class="card h-100">
@@ -97,7 +97,7 @@
                         </div>
                         <form method="post" action="{% url 'accounts_admin:user_role_revoke' view_user.pk ur.role.pk %}">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
                                     onclick="return confirm('¿Estás seguro de quitar este rol?')">
                                 <i class="bi bi-x-circle"></i>
                             </button>

@@ -1,4 +1,5 @@
 """URLs for accounts API."""
+
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
@@ -16,7 +17,9 @@ from apps.accounts.api.views import (
 
 router = DefaultRouter()
 router.register(r"consentimientos", ConsentimientoViewSet, basename="consentimiento")
-router.register(r"habeas-data/solicitudes", SolicitudHabeasDataViewSet, basename="solicitud-habeas-data")
+router.register(
+    r"habeas-data/solicitudes", SolicitudHabeasDataViewSet, basename="solicitud-habeas-data"
+)
 router.register(r"notifications", NotificationViewSet, basename="notification")
 
 urlpatterns = [

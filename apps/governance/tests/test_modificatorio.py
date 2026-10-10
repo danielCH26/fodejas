@@ -1,4 +1,5 @@
 """CPACA Art. 45 acto modificatorio tests (CHG-208)."""
+
 from __future__ import annotations
 
 import pytest
@@ -29,9 +30,7 @@ def _make_user(email="junta@example.com", codes=("R-JUNTA",)):
     )
     for code in codes:
         role = _make_role(code)
-        UserRole.objects.get_or_create(
-            user=user, role=role, convocation_scope_id=None
-        )
+        UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
     return user
 
 

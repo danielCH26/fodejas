@@ -1,4 +1,5 @@
 """HTMX views for the legalization signature workflow (CHG-301, CAP-029)."""
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
@@ -21,9 +22,7 @@ class LegalizationListView(LoginRequiredMixin, TemplateView):
         if user.is_staff or user.is_superuser or has_any_role(user, ["R-JUNTA", "R-ADMIN"]):
             # Staff and JUNTA see all processes.
             ctx["processes"] = (
-                LegalizationProcess.objects.select_related(
-                    "beneficiary", "convocatoria"
-                )
+                LegalizationProcess.objects.select_related("beneficiary", "convocatoria")
                 .prefetch_related("documents")
                 .order_by("-created_at")[:50]
             )

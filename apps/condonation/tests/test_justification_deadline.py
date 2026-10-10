@@ -1,4 +1,5 @@
 """Tests for ``SanctionService.submit_justification`` deadline population (CHG-802)."""
+
 from __future__ import annotations
 
 from datetime import timedelta

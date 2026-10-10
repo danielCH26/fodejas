@@ -1,4 +1,5 @@
 """Integration tests for accounts views."""
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -253,4 +254,6 @@ class LogoutViewTests(TestCase):
         self.client.post(self.url)
         # After logout, accessing a protected view should redirect
         response = self.client.get(reverse("accounts:dashboard"))
-        self.assertRedirects(response, f"{reverse('accounts:login')}?next={reverse('accounts:dashboard')}")
+        self.assertRedirects(
+            response, f"{reverse('accounts:login')}?next={reverse('accounts:dashboard')}"
+        )

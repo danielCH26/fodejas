@@ -3,6 +3,7 @@
 Espejo de apps/accounts/tests/test_migrations_0008_uuid.py pero para la
 migración de Convocatory.
 """
+
 import importlib
 import inspect
 import uuid

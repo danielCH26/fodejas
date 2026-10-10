@@ -1,4 +1,5 @@
 """Tests for applications views."""
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -19,7 +20,7 @@ class ApplicationListViewTest(TestCase):
             documento="12345678",
             first_name="Test",
             last_name="User",
-            password="testpass123"
+            password="testpass123",
         )
         self.client.force_login(self.user)
 
@@ -39,7 +40,7 @@ class RequisitoValidacionModelTest(TestCase):
             documento="12345678",
             first_name="Test",
             last_name="User",
-            password="testpass123"
+            password="testpass123",
         )
         self.convocatoria = Convocatory.objects.create(
             nombre="Test Convocatoria",
@@ -87,13 +88,14 @@ class RequirementReviewViewTest(TestCase):
             documento="87654321",
             first_name="Revisor",
             last_name="Test",
-            password="testpass123"
+            password="testpass123",
         )
         # Assign R-REVISOR through the CHG-112 role system
         # (permission mixin checks user.user_roles, not auth.Group).
         from apps.accounts.models import Role
         from apps.accounts.services.assignment import assign_role_to_user
         from apps.accounts.services.sync import sync_role_to_group
+
         self.role = Role.objects.create(
             code="R-REVISOR",
             name="Revisor",

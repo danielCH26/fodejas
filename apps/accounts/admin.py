@@ -1,4 +1,5 @@
 """Admin configuration for accounts app."""
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
@@ -18,6 +19,7 @@ from apps.accounts.models import (
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     """Admin configuration for CustomUser."""
+
     list_display = (
         "email",
         "documento",
@@ -79,6 +81,7 @@ class CustomUserAdmin(UserAdmin):
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
     """Admin configuration for Role."""
+
     list_display = ("code", "name", "type", "description")
     list_filter = ("type",)
     search_fields = ("code", "name")
@@ -88,6 +91,7 @@ class RoleAdmin(admin.ModelAdmin):
 @admin.register(Permission)
 class PermissionAdmin(admin.ModelAdmin):
     """Admin configuration for Permission."""
+
     list_display = ("app_label", "action", "convocation_scope_id", "stage")
     list_filter = ("app_label",)
     search_fields = ("app_label", "action")
@@ -97,6 +101,7 @@ class PermissionAdmin(admin.ModelAdmin):
 @admin.register(UserRole)
 class UserRoleAdmin(admin.ModelAdmin):
     """Admin configuration for UserRole."""
+
     list_display = ("user", "role", "convocation_scope_id", "created_at")
     list_filter = ("role",)
     search_fields = ("user__email", "role__code")
@@ -106,6 +111,7 @@ class UserRoleAdmin(admin.ModelAdmin):
 @admin.register(RolePermission)
 class RolePermissionAdmin(admin.ModelAdmin):
     """Admin configuration for RolePermission."""
+
     list_display = ("role", "permission")
     list_filter = ("role",)
     search_fields = ("role__code", "permission__action")
@@ -114,6 +120,7 @@ class RolePermissionAdmin(admin.ModelAdmin):
 
 class ConsentimientoAdmin(admin.ModelAdmin):
     """Admin configuration for Consentimiento."""
+
     list_display = ("titular_email", "tipo", "version_etiqueta", "otorgado_en", "revocado_en")
     list_filter = ("tipo", "revocado_en")
     search_fields = ("titular__email", "version_etiqueta")
@@ -138,6 +145,7 @@ class ConsentimientoAdmin(admin.ModelAdmin):
 
 class SolicitudHabeasDataAdmin(admin.ModelAdmin):
     """Admin configuration for SolicitudHabeasData."""
+
     list_display = (
         "titular_email",
         "tipo",
@@ -238,9 +246,9 @@ class NotificationAdmin(admin.ModelAdmin):
 
         # Check if user has R-ADMIN or R-COORD role
         from apps.accounts.models import UserRole
+
         return UserRole.objects.filter(
-            user=request.user,
-            role__code__in=["R-ADMIN", "R-COORD"]
+            user=request.user, role__code__in=["R-ADMIN", "R-COORD"]
         ).exists()
 
     def has_module_permission(self, request):
@@ -313,7 +321,7 @@ class NotificationAdmin(admin.ModelAdmin):
 
         for notification in queryset:
             for notifier in notifiers:
-                if hasattr(notifier, '_dispatch_notification'):
+                if hasattr(notifier, "_dispatch_notification"):
                     try:
                         notifier._dispatch_notification(notification.id)
                         dispatched += 1

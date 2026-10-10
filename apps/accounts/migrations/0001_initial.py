@@ -8,100 +8,344 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
+        ("auth", "0012_alter_user_first_name_max_length"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CustomUser',
+            name="CustomUser",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('first_name', models.CharField(blank=True, max_length=150, verbose_name='first name')),
-                ('last_name', models.CharField(blank=True, max_length=150, verbose_name='last name')),
-                ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
-                ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
-                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
-                ('documento', models.CharField(help_text='Documento de identidad único (mínimo 6 caracteres)', max_length=20, unique=True, validators=[django.core.validators.MinLengthValidator(6)], verbose_name='documento de identidad')),
-                ('email', models.EmailField(help_text='Correo electrónico único para inicio de sesión', max_length=254, unique=True, verbose_name='correo electrónico')),
-                ('telefono', models.CharField(blank=True, help_text='Número de teléfono en formato E.164', max_length=20, verbose_name='teléfono')),
-                ('fecha_nacimiento', models.DateField(blank=True, help_text='Fecha de nacimiento (mínimo 14 años)', null=True, verbose_name='fecha de nacimiento')),
-                ('last_activity', models.DateTimeField(auto_now=True, help_text='Última vez que el usuario interactuó con el sistema', verbose_name='última actividad')),
-                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
-                ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(blank=True, null=True, verbose_name="last login"),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates that this user has all permissions without explicitly assigning them.",
+                        verbose_name="superuser status",
+                    ),
+                ),
+                (
+                    "first_name",
+                    models.CharField(blank=True, max_length=150, verbose_name="first name"),
+                ),
+                (
+                    "last_name",
+                    models.CharField(blank=True, max_length=150, verbose_name="last name"),
+                ),
+                (
+                    "is_staff",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates whether the user can log into this admin site.",
+                        verbose_name="staff status",
+                    ),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
+                        verbose_name="active",
+                    ),
+                ),
+                (
+                    "date_joined",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, verbose_name="date joined"
+                    ),
+                ),
+                (
+                    "documento",
+                    models.CharField(
+                        help_text="Documento de identidad único (mínimo 6 caracteres)",
+                        max_length=20,
+                        unique=True,
+                        validators=[django.core.validators.MinLengthValidator(6)],
+                        verbose_name="documento de identidad",
+                    ),
+                ),
+                (
+                    "email",
+                    models.EmailField(
+                        help_text="Correo electrónico único para inicio de sesión",
+                        max_length=254,
+                        unique=True,
+                        verbose_name="correo electrónico",
+                    ),
+                ),
+                (
+                    "telefono",
+                    models.CharField(
+                        blank=True,
+                        help_text="Número de teléfono en formato E.164",
+                        max_length=20,
+                        verbose_name="teléfono",
+                    ),
+                ),
+                (
+                    "fecha_nacimiento",
+                    models.DateField(
+                        blank=True,
+                        help_text="Fecha de nacimiento (mínimo 14 años)",
+                        null=True,
+                        verbose_name="fecha de nacimiento",
+                    ),
+                ),
+                (
+                    "last_activity",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Última vez que el usuario interactuó con el sistema",
+                        verbose_name="última actividad",
+                    ),
+                ),
+                (
+                    "groups",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.group",
+                        verbose_name="groups",
+                    ),
+                ),
+                (
+                    "user_permissions",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="Specific permissions for this user.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.permission",
+                        verbose_name="user permissions",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'usuario',
-                'verbose_name_plural': 'usuarios',
-                'ordering': ['-date_joined'],
+                "verbose_name": "usuario",
+                "verbose_name_plural": "usuarios",
+                "ordering": ["-date_joined"],
             },
         ),
         migrations.CreateModel(
-            name='Permission',
+            name="Permission",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('app_label', models.CharField(help_text="Etiqueta de la aplicación Django (ej: 'applications')", max_length=100, verbose_name='etiqueta de aplicación')),
-                ('action', models.CharField(help_text="Acción permitida (ej: 'add_application', 'view_convocatory')", max_length=50, verbose_name='acción')),
-                ('convocation_scope_id', models.CharField(blank=True, help_text='ID de convocatoria específica (null para alcance global)', max_length=20, null=True, verbose_name='ID de convocatoria')),
-                ('stage', models.CharField(blank=True, help_text='Etapa específica dentro de la convocatoria (opcional)', max_length=30, null=True, verbose_name='etapa')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "app_label",
+                    models.CharField(
+                        help_text="Etiqueta de la aplicación Django (ej: 'applications')",
+                        max_length=100,
+                        verbose_name="etiqueta de aplicación",
+                    ),
+                ),
+                (
+                    "action",
+                    models.CharField(
+                        help_text="Acción permitida (ej: 'add_application', 'view_convocatory')",
+                        max_length=50,
+                        verbose_name="acción",
+                    ),
+                ),
+                (
+                    "convocation_scope_id",
+                    models.CharField(
+                        blank=True,
+                        help_text="ID de convocatoria específica (null para alcance global)",
+                        max_length=20,
+                        null=True,
+                        verbose_name="ID de convocatoria",
+                    ),
+                ),
+                (
+                    "stage",
+                    models.CharField(
+                        blank=True,
+                        help_text="Etapa específica dentro de la convocatoria (opcional)",
+                        max_length=30,
+                        null=True,
+                        verbose_name="etapa",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'permiso',
-                'verbose_name_plural': 'permisos',
-                'ordering': ['app_label', 'action'],
-                'constraints': [models.UniqueConstraint(fields=('app_label', 'action', 'convocation_scope_id', 'stage'), name='unique_permission_scope')],
+                "verbose_name": "permiso",
+                "verbose_name_plural": "permisos",
+                "ordering": ["app_label", "action"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("app_label", "action", "convocation_scope_id", "stage"),
+                        name="unique_permission_scope",
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
-            name='Role',
+            name="Role",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(help_text='Código único del rol (ej: R-ASPIRANTE)', max_length=16, unique=True, verbose_name='código de rol')),
-                ('name', models.CharField(help_text='Nombre descriptivo del rol', max_length=80, verbose_name='nombre del rol')),
-                ('type', models.CharField(choices=[('interno', 'Interno'), ('externo', 'Externo')], help_text='Tipo de rol (interno para personal, externo para beneficiarios/ciudadanos)', max_length=8, verbose_name='tipo de rol')),
-                ('description', models.TextField(blank=True, help_text='Descripción detallada del rol y sus responsabilidades', verbose_name='descripción')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "code",
+                    models.CharField(
+                        help_text="Código único del rol (ej: R-ASPIRANTE)",
+                        max_length=16,
+                        unique=True,
+                        verbose_name="código de rol",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Nombre descriptivo del rol",
+                        max_length=80,
+                        verbose_name="nombre del rol",
+                    ),
+                ),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[("interno", "Interno"), ("externo", "Externo")],
+                        help_text="Tipo de rol (interno para personal, externo para beneficiarios/ciudadanos)",
+                        max_length=8,
+                        verbose_name="tipo de rol",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True,
+                        help_text="Descripción detallada del rol y sus responsabilidades",
+                        verbose_name="descripción",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'rol',
-                'verbose_name_plural': 'roles',
-                'ordering': ['code'],
-                'constraints': [models.CheckConstraint(condition=models.Q(('type__in', ['interno', 'externo'])), name='role_type_valid')],
+                "verbose_name": "rol",
+                "verbose_name_plural": "roles",
+                "ordering": ["code"],
+                "constraints": [
+                    models.CheckConstraint(
+                        condition=models.Q(("type__in", ["interno", "externo"])),
+                        name="role_type_valid",
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
-            name='RolePermission',
+            name="RolePermission",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('permission', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='role_permissions', to='accounts.permission', verbose_name='permiso')),
-                ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='role_permissions', to='accounts.role', verbose_name='rol')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "permission",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="role_permissions",
+                        to="accounts.permission",
+                        verbose_name="permiso",
+                    ),
+                ),
+                (
+                    "role",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="role_permissions",
+                        to="accounts.role",
+                        verbose_name="rol",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'permiso de rol',
-                'verbose_name_plural': 'permisos de roles',
-                'ordering': ['role', 'permission'],
-                'constraints': [models.UniqueConstraint(fields=('role', 'permission'), name='unique_role_permission')],
+                "verbose_name": "permiso de rol",
+                "verbose_name_plural": "permisos de roles",
+                "ordering": ["role", "permission"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("role", "permission"), name="unique_role_permission"
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
-            name='UserRole',
+            name="UserRole",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('convocation_scope_id', models.CharField(blank=True, help_text='ID de convocatoria específica (null para alcance global)', max_length=20, null=True, verbose_name='ID de convocatoria')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='fecha de asignación')),
-                ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_roles', to='accounts.role', verbose_name='rol')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_roles', to=settings.AUTH_USER_MODEL, verbose_name='usuario')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "convocation_scope_id",
+                    models.CharField(
+                        blank=True,
+                        help_text="ID de convocatoria específica (null para alcance global)",
+                        max_length=20,
+                        null=True,
+                        verbose_name="ID de convocatoria",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de asignación"),
+                ),
+                (
+                    "role",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_roles",
+                        to="accounts.role",
+                        verbose_name="rol",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_roles",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="usuario",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'asignación de rol',
-                'verbose_name_plural': 'asignaciones de roles',
-                'ordering': ['-created_at'],
-                'constraints': [models.UniqueConstraint(fields=('user', 'role', 'convocation_scope_id'), name='unique_user_role_scope')],
+                "verbose_name": "asignación de rol",
+                "verbose_name_plural": "asignaciones de roles",
+                "ordering": ["-created_at"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("user", "role", "convocation_scope_id"),
+                        name="unique_user_role_scope",
+                    )
+                ],
             },
         ),
     ]

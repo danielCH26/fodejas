@@ -7,6 +7,7 @@ Tests:
     self-sign rejection, duplicate-role rejection
   - URL routing: list, detail, authorize endpoints resolve correctly
 """
+
 from __future__ import annotations
 
 import uuid
@@ -24,6 +25,7 @@ from apps.treasury.services import TreasuryService
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_user(email=None, role_codes=("R-JUNTA",)):
     email = email or f"{uuid.uuid4().hex}@example.test"
     user = CustomUser.objects.create_user(
@@ -38,9 +40,7 @@ def _make_user(email=None, role_codes=("R-JUNTA",)):
             code=code,
             defaults={"name": code, "type": "interno", "description": code},
         )
-        UserRole.objects.get_or_create(
-            user=user, role=role, convocation_scope_id=None
-        )
+        UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
     return user
 
 
@@ -58,6 +58,7 @@ def _auth_factory(status="PENDIENTE", **extra):
             status=status,
             **kw,
         )
+
     return _make
 
 
@@ -95,6 +96,7 @@ def four_doc_process(db, user_factory):
 # URL tests
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestDisbursementURLs:
     def test_list_url_resolves(self):
@@ -106,8 +108,10 @@ class TestDisbursementURLs:
             amount="500000.00",
             status=DisbursementAuthorization.Status.PENDIENTE,
         )
-        assert reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk}) \
+        assert (
+            reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk})
             == f"/treasury/{auth.pk}/"
+        )
 
     def test_authorize_url_resolves(self, four_doc_process):
         auth = DisbursementAuthorization.objects.create(
@@ -115,13 +119,16 @@ class TestDisbursementURLs:
             amount="500000.00",
             status=DisbursementAuthorization.Status.PENDIENTE,
         )
-        assert reverse("treasury:authorize", kwargs={"pk": auth.pk}) \
+        assert (
+            reverse("treasury:authorize", kwargs={"pk": auth.pk})
             == f"/treasury/{auth.pk}/autorizar/"
+        )
 
 
 # ---------------------------------------------------------------------------
 # List view
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestDisbursementListView:
@@ -206,6 +213,7 @@ class TestDisbursementListView:
 # Detail view
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestDisbursementDetailView:
     def test_junta_can_access_detail(self, four_doc_process):
@@ -217,9 +225,7 @@ class TestDisbursementDetailView:
             status=DisbursementAuthorization.Status.PENDIENTE,
         )
         client = _session_client(junta)
-        resp = client.get(
-            reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk})
-        )
+        resp = client.get(reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk}))
         assert resp.status_code == 200
         assert resp.context["authorization"] == auth
 
@@ -232,17 +238,13 @@ class TestDisbursementDetailView:
             status=DisbursementAuthorization.Status.PENDIENTE,
         )
         client = _session_client(junta)
-        resp = client.get(
-            reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk})
-        )
+        resp = client.get(reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk}))
         assert resp.context["process"] == four_doc_process
 
     def test_detail_context_shows_partial_signature_state(self, four_doc_process):
         """When only president has signed, context shows missing secretary."""
         president = _make_user(role_codes=["R-JUNTA"])
-        secretary = _make_user(
-            email="sec@example.test", role_codes=["R-COORDINADOR"]
-        )
+        secretary = _make_user(email="sec@example.test", role_codes=["R-COORDINADOR"])
         auth = DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
             amount="500000.00",
@@ -252,9 +254,7 @@ class TestDisbursementDetailView:
         TreasuryService.authorize(auth.id, president, role="president")
 
         client = _session_client(secretary)
-        resp = client.get(
-            reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk})
-        )
+        resp = client.get(reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk}))
         assert resp.status_code == 200
         assert resp.context["can_sign"] is True  # Secretary can still sign
         assert resp.context["missing_role"] == "secretary"
@@ -262,9 +262,7 @@ class TestDisbursementDetailView:
     def test_detail_context_shows_fully_authorized(self, four_doc_process):
         """When both signed, can_sign=False (already complete)."""
         president = _make_user(role_codes=["R-JUNTA"])
-        secretary = _make_user(
-            email="sec2@example.test", role_codes=["R-COORDINADOR"]
-        )
+        secretary = _make_user(email="sec2@example.test", role_codes=["R-COORDINADOR"])
         auth = DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
             amount="500000.00",
@@ -275,12 +273,9 @@ class TestDisbursementDetailView:
 
         junta = _make_user(role_codes=["R-JUNTA"])
         client = _session_client(junta)
-        resp = client.get(
-            reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk})
-        )
+        resp = client.get(reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk}))
         assert resp.context["can_sign"] is False
-        assert resp.context["authorization"].status == \
-            DisbursementAuthorization.Status.AUTORIZADO
+        assert resp.context["authorization"].status == DisbursementAuthorization.Status.AUTORIZADO
 
     def test_detail_context_has_attachment_types(self, four_doc_process):
         """Detail shows the 4 required normative attachment types."""
@@ -291,9 +286,7 @@ class TestDisbursementDetailView:
             status=DisbursementAuthorization.Status.PENDIENTE,
         )
         client = _session_client(junta)
-        resp = client.get(
-            reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk})
-        )
+        resp = client.get(reverse("treasury:disbursement_detail", kwargs={"pk": auth.pk}))
         assert "required_attachment_types" in resp.context
         assert len(resp.context["required_attachment_types"]) == 4
 
@@ -302,14 +295,13 @@ class TestDisbursementDetailView:
 # Authorize HTMX view
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestAuthorizeView:
     def test_president_signs_successfully(self, four_doc_process):
         """First signature (president) transitions auth to PENDIENTE with 1 sig."""
         president = _make_user(role_codes=["R-JUNTA"])
-        _make_user(
-            email="sec3@example.test", role_codes=["R-COORDINADOR"]
-        )
+        _make_user(email="sec3@example.test", role_codes=["R-COORDINADOR"])
         auth = DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
             amount="500000.00",
@@ -330,9 +322,7 @@ class TestAuthorizeView:
     def test_second_signature_completes_authorization(self, four_doc_process):
         """Second signature (secretary) transitions auth to AUTORIZADO."""
         president = _make_user(role_codes=["R-JUNTA"])
-        secretary = _make_user(
-            email="sec4@example.test", role_codes=["R-COORDINADOR"]
-        )
+        secretary = _make_user(email="sec4@example.test", role_codes=["R-COORDINADOR"])
         auth = DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
             amount="500000.00",
@@ -369,8 +359,10 @@ class TestAuthorizeView:
             data={"role": "secretary"},
         )
         assert resp.status_code == 400
-        assert "mismo usuario" in resp.content.decode().lower() or \
-               "same user" in resp.content.decode().lower()
+        assert (
+            "mismo usuario" in resp.content.decode().lower()
+            or "same user" in resp.content.decode().lower()
+        )
 
     def test_duplicate_role_rejected(self, four_doc_process):
         """User cannot sign the same role twice."""
@@ -389,8 +381,7 @@ class TestAuthorizeView:
             data={"role": "president"},
         )
         assert resp.status_code == 400
-        assert "already" in resp.content.decode().lower() or \
-               "ya" in resp.content.decode().lower()
+        assert "already" in resp.content.decode().lower() or "ya" in resp.content.decode().lower()
 
     def test_non_authorized_role_forbidden(self, four_doc_process):
         """User without R-JUNTA/R-COORDINADOR cannot access authorize view."""

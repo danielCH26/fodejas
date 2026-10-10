@@ -1,4 +1,5 @@
 """URL configuration for applications HTML views."""
+
 from django.urls import path
 
 from apps.applications.views import (
@@ -22,28 +23,15 @@ app_name = "applications"
 urlpatterns = [
     # Apply to convocation
     path("apply/<uuid:pk>/", ApplicationApplyView.as_view(), name="apply"),
-
     # List view
     path("", ApplicationListView.as_view(), name="list"),
-
     # Detail view with UUID
     path("<uuid:pk>/", ApplicationDetailView.as_view(), name="detail"),
-
     # Wizard views
     path("<uuid:pk>/wizard/", ApplicationWizardView.as_view(), name="wizard"),
-    path(
-        "<uuid:pk>/wizard/<int:step>/",
-        ApplicationWizardStepView.as_view(),
-        name="wizard_step"
-    ),
-
+    path("<uuid:pk>/wizard/<int:step>/", ApplicationWizardStepView.as_view(), name="wizard_step"),
     # Upload view
-    path(
-        "<uuid:pk>/upload/",
-        ApplicationUploadView.as_view(),
-        name="upload"
-    ),
-
+    path("<uuid:pk>/upload/", ApplicationUploadView.as_view(), name="upload"),
     # Review views (CHG-203)
     path("revision/", RequirementReviewListView.as_view(), name="review_list"),
     path("revision/<uuid:pk>/", RequirementReviewDetailView.as_view(), name="review_detail"),

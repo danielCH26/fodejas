@@ -30,30 +30,30 @@
                     <dl class="row mb-0">
                         <dt class="col-sm-3">UUID</dt>
                         <dd class="col-sm-9"><code>{{ reclamacion.uuid }}</code></dd>
-                        
+
                         <dt class="col-sm-3">Convocatoria</dt>
                         <dd class="col-sm-9">{{ reclamacion.solicitud.convocatoria.nombre }}</dd>
-                        
+
                         <dt class="col-sm-3">Radicado</dt>
                         <dd class="col-sm-9">{{ reclamacion.solicitud.radicado }}</dd>
-                        
+
                         <dt class="col-sm-3">Tipo</dt>
                         <dd class="col-sm-9">{{ reclamacion.get_tipo_display }}</dd>
-                        
+
                         <dt class="col-sm-3">Estado</dt>
                         <dd class="col-sm-9">
                             <span class="badge bg-{% if reclamacion.estado == 'presentada' %}secondary{% elif reclamacion.estado == 'en_revision' %}warning{% elif reclamacion.estado == 'resuelta' %}success{% else %}danger{% endif %}">
                                 {{ reclamacion.get_estado_display }}
                             </span>
                         </dd>
-                        
+
                         <dt class="col-sm-3">Fecha de creación</dt>
                         <dd class="col-sm-9">{{ reclamacion.created_at|date:"d/m/Y H:i" }}</dd>
-                        
+
                         {% if reclamacion.fecha_resolucion %}
                         <dt class="col-sm-3">Fecha de resolución</dt>
                         <dd class="col-sm-9">{{ reclamacion.fecha_resolucion|date:"d/m/Y H:i" }}</dd>
-                        
+
                         <dt class="col-sm-3">Resuelto por</dt>
                         <dd class="col-sm-9">{{ reclamacion.resuelto_por|default:"-" }}</dd>
                         {% endif %}

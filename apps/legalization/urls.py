@@ -1,4 +1,5 @@
 """URL configuration for legalization app (CHG-301, CAP-029)."""
+
 from django.urls import path
 
 from apps.legalization.views import (

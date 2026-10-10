@@ -7,69 +7,172 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('convocatories', '0002_alter_convocatory_id'),
+        ("convocatories", "0002_alter_convocatory_id"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ActoAdministrativo',
+            name="ActoAdministrativo",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)),
-                ('numero', models.CharField(max_length=30, unique=True, verbose_name='número')),
-                ('tipo', models.CharField(choices=[('resolucion', 'Resolución'), ('acta', 'Acta'), ('modificatorio', 'Acto Modificatorio'), ('certificacion', 'Certificación')], max_length=20, verbose_name='tipo de acto')),
-                ('fecha_expedicion', models.DateField(verbose_name='fecha de expedición')),
-                ('fecha_publicacion', models.DateTimeField(blank=True, null=True, verbose_name='fecha de publicación')),
-                ('asunto', models.TextField(verbose_name='asunto')),
-                ('considerandos', models.JSONField(default=list, verbose_name='considerandos')),
-                ('resolutivo', models.TextField(verbose_name='resolutivo')),
-                ('pdf', models.FileField(blank=True, null=True, upload_to='actos/%Y/%m/', verbose_name='PDF')),
-                ('pdf_sha256', models.CharField(blank=True, max_length=64, null=True, verbose_name='hash SHA-256 del PDF')),
-                ('estado', models.CharField(choices=[('borrador', 'Borrador'), ('firmado', 'Firmado'), ('publicado', 'Publicado'), ('anulado', 'Anulado')], default='borrador', max_length=20, verbose_name='estado')),
-                ('firmantes', models.JSONField(default=list, verbose_name='firmantes')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('acto_original', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='modificatorios', to='governance.actoadministrativo', verbose_name='acto original')),
-                ('convocatoria', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='actos', to='convocatories.convocatory', verbose_name='convocatoria')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "uuid",
+                    models.UUIDField(
+                        db_index=True, default=uuid.uuid4, editable=False, unique=True
+                    ),
+                ),
+                ("numero", models.CharField(max_length=30, unique=True, verbose_name="número")),
+                (
+                    "tipo",
+                    models.CharField(
+                        choices=[
+                            ("resolucion", "Resolución"),
+                            ("acta", "Acta"),
+                            ("modificatorio", "Acto Modificatorio"),
+                            ("certificacion", "Certificación"),
+                        ],
+                        max_length=20,
+                        verbose_name="tipo de acto",
+                    ),
+                ),
+                ("fecha_expedicion", models.DateField(verbose_name="fecha de expedición")),
+                (
+                    "fecha_publicacion",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="fecha de publicación"
+                    ),
+                ),
+                ("asunto", models.TextField(verbose_name="asunto")),
+                ("considerandos", models.JSONField(default=list, verbose_name="considerandos")),
+                ("resolutivo", models.TextField(verbose_name="resolutivo")),
+                (
+                    "pdf",
+                    models.FileField(
+                        blank=True, null=True, upload_to="actos/%Y/%m/", verbose_name="PDF"
+                    ),
+                ),
+                (
+                    "pdf_sha256",
+                    models.CharField(
+                        blank=True, max_length=64, null=True, verbose_name="hash SHA-256 del PDF"
+                    ),
+                ),
+                (
+                    "estado",
+                    models.CharField(
+                        choices=[
+                            ("borrador", "Borrador"),
+                            ("firmado", "Firmado"),
+                            ("publicado", "Publicado"),
+                            ("anulado", "Anulado"),
+                        ],
+                        default="borrador",
+                        max_length=20,
+                        verbose_name="estado",
+                    ),
+                ),
+                ("firmantes", models.JSONField(default=list, verbose_name="firmantes")),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "acto_original",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="modificatorios",
+                        to="governance.actoadministrativo",
+                        verbose_name="acto original",
+                    ),
+                ),
+                (
+                    "convocatoria",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="actos",
+                        to="convocatories.convocatory",
+                        verbose_name="convocatoria",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'acto administrativo',
-                'verbose_name_plural': 'actos administrativos',
-                'ordering': ['-created_at'],
+                "verbose_name": "acto administrativo",
+                "verbose_name_plural": "actos administrativos",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='ListadoDefinitivo',
+            name="ListadoDefinitivo",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)),
-                ('ranking', models.JSONField(verbose_name='ranking')),
-                ('fecha_publicacion', models.DateTimeField(auto_now_add=True, verbose_name='fecha de publicación')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('acto', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='listados', to='governance.actoadministrativo', verbose_name='acto administrativo')),
-                ('convocatoria', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='listado_definitivo', to='convocatories.convocatory', verbose_name='convocatoria')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "uuid",
+                    models.UUIDField(
+                        db_index=True, default=uuid.uuid4, editable=False, unique=True
+                    ),
+                ),
+                ("ranking", models.JSONField(verbose_name="ranking")),
+                (
+                    "fecha_publicacion",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de publicación"),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "acto",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="listados",
+                        to="governance.actoadministrativo",
+                        verbose_name="acto administrativo",
+                    ),
+                ),
+                (
+                    "convocatoria",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="listado_definitivo",
+                        to="convocatories.convocatory",
+                        verbose_name="convocatoria",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'listado definitivo',
-                'verbose_name_plural': 'listados definitivos',
+                "verbose_name": "listado definitivo",
+                "verbose_name_plural": "listados definitivos",
             },
         ),
         migrations.CreateModel(
-            name='SecuencialActo',
+            name="SecuencialActo",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tipo', models.CharField(max_length=20, unique=True, verbose_name='tipo de acto')),
-                ('anio', models.PositiveIntegerField(verbose_name='año')),
-                ('secuencia', models.PositiveIntegerField(default=0, verbose_name='secuencia')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("tipo", models.CharField(max_length=20, unique=True, verbose_name="tipo de acto")),
+                ("anio", models.PositiveIntegerField(verbose_name="año")),
+                ("secuencia", models.PositiveIntegerField(default=0, verbose_name="secuencia")),
             ],
             options={
-                'verbose_name': 'secuencial de acto',
-                'verbose_name_plural': 'secuenciales de actos',
-                'unique_together': {('tipo', 'anio')},
+                "verbose_name": "secuencial de acto",
+                "verbose_name_plural": "secuenciales de actos",
+                "unique_together": {("tipo", "anio")},
             },
         ),
     ]

@@ -33,12 +33,14 @@ class TreasuryService:
 
     # The four normative attachment types that MUST be attached
     # to every treasury order (CHG-303 / design.md D1).
-    REQUIRED_ATTACHMENT_TYPES = frozenset([
-        LegalDocument.DocumentType.PAGARE,
-        LegalDocument.DocumentType.CARTA_INSTRUCCIONES,
-        LegalDocument.DocumentType.CONTRATO,
-        LegalDocument.DocumentType.ACTO_ADMINISTRATIVO,
-    ])
+    REQUIRED_ATTACHMENT_TYPES = frozenset(
+        [
+            LegalDocument.DocumentType.PAGARE,
+            LegalDocument.DocumentType.CARTA_INSTRUCCIONES,
+            LegalDocument.DocumentType.CONTRATO,
+            LegalDocument.DocumentType.ACTO_ADMINISTRATIVO,
+        ]
+    )
 
     @staticmethod
     @transaction.atomic
@@ -60,6 +62,7 @@ class TreasuryService:
             raise ValueError("Cannot create disbursement for non-legalized process")
 
         from decimal import Decimal
+
         if amount is None or Decimal(str(amount)) <= 0:
             raise ValueError("Amount must be a positive number.")
 
@@ -111,9 +114,7 @@ class TreasuryService:
             Updated DisbursementAuthorization instance
         """
         try:
-            auth = (
-                DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
-            )
+            auth = DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
         except DisbursementAuthorization.DoesNotExist:
             raise ValueError("Authorization not found") from None
 
@@ -122,8 +123,10 @@ class TreasuryService:
 
         if role == "president":
             # CHG-303: prevent self-signing.
-            if auth.authorized_by_secretary_id is not None and \
-               auth.authorized_by_secretary_id == user.id:
+            if (
+                auth.authorized_by_secretary_id is not None
+                and auth.authorized_by_secretary_id == user.id
+            ):
                 raise ValueError(
                     "Secretary has already signed; president cannot be "
                     "the same user as secretary."
@@ -133,8 +136,10 @@ class TreasuryService:
             auth.authorized_by_president = user
         elif role == "secretary":
             # CHG-303: prevent self-signing.
-            if auth.authorized_by_president_id is not None and \
-               auth.authorized_by_president_id == user.id:
+            if (
+                auth.authorized_by_president_id is not None
+                and auth.authorized_by_president_id == user.id
+            ):
                 raise ValueError(
                     "President has already signed; secretary cannot be "
                     "the same user as president."
@@ -192,9 +197,7 @@ class TreasuryService:
             Updated DisbursementAuthorization instance
         """
         try:
-            auth = (
-                DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
-            )
+            auth = DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
         except DisbursementAuthorization.DoesNotExist:
             raise ValueError("Authorization not found") from None
 
@@ -204,13 +207,9 @@ class TreasuryService:
         process = auth.legalization_process
 
         # CHG-303: validate all 4 normative attachments.
-        all_docs = {
-            doc.document_type: doc
-            for doc in process.documents.all()
-        }
+        all_docs = {doc.document_type: doc for doc in process.documents.all()}
         missing_types = [
-            dt for dt in TreasuryService.REQUIRED_ATTACHMENT_TYPES
-            if dt not in all_docs
+            dt for dt in TreasuryService.REQUIRED_ATTACHMENT_TYPES if dt not in all_docs
         ]
         if missing_types:
             raise ValueError(
@@ -221,8 +220,7 @@ class TreasuryService:
             )
 
         not_legalizado = [
-            dt for dt, doc in all_docs.items()
-            if doc.status != LegalDocument.Status.LEGALIZADO
+            dt for dt, doc in all_docs.items() if doc.status != LegalDocument.Status.LEGALIZADO
         ]
         if not_legalizado:
             raise ValueError(
@@ -282,16 +280,12 @@ class TreasuryService:
             Updated DisbursementAuthorization instance
         """
         try:
-            auth = (
-                DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
-            )
+            auth = DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
         except DisbursementAuthorization.DoesNotExist:
             raise ValueError("Authorization not found") from None
 
         if auth.status != DisbursementAuthorization.Status.ORDENADO:
-            raise ValueError(
-                f"Cannot mark as received in {auth.status} status"
-            )
+            raise ValueError(f"Cannot mark as received in {auth.status} status")
 
         auth.treasury_received_at = timezone.now()
         auth.status = DisbursementAuthorization.Status.RECIBIDO
@@ -339,9 +333,7 @@ class TreasuryService:
             Updated DisbursementAuthorization instance
         """
         try:
-            auth = (
-                DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
-            )
+            auth = DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
         except DisbursementAuthorization.DoesNotExist:
             raise ValueError("Authorization not found") from None
 
@@ -391,9 +383,7 @@ class TreasuryService:
             Updated DisbursementAuthorization instance
         """
         try:
-            auth = (
-                DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
-            )
+            auth = DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
         except DisbursementAuthorization.DoesNotExist:
             raise ValueError("Authorization not found") from None
 

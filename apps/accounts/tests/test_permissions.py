@@ -1,4 +1,5 @@
 """Tests for permissions services."""
+
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import Permission as AuthPermission
 from django.contrib.contenttypes.models import ContentType
@@ -21,14 +22,11 @@ class GetUserEffectivePermissionsTests(TestCase):
             email="permissions@example.com",
             documento="555555555",
             first_name="Permissions",
-            last_name="User"
+            last_name="User",
         )
 
         # Create content type for auth permissions
-        self.content_type = ContentType.objects.create(
-            app_label="test_app",
-            model="testmodel"
-        )
+        self.content_type = ContentType.objects.create(app_label="test_app", model="testmodel")
 
     def test_get_user_effective_permissions_returns_user_permissions(self):
         """Test that get_user_effective_permissions returns user.get_all_permissions()."""
@@ -38,6 +36,7 @@ class GetUserEffectivePermissionsTests(TestCase):
         # When: we call get_user_effective_permissions
         # The function doesn't exist yet - this will fail (RED phase)
         from apps.accounts.services.permissions import get_user_effective_permissions
+
         result = get_user_effective_permissions(self.user)
 
         # Then: it should return user.get_all_permissions()
@@ -50,24 +49,17 @@ class GetUserEffectivePermissionsTests(TestCase):
         # Create a role with a group
         group = Group.objects.create(name="R-PERM")
         role = Role.objects.create(
-            code="R-PERM",
-            name="Permission Role",
-            type="interno",
-            group=group
+            code="R-PERM", name="Permission Role", type="interno", group=group
         )
 
         # Create a Django auth permission
         auth_perm = AuthPermission.objects.create(
-            content_type=self.content_type,
-            codename="test_permission",
-            name="Can test permission"
+            content_type=self.content_type, codename="test_permission", name="Can test permission"
         )
 
         # Create our custom permission linked to auth permission
         custom_perm = Permission.objects.create(
-            app_label="test_app",
-            action="test_permission",
-            auth_permission=auth_perm
+            app_label="test_app", action="test_permission", auth_permission=auth_perm
         )
 
         # Link permission to role
@@ -78,10 +70,12 @@ class GetUserEffectivePermissionsTests(TestCase):
 
         # Assign role to user using our service (which adds user to group)
         from apps.accounts.services.assignment import assign_role_to_user
+
         assign_role_to_user(self.user, role)
 
         # When: we call get_user_effective_permissions
         from apps.accounts.services.permissions import get_user_effective_permissions
+
         result = get_user_effective_permissions(self.user)
 
         # Then: it should include the permission from the role
@@ -123,23 +117,17 @@ class GetUserEffectivePermissionsTests(TestCase):
 
         # When: we assign a new role to the user
         group = Group.objects.create(name="R-NEW")
-        role = Role.objects.create(
-            code="R-NEW",
-            name="New Role",
-            type="interno",
-            group=group
-        )
+        role = Role.objects.create(code="R-NEW", name="New Role", type="interno", group=group)
 
         # Create and add a permission to the group
         auth_perm = AuthPermission.objects.create(
-            content_type=self.content_type,
-            codename="new_permission",
-            name="Can new permission"
+            content_type=self.content_type, codename="new_permission", name="Can new permission"
         )
         group.permissions.add(auth_perm)
 
         # Assign role to user using our service (which adds user to group)
         from apps.accounts.services.assignment import assign_role_to_user
+
         assign_role_to_user(self.user, role)
 
         # Refresh user from database to get new group memberships

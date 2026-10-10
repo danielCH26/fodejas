@@ -1,4 +1,5 @@
 """Views for audit app."""
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, permissions
 from rest_framework.response import Response
@@ -112,9 +113,7 @@ class BaseAuditView(LoginRequiredMixin, AuditPermissionMixin, TemplateView):
             return False
         if request.user.is_superuser or request.user.is_staff:
             return True
-        return request.user.user_roles.filter(
-            role__code__in=["R-ADMIN", "R-CONTROL"]
-        ).exists()
+        return request.user.user_roles.filter(role__code__in=["R-ADMIN", "R-CONTROL"]).exists()
 
 
 class AuditDashboardView(BaseAuditView):
@@ -173,8 +172,13 @@ class AuditDashboardView(BaseAuditView):
         return context
 
 
-class AuditEventDetailView(LoginRequiredMixin, DetailView):
-    """Detail view for a single audit event."""
+class AuditEventHtmlDetailView(LoginRequiredMixin, DetailView):
+    """HTML detail view for a single audit event.
+
+    Renamed from ``AuditEventDetailView`` — it shadowed the DRF
+    view of the same name, so ``apps/audit/urls.py`` was silently
+    serving this HTML view (no ``IsAuditViewer``) on the API route.
+    """
 
     template_name = "audit/detail.html"
     model = AuditEvent
@@ -185,9 +189,7 @@ class AuditEventDetailView(LoginRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         if not self.has_permission(request):
-            messages.error(
-                request, "No tienes permiso para ver detalles de auditoría."
-            )
+            messages.error(request, "No tienes permiso para ver detalles de auditoría.")
             from django.shortcuts import redirect
 
             return redirect("dashboard")
@@ -198,9 +200,7 @@ class AuditEventDetailView(LoginRequiredMixin, DetailView):
             return False
         if request.user.is_superuser or request.user.is_staff:
             return True
-        return request.user.user_roles.filter(
-            role__code__in=["R-ADMIN", "R-CONTROL"]
-        ).exists()
+        return request.user.user_roles.filter(role__code__in=["R-ADMIN", "R-CONTROL"]).exists()
 
     def get_object(self):
         event = selectors.get_audit_event_by_id(self.kwargs["id"])

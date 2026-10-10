@@ -50,18 +50,18 @@
                             <td>{{ solicitud.created_at|date:"d/m/Y H:i" }}</td>
                             <td>
                                 <div class="progress" style="height: 20px; width: 150px;">
-                                    <div class="progress-bar bg-success" 
-                                         role="progressbar" 
+                                    <div class="progress-bar bg-success"
+                                         role="progressbar"
                                          style="width: {{ solicitud.progress }}%"
-                                         aria-valuenow="{{ solicitud.progress }}" 
-                                         aria-valuemin="0" 
+                                         aria-valuenow="{{ solicitud.progress }}"
+                                         aria-valuemin="0"
                                          aria-valuemax="100">
                                         {{ solicitud.progress }}%
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <a href="{% url 'applications:review_detail' solicitud.uuid %}" 
+                                <a href="{% url 'applications:review_detail' solicitud.uuid %}"
                                    class="btn btn-sm btn-primary">
                                     <i class="bi bi-check-circle me-1"></i>Verificar
                                 </a>

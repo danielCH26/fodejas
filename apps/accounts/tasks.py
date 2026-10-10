@@ -3,6 +3,7 @@
 Periodic deadline sweeps for the 30-working-day habeas data
 window. Ley 1581/2012 + Decreto 1377/2013.
 """
+
 from __future__ import annotations
 
 import logging
@@ -52,9 +53,7 @@ def habeas_sweep_v30d() -> int:
                 entity_id=sol.id,
                 changes={
                     "reason": "Habeas data 30 días hábiles excedidos",
-                    "fecha_limite": (
-                        sol.fecha_limite.isoformat() if sol.fecha_limite else None
-                    ),
+                    "fecha_limite": (sol.fecha_limite.isoformat() if sol.fecha_limite else None),
                 },
                 module="accounts",
             )

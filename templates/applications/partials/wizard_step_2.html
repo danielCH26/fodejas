@@ -1,6 +1,6 @@
 <div id="wizard-step-2">
     <p class="text-muted mb-4">Información sobre tu historial educativo y logros académicos.</p>
-    
+
     <form id="step-2-form">
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -17,22 +17,22 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label for="programa" class="form-label">Programa Académico *</label>
-                <input type="text" 
-                       class="form-control" 
-                       id="programa" 
+                <input type="text"
+                       class="form-control"
+                       id="programa"
                        name="programa"
                        value="{{ application.datos_academicos.programa|default:'' }}"
                        required>
                 <div class="form-text">Ej: Ingeniería de Sistemas</div>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="institucion" class="form-label">Institución Educativa *</label>
-                <input type="text" 
-                       class="form-control" 
-                       id="institucion" 
+                <input type="text"
+                       class="form-control"
+                       id="institucion"
                        name="institucion"
                        value="{{ application.datos_academicos.institucion|default:'' }}"
                        required>
@@ -47,13 +47,13 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="semestre_actual" class="form-label">Semestre Actual *</label>
-                <input type="number" 
-                       class="form-control" 
-                       id="semestre_actual" 
+                <input type="number"
+                       class="form-control"
+                       id="semestre_actual"
                        name="semestre_actual"
                        min="1"
                        max="20"
@@ -62,9 +62,9 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label for="promedio_acumulado" class="form-label">Promedio Acumulado *</label>
-                <input type="number" 
-                       class="form-control" 
-                       id="promedio_acumulado" 
+                <input type="number"
+                       class="form-control"
+                       id="promedio_acumulado"
                        name="promedio_acumulado"
                        min="0"
                        max="5"
@@ -74,23 +74,23 @@
                 <div class="form-text">Escala de 0.0 a 5.0</div>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-12 mb-3">
                 <label for="logros_academicos" class="form-label">Logros Académicos</label>
-                <textarea class="form-control" 
-                          id="logros_academicos" 
-                          name="logros_academicos" 
+                <textarea class="form-control"
+                          id="logros_academicos"
+                          name="logros_academicos"
                           rows="3">{{ application.datos_academicos.logros_academicos|default:'' }}</textarea>
                 <div class="form-text">Mención de honores, becas, publicaciones, etc.</div>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-12">
                 <div class="form-check mb-2">
-                    <input class="form-check-input" 
-                           type="checkbox" 
+                    <input class="form-check-input"
+                           type="checkbox"
                            id="excelencia_academica"
                            name="excelencia_academica"
                            {% if application.datos_academicos.excelencia_academica %}checked{% endif %}>
@@ -98,10 +98,10 @@
                         Poseo certificado de excelencia académica
                     </label>
                 </div>
-                
+
                 <div class="form-check mb-2">
-                    <input class="form-check-input" 
-                           type="checkbox" 
+                    <input class="form-check-input"
+                           type="checkbox"
                            id="investigacion"
                            name="investigacion"
                            {% if application.datos_academicos.investigacion %}checked{% endif %}>
@@ -112,10 +112,10 @@
             </div>
         </div>
     </form>
-    
+
     <div class="alert alert-info mt-4">
         <i class="bi bi-info-circle me-2"></i>
-        <strong>Importante para el scoring:</strong> La información académica es crucial para la evaluación. 
+        <strong>Importante para el scoring:</strong> La información académica es crucial para la evaluación.
         Asegúrate de que sea precisa y puedas respaldarla con documentos.
     </div>
 </div>
@@ -127,18 +127,18 @@
             saveStepData(2);
         }
     });
-    
+
     function saveStepData(step) {
         const form = document.getElementById('step-2-form');
         if (!form) return;
-        
+
         const formData = new FormData(form);
         formData.append('step', step);
-        
+
         // Convert checkboxes to boolean
         formData.set('excelencia_academica', document.getElementById('excelencia_academica').checked ? 'on' : '');
         formData.set('investigacion', document.getElementById('investigacion').checked ? 'on' : '');
-        
+
         // Send save request to wizard view
         fetch('{% url "applications:wizard" application.uuid %}', {
             method: 'POST',

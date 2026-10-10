@@ -1,6 +1,7 @@
 """
 Command to create test users for each role in the system.
 """
+
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
@@ -118,9 +119,7 @@ class Command(BaseCommand):
 
         for code in role_codes:
             if code not in existing_roles:
-                self.stdout.write(
-                    self.style.WARNING(f"  Role {code} not found in database!")
-                )
+                self.stdout.write(self.style.WARNING(f"  Role {code} not found in database!"))
 
         # Create users
         created_count = 0
@@ -135,7 +134,7 @@ class Command(BaseCommand):
                     "documento": user_data["documento"],
                     "first_name": user_data["first_name"],
                     "last_name": user_data["last_name"],
-                }
+                },
             )
 
             # Set password if created or not set
@@ -143,9 +142,7 @@ class Command(BaseCommand):
                 user.set_password(TEST_PASSWORD)
                 user.save()
                 created_count += 1
-                self.stdout.write(
-                    self.style.SUCCESS(f"  Created user: {email}")
-                )
+                self.stdout.write(self.style.SUCCESS(f"  Created user: {email}"))
             else:
                 self.stdout.write(f"  User exists: {email}")
 
@@ -154,22 +151,16 @@ class Command(BaseCommand):
                 role = Role.objects.filter(code=role_code).first()
                 if not role:
                     self.stdout.write(
-                        self.style.ERROR(
-                            f"    Role {role_code} not found - skipping!"
-                        )
+                        self.style.ERROR(f"    Role {role_code} not found - skipping!")
                     )
                     continue
 
                 user_role, ur_created = UserRole.objects.get_or_create(
-                    user=user,
-                    role=role,
-                    defaults={"convocation_scope_id": None}
+                    user=user, role=role, defaults={"convocation_scope_id": None}
                 )
 
                 if ur_created:
-                    self.stdout.write(
-                        self.style.SUCCESS(f"    Assigned role: {role_code}")
-                    )
+                    self.stdout.write(self.style.SUCCESS(f"    Assigned role: {role_code}"))
                 else:
                     self.stdout.write(f"    Role already assigned: {role_code}")
 

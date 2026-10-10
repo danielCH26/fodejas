@@ -36,7 +36,6 @@ media/
 staticfiles/
 
 # Secret keys
-.secrets.baseline
 *.secrets
 
 # IDE

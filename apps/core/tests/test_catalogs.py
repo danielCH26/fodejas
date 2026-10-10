@@ -1,4 +1,5 @@
 """Tests for catalog models."""
+
 from django.db import models
 
 
@@ -19,20 +20,20 @@ def test_catalogo_dominio_fields():
     from apps.core.models import CatalogoDominio
 
     # Check fields exist with correct types
-    assert isinstance(CatalogoDominio._meta.get_field('codigo'), models.SlugField)
-    assert CatalogoDominio._meta.get_field('codigo').max_length == 32
-    assert CatalogoDominio._meta.get_field('codigo').unique is True
+    assert isinstance(CatalogoDominio._meta.get_field("codigo"), models.SlugField)
+    assert CatalogoDominio._meta.get_field("codigo").max_length == 32
+    assert CatalogoDominio._meta.get_field("codigo").unique is True
 
-    assert isinstance(CatalogoDominio._meta.get_field('nombre'), models.CharField)
-    assert CatalogoDominio._meta.get_field('nombre').max_length == 120
+    assert isinstance(CatalogoDominio._meta.get_field("nombre"), models.CharField)
+    assert CatalogoDominio._meta.get_field("nombre").max_length == 120
 
-    assert isinstance(CatalogoDominio._meta.get_field('descripcion'), models.TextField)
+    assert isinstance(CatalogoDominio._meta.get_field("descripcion"), models.TextField)
 
-    assert isinstance(CatalogoDominio._meta.get_field('orden'), models.PositiveSmallIntegerField)
+    assert isinstance(CatalogoDominio._meta.get_field("orden"), models.PositiveSmallIntegerField)
 
-    assert isinstance(CatalogoDominio._meta.get_field('activo'), models.BooleanField)
+    assert isinstance(CatalogoDominio._meta.get_field("activo"), models.BooleanField)
 
-    assert isinstance(CatalogoDominio._meta.get_field('metadatos'), models.JSONField)
+    assert isinstance(CatalogoDominio._meta.get_field("metadatos"), models.JSONField)
 
 
 def test_activos_manager():
@@ -40,14 +41,14 @@ def test_activos_manager():
     from apps.core.models import CatalogoDominio
 
     # Check dual managers exist - they're stored as ManagerDescriptor in __dict__
-    assert 'objects' in CatalogoDominio.__dict__
-    assert 'activos' in CatalogoDominio.__dict__
+    assert "objects" in CatalogoDominio.__dict__
+    assert "activos" in CatalogoDominio.__dict__
 
     # Check activos is a custom manager (ActivosManager class is defined in models.py)
 
     # The ManagerDescriptor returns the actual manager when accessed
     # We need to check the type of the manager instance
-    CatalogoDominio.__dict__['activos']
+    CatalogoDominio.__dict__["activos"]
     # Actually, we should check that CatalogoDominio.activos returns an ActivosManager
     # But we can't easily test this on an abstract model without a concrete subclass
     # For now, verify the descriptor exists
@@ -66,7 +67,7 @@ def test_activos_manager_filters_active():
         activos = ActivosManager()
 
         class Meta:
-            app_label = 'core'
+            app_label = "core"
 
     # Test that get_queryset filters for activo=True
     TestModel.activos.get_queryset()
@@ -134,21 +135,21 @@ def test_concrete_models_inherit_fields():
 
     # Check that Estrato has all the fields from CatalogoDominio
     field_names = {f.name for f in Estrato._meta.get_fields()}
-    expected_fields = {'id', 'codigo', 'nombre', 'descripcion', 'orden', 'activo', 'metadatos'}
+    expected_fields = {"id", "codigo", "nombre", "descripcion", "orden", "activo", "metadatos"}
 
     # Check all expected fields are present
     for field in expected_fields:
         assert field in field_names, f"Missing field: {field}"
 
     # Check codigo is unique
-    codigo_field = Estrato._meta.get_field('codigo')
+    codigo_field = Estrato._meta.get_field("codigo")
     assert codigo_field.unique is True
 
     # Check default values
-    activo_field = Estrato._meta.get_field('activo')
+    activo_field = Estrato._meta.get_field("activo")
     assert activo_field.default is True
 
-    orden_field = Estrato._meta.get_field('orden')
+    orden_field = Estrato._meta.get_field("orden")
     assert orden_field.default == 0
 
 
@@ -169,15 +170,26 @@ def test_concrete_models_have_separate_tables():
 
     # Each model should have its own db_table
     tables = set()
-    for model in [Estrato, GrupoSisben, Etnia, MunicipioIsla,
-                  NivelFormacion, ModalidadApoyo, TipoIes, TipoDocumento,
-                  EstadoDocumento, CausalTerminacionConvenio]:
+    for model in [
+        Estrato,
+        GrupoSisben,
+        Etnia,
+        MunicipioIsla,
+        NivelFormacion,
+        ModalidadApoyo,
+        TipoIes,
+        TipoDocumento,
+        EstadoDocumento,
+        CausalTerminacionConvenio,
+    ]:
         table_name = model._meta.db_table
         assert table_name not in tables, f"Duplicate table name: {table_name}"
         tables.add(table_name)
 
         # Table name should follow Django convention: app_model
-        assert table_name.startswith('core_'), f"Table name doesn't start with 'core_': {table_name}"
+        assert table_name.startswith(
+            "core_"
+        ), f"Table name doesn't start with 'core_': {table_name}"
 
 
 def test_catalogo_dominio_str():
@@ -188,7 +200,7 @@ def test_catalogo_dominio_str():
     class TestCatalogo(CatalogoDominio):
         class Meta:
             abstract = False
-            app_label = 'core'
+            app_label = "core"
 
     instance = TestCatalogo(nombre="Test Catalog")
     assert str(instance) == "Test Catalog"

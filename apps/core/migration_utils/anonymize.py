@@ -20,6 +20,7 @@ Constantes:
 - ``_DEFAULT_SALT_ENV``: nombre de la variable de entorno con el
   salt por defecto. El comando de migración lee esta variable.
 """
+
 from __future__ import annotations
 
 import hashlib

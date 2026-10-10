@@ -1,6 +1,6 @@
 <div id="wizard-step-3">
     <p class="text-muted mb-4">Información sobre tu contexto familiar y económico.</p>
-    
+
     <form id="step-3-form">
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -26,13 +26,13 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="personas_hogar" class="form-label">Personas en el Hogar *</label>
-                <input type="number" 
-                       class="form-control" 
-                       id="personas_hogar" 
+                <input type="number"
+                       class="form-control"
+                       id="personas_hogar"
                        name="personas_hogar"
                        min="1"
                        max="20"
@@ -44,9 +44,9 @@
                 <label for="ingreso_familiar" class="form-label">Ingreso Familiar Mensual *</label>
                 <div class="input-group">
                     <span class="input-group-text">$</span>
-                    <input type="number" 
-                           class="form-control" 
-                           id="ingreso_familiar" 
+                    <input type="number"
+                           class="form-control"
+                           id="ingreso_familiar"
                            name="ingreso_familiar"
                            min="0"
                            step="1000"
@@ -56,13 +56,13 @@
                 <div class="form-text">En pesos colombianos</div>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="personas_dependientes" class="form-label">Personas Dependientes</label>
-                <input type="number" 
-                       class="form-control" 
-                       id="personas_dependientes" 
+                <input type="number"
+                       class="form-control"
+                       id="personas_dependientes"
                        name="personas_dependientes"
                        min="0"
                        max="10"
@@ -80,14 +80,14 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-12 mb-3">
                 <label class="form-label">Situación Laboral *</label>
                 <div class="form-check">
-                    <input class="form-check-input" 
-                           type="radio" 
-                           name="situacion_laboral" 
+                    <input class="form-check-input"
+                           type="radio"
+                           name="situacion_laboral"
                            id="empleado"
                            value="empleado"
                            {% if application.datos_socioeconomicos.situacion_laboral == 'empleado' %}checked{% endif %}
@@ -97,9 +97,9 @@
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" 
-                           type="radio" 
-                           name="situacion_laboral" 
+                    <input class="form-check-input"
+                           type="radio"
+                           name="situacion_laboral"
                            id="independiente"
                            value="independiente"
                            {% if application.datos_socioeconomicos.situacion_laboral == 'independiente' %}checked{% endif %}>
@@ -108,9 +108,9 @@
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" 
-                           type="radio" 
-                           name="situacion_laboral" 
+                    <input class="form-check-input"
+                           type="radio"
+                           name="situacion_laboral"
                            id="desempleado"
                            value="desempleado"
                            {% if application.datos_socioeconomicos.situacion_laboral == 'desempleado' %}checked{% endif %}>
@@ -119,9 +119,9 @@
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" 
-                           type="radio" 
-                           name="situacion_laboral" 
+                    <input class="form-check-input"
+                           type="radio"
+                           name="situacion_laboral"
                            id="estudiante"
                            value="estudiante"
                            {% if application.datos_socioeconomicos.situacion_laboral == 'estudiante' %}checked{% endif %}>
@@ -131,22 +131,22 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-12 mb-3">
                 <label for="observaciones_socioeconomicas" class="form-label">Observaciones Adicionales</label>
-                <textarea class="form-control" 
-                          id="observaciones_socioeconomicas" 
-                          name="observaciones_socioeconomicas" 
+                <textarea class="form-control"
+                          id="observaciones_socioeconomicas"
+                          name="observaciones_socioeconomicas"
                           rows="3">{{ application.datos_socioeconomicos.observaciones_socioeconomicas|default:'' }}</textarea>
                 <div class="form-text">Información adicional relevante sobre tu situación socioeconómica</div>
             </div>
         </div>
     </form>
-    
+
     <div class="alert alert-info mt-4">
         <i class="bi bi-info-circle me-2"></i>
-        <strong>Confidencialidad garantizada:</strong> Esta información es confidencial y se usa únicamente 
+        <strong>Confidencialidad garantizada:</strong> Esta información es confidencial y se usa únicamente
         para la evaluación socioeconómica del beneficio. No se comparte con terceros.
     </div>
 </div>
@@ -158,14 +158,14 @@
             saveStepData(3);
         }
     });
-    
+
     function saveStepData(step) {
         const form = document.getElementById('step-3-form');
         if (!form) return;
-        
+
         const formData = new FormData(form);
         formData.append('step', step);
-        
+
         // Send save request to wizard view
         fetch('{% url "applications:wizard" application.uuid %}', {
             method: 'POST',

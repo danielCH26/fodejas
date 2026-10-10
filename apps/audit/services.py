@@ -1,4 +1,5 @@
 """Audit service for logging events (CAP-022 hash chain)."""
+
 import hashlib
 import json
 import logging
@@ -57,10 +58,7 @@ def calculate_hash(timestamp, actor_id, action, entity, entity_id, changes, prev
     else:
         changes_str = json.dumps(changes, sort_keys=True, default=str)
 
-    data = (
-        f"{timestamp}|{actor_id}|{action}|{entity}|"
-        f"{entity_id}|{changes_str}|{previous_hash}"
-    )
+    data = f"{timestamp}|{actor_id}|{action}|{entity}|" f"{entity_id}|{changes_str}|{previous_hash}"
     return hashlib.sha256(data.encode()).hexdigest()
 
 
@@ -76,11 +74,7 @@ def _lock_chain_head():
     Returns:
         str: hex SHA-256 of the previous record (or zeros for empty).
     """
-    head = (
-        AuditEvent.objects.select_for_update()
-        .order_by("-timestamp")
-        .first()
-    )
+    head = AuditEvent.objects.select_for_update().order_by("-timestamp").first()
     if head is None:
         return "0" * 64
     return head.current_hash

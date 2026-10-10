@@ -3,6 +3,7 @@
 These validators are called from ConfiguracionConvocatoria.full_clean()
 to enforce business rules defined in project.md §11.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -80,10 +81,7 @@ def _validar_pesos_criterios(payload: dict, errors: list) -> None:
 
     suma_pesos = sum(c.get("peso", 0) for c in criterios)
     if suma_pesos != 100:
-        errors.append(
-            f"criterios: suma de pesos debe ser 100, "
-            f"actualmente {suma_pesos}"
-        )
+        errors.append(f"criterios: suma de pesos debe ser 100, " f"actualmente {suma_pesos}")
 
 
 def _validar_catalogos_activos(config: ConfiguracionConvocatoria, errors: list) -> None:
@@ -104,21 +102,15 @@ def _validar_catalogos_activos(config: ConfiguracionConvocatoria, errors: list) 
     for cupo in cupos:
         if hasattr(cupo, "municipio") and cupo.municipio_id:
             if not MunicipioIsla.objects.activos().filter(pk=cupo.municipio_id).exists():
-                errors.append(
-                    f"Cupo: municipio_id {cupo.municipio_id} no está activo"
-                )
+                errors.append(f"Cupo: municipio_id {cupo.municipio_id} no está activo")
 
         if hasattr(cupo, "modalidad") and cupo.modalidad_id:
             if not ModalidadApoyo.objects.activos().filter(pk=cupo.modalidad_id).exists():
-                errors.append(
-                    f"Cupo: modalidad_id {cupo.modalidad_id} no está activa"
-                )
+                errors.append(f"Cupo: modalidad_id {cupo.modalidad_id} no está activa")
 
         if hasattr(cupo, "nivel") and cupo.nivel_id:
             if not NivelFormacion.objects.activos().filter(pk=cupo.nivel_id).exists():
-                errors.append(
-                    f"Cupo: nivel_id {cupo.nivel_id} no está activo"
-                )
+                errors.append(f"Cupo: nivel_id {cupo.nivel_id} no está activo")
 
 
 def _validar_plazos(config: ConfiguracionConvocatoria, errors: list) -> None:

@@ -1,4 +1,5 @@
 """Tests for apps.legalization.signer and sign_legal_document (CHG-301)."""
+
 from __future__ import annotations
 
 import hashlib
@@ -41,9 +42,7 @@ def _make_user(role_codes=("R-JUNTA",)):
             code=code,
             defaults={"name": code, "type": "interno", "description": code},
         )
-        UserRole.objects.get_or_create(
-            user=user, role=role, convocation_scope_id=None
-        )
+        UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
     return user
 
 

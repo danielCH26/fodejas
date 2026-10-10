@@ -1,4 +1,5 @@
 """Tests for apps.core.migration_utils.validators (CHG-099)."""
+
 import pytest
 
 from apps.core.migration_utils.validators import (
@@ -82,9 +83,7 @@ class TestValidateNoPii:
     def test_ok(self, tmp_path):
         f = tmp_path / "ok.csv"
         f.write_text(
-            "id,documento_hash\n"
-            "1,anon-test-aaa\n"
-            "2,anon-test-bbb\n",
+            "id,documento_hash\n" "1,anon-test-aaa\n" "2,anon-test-bbb\n",
             encoding="utf-8",
         )
         assert validate_no_pii(f, ["documento_hash"]) == []
@@ -92,8 +91,7 @@ class TestValidateNoPii:
     def test_detects_email(self, tmp_path):
         f = tmp_path / "bad.csv"
         f.write_text(
-            "id,email_hash\n"
-            "1,leaked@example.com\n",
+            "id,email_hash\n" "1,leaked@example.com\n",
             encoding="utf-8",
         )
         errors = validate_no_pii(f, ["email_hash"])
@@ -102,8 +100,7 @@ class TestValidateNoPii:
     def test_detects_documento(self, tmp_path):
         f = tmp_path / "bad.csv"
         f.write_text(
-            "id,documento_hash\n"
-            "1,1234567890\n",
+            "id,documento_hash\n" "1,1234567890\n",
             encoding="utf-8",
         )
         errors = validate_no_pii(f, ["documento_hash"])
@@ -112,8 +109,7 @@ class TestValidateNoPii:
     def test_detects_telefono(self, tmp_path):
         f = tmp_path / "bad.csv"
         f.write_text(
-            "id,telefono_hash\n"
-            "1,3123456789\n",
+            "id,telefono_hash\n" "1,3123456789\n",
             encoding="utf-8",
         )
         errors = validate_no_pii(f, ["telefono_hash"])

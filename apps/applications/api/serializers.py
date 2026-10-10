@@ -1,4 +1,5 @@
 """Serializers for applications API."""
+
 from rest_framework import serializers
 
 from apps.applications.models import Anexo, Solicitud

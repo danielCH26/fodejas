@@ -1,4 +1,5 @@
 """Serializers for the legalization API (CHG-301, CAP-029)."""
+
 from rest_framework import serializers
 
 from apps.legalization.models import LegalDocument, LegalizationProcess
@@ -80,12 +81,8 @@ class LegalizationProcessSerializer(serializers.ModelSerializer):
     """Serializer for LegalizationProcess."""
 
     documents = LegalDocumentSerializer(many=True, read_only=True)
-    beneficiary_email = serializers.EmailField(
-        source="beneficiary.email", read_only=True
-    )
-    convocatoria_nombre = serializers.CharField(
-        source="convocatoria.nombre", read_only=True
-    )
+    beneficiary_email = serializers.EmailField(source="beneficiary.email", read_only=True)
+    convocatoria_nombre = serializers.CharField(source="convocatoria.nombre", read_only=True)
 
     class Meta:
         model = LegalizationProcess

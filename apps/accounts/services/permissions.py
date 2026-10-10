@@ -1,4 +1,5 @@
 """Permissions services with caching."""
+
 from django.core.cache import cache
 
 from apps.accounts.models import CustomUser

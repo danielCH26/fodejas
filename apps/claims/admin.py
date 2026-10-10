@@ -1,4 +1,5 @@
 """Admin configuration for claims app."""
+
 from django.contrib import admin
 
 from apps.claims.models import Apelacion, ApelacionHistorial, Reclamacion, ReclamacionHistorial
@@ -15,16 +16,12 @@ class ReclamacionAdmin(admin.ModelAdmin):
     ordering = ["-created_at"]
 
     fieldsets = (
-        ("Información Basic", {
-            "fields": ("uuid", "solicitud", "tipo", "descripcion", "evidencia")
-        }),
-        ("Estado", {
-            "fields": ("estado", "respuesta", "resuelto_por", "fecha_resolucion")
-        }),
-        ("Metadatos", {
-            "fields": ("created_at", "updated_at"),
-            "classes": ("collapse",)
-        }),
+        (
+            "Información Basic",
+            {"fields": ("uuid", "solicitud", "tipo", "descripcion", "evidencia")},
+        ),
+        ("Estado", {"fields": ("estado", "respuesta", "resuelto_por", "fecha_resolucion")}),
+        ("Metadatos", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
     )
 
 
@@ -50,16 +47,9 @@ class ApelacionAdmin(admin.ModelAdmin):
     ordering = ["-created_at"]
 
     fieldsets = (
-        ("Información Basic", {
-            "fields": ("uuid", "reclamacion", "descripcion", "evidencia")
-        }),
-        ("Estado", {
-            "fields": ("estado", "respuesta", "resuelto_por", "fecha_resolucion")
-        }),
-        ("Metadatos", {
-            "fields": ("created_at", "updated_at"),
-            "classes": ("collapse",)
-        }),
+        ("Información Basic", {"fields": ("uuid", "reclamacion", "descripcion", "evidencia")}),
+        ("Estado", {"fields": ("estado", "respuesta", "resuelto_por", "fecha_resolucion")}),
+        ("Metadatos", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
     )
 
 

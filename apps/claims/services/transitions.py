@@ -1,4 +1,5 @@
 """State transition services for apelaciones (CHG-206)."""
+
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.utils import timezone
 
@@ -27,6 +28,7 @@ def iniciar_analisis(apelacion, actor):
     # 1. Validate actor has R-OFIJUR role
     if actor and not actor.is_superuser:
         from apps.accounts.models import Role, UserRole
+
         ofijur_role = Role.objects.filter(code="R-OFIJUR").first()
         if ofijur_role and not UserRole.objects.filter(user=actor, role=ofijur_role).exists():
             raise PermissionDenied("Solo R-OFIJUR puede iniciar análisis de apelaciones.")
@@ -34,9 +36,7 @@ def iniciar_analisis(apelacion, actor):
     # 2. Validate transition
     nuevo_estado = Apelacion.Estado.EN_ANALISIS
     if not is_valid_apelacion_transition(apelacion.estado, nuevo_estado):
-        raise ValidationError(
-            f"Transición inválida para apelación en estado {apelacion.estado}."
-        )
+        raise ValidationError(f"Transición inválida para apelación en estado {apelacion.estado}.")
 
     # 3. Update appeal
     estado_anterior = apelacion.estado
@@ -75,6 +75,7 @@ def confirmar(apelacion, respuesta, actor):
     # 1. Validate actor has R-OFIJUR role
     if actor and not actor.is_superuser:
         from apps.accounts.models import Role, UserRole
+
         ofijur_role = Role.objects.filter(code="R-OFIJUR").first()
         if ofijur_role and not UserRole.objects.filter(user=actor, role=ofijur_role).exists():
             raise PermissionDenied("Solo R-OFIJUR puede confirmar apelaciones.")
@@ -86,9 +87,7 @@ def confirmar(apelacion, respuesta, actor):
     # 3. Validate transition
     nuevo_estado = Apelacion.Estado.CONFIRMADA
     if not is_valid_apelacion_transition(apelacion.estado, nuevo_estado):
-        raise ValidationError(
-            f"Transición inválida para apelación en estado {apelacion.estado}."
-        )
+        raise ValidationError(f"Transición inválida para apelación en estado {apelacion.estado}.")
 
     # 4. Update appeal
     estado_anterior = apelacion.estado
@@ -130,6 +129,7 @@ def revocar(apelacion, respuesta, actor):
     # 1. Validate actor has R-OFIJUR role
     if actor and not actor.is_superuser:
         from apps.accounts.models import Role, UserRole
+
         ofijur_role = Role.objects.filter(code="R-OFIJUR").first()
         if ofijur_role and not UserRole.objects.filter(user=actor, role=ofijur_role).exists():
             raise PermissionDenied("Solo R-OFIJUR puede revocar apelaciones.")
@@ -141,9 +141,7 @@ def revocar(apelacion, respuesta, actor):
     # 3. Validate transition
     nuevo_estado = Apelacion.Estado.REVOCADA
     if not is_valid_apelacion_transition(apelacion.estado, nuevo_estado):
-        raise ValidationError(
-            f"Transición inválida para apelación en estado {apelacion.estado}."
-        )
+        raise ValidationError(f"Transición inválida para apelación en estado {apelacion.estado}.")
 
     # 4. Update appeal
     estado_anterior = apelacion.estado
@@ -187,14 +185,17 @@ def cambiar_estado_apelacion(apelacion, nuevo_estado, respuesta="", actor=None):
 
     # Validate transition
     if not is_valid_apelacion_transition(estado_anterior, nuevo_estado):
-        raise ValidationError(
-            f"Transición inválida: {estado_anterior} → {nuevo_estado}"
-        )
+        raise ValidationError(f"Transición inválida: {estado_anterior} → {nuevo_estado}")
 
     # Role validation based on transition
-    if nuevo_estado in [Apelacion.Estado.EN_ANALISIS, Apelacion.Estado.CONFIRMADA, Apelacion.Estado.REVOCADA]:
+    if nuevo_estado in [
+        Apelacion.Estado.EN_ANALISIS,
+        Apelacion.Estado.CONFIRMADA,
+        Apelacion.Estado.REVOCADA,
+    ]:
         if actor and not actor.is_superuser:
             from apps.accounts.models import Role, UserRole
+
             ofijur_role = Role.objects.filter(code="R-OFIJUR").first()
             if ofijur_role and not UserRole.objects.filter(user=actor, role=ofijur_role).exists():
                 raise PermissionDenied("Solo R-OFIJUR puede realizar esta transición.")

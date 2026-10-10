@@ -9,6 +9,7 @@ CHG-303 Batch B: disbursement authorization list, detail, and
 HTMX authorize-action views for the doble-firma workflow
 (president R-JUNTA + secretary R-COORDINADOR).
 """
+
 from __future__ import annotations
 
 import logging
@@ -133,12 +134,12 @@ class DisbursementAuthorizationListView(LoginRequiredMixin, View):
         ):
             return super().dispatch(request, *args, **kwargs)
         from django.core.exceptions import PermissionDenied
+
         raise PermissionDenied
 
     def get(self, request, *args, **kwargs):
         authorizations = (
-            DisbursementAuthorization.objects
-            .filter(
+            DisbursementAuthorization.objects.filter(
                 status__in=[
                     DisbursementAuthorization.Status.PENDIENTE,
                     DisbursementAuthorization.Status.AUTORIZADO,
@@ -179,6 +180,7 @@ class DisbursementAuthorizationDetailView(LoginRequiredMixin, View):
         ):
             return super().dispatch(request, *args, **kwargs)
         from django.core.exceptions import PermissionDenied
+
         raise PermissionDenied
 
     def get(self, request, *args, **kwargs):
@@ -193,9 +195,7 @@ class DisbursementAuthorizationDetailView(LoginRequiredMixin, View):
         process = auth.legalization_process
 
         # Determine which role the current user can sign (if any).
-        user_role_codes = set(
-            request.user.user_roles.values_list("role__code", flat=True)
-        )
+        user_role_codes = set(request.user.user_roles.values_list("role__code", flat=True))
         signing_roles = user_role_codes & set(SIGNABLE_ROLES)
         can_sign = False
         missing_role = None
@@ -240,6 +240,7 @@ class AuthorizeDisbursementHTMXView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             from django.core.exceptions import PermissionDenied
+
             raise PermissionDenied
         if not (
             request.user.is_superuser
@@ -247,20 +248,17 @@ class AuthorizeDisbursementHTMXView(LoginRequiredMixin, View):
             or has_any_role(request.user, SIGNABLE_ROLES)
         ):
             from django.core.exceptions import PermissionDenied
+
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         auth = get_object_or_404(
-            DisbursementAuthorization.objects.select_related(
-                "legalization_process"
-            ),
+            DisbursementAuthorization.objects.select_related("legalization_process"),
             pk=kwargs["pk"],
         )
         # Determine which role the user can sign as.
-        user_role_codes = set(
-            request.user.user_roles.values_list("role__code", flat=True)
-        )
+        user_role_codes = set(request.user.user_roles.values_list("role__code", flat=True))
         can_sign_as = []
         if "R-JUNTA" in user_role_codes and not auth.authorized_by_president:
             can_sign_as.append("president")
@@ -290,14 +288,14 @@ class AuthorizeDisbursementHTMXView(LoginRequiredMixin, View):
                 headers={"HX-Reswap": "outerHTML"},
             )
         try:
-            auth = TreasuryService.authorize(
-                auth.id, user=request.user, role=role
-            )
+            auth = TreasuryService.authorize(auth.id, user=request.user, role=role)
             messages.success(
                 request,
-                f"Firma de {role} registrada exitosamente."
-                if not auth.is_fully_authorized
-                else "¡Desembolso autorizado! Ambas firmas completadas.",
+                (
+                    f"Firma de {role} registrada exitosamente."
+                    if not auth.is_fully_authorized
+                    else "¡Desembolso autorizado! Ambas firmas completadas."
+                ),
             )
         except ValueError as exc:
             msg = str(exc)

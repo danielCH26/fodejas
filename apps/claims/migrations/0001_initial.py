@@ -8,52 +8,150 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('applications', '0003_add_requisito_validacion'),
+        ("applications", "0003_add_requisito_validacion"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Reclamacion',
+            name="Reclamacion",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)),
-                ('tipo', models.CharField(choices=[('puntaje', 'Puntaje incorrecto'), ('requisito', 'Requisito mal validado'), ('otro', 'Otro')], max_length=20, verbose_name='tipo de reclamación')),
-                ('descripcion', models.TextField(help_text='Motivo de la reclamación', verbose_name='descripción')),
-                ('evidencia', models.FileField(blank=True, null=True, upload_to='reclamaciones/%Y/%m/', verbose_name='evidencia')),
-                ('estado', models.CharField(choices=[('presentada', 'Presentada'), ('en_revision', 'En revisión'), ('resuelta', 'Resuelta'), ('rechazada', 'Rechazada')], default='presentada', max_length=20, verbose_name='estado')),
-                ('respuesta', models.TextField(blank=True, help_text='Fundamentación de la resolución', verbose_name='respuesta')),
-                ('fecha_resolucion', models.DateTimeField(blank=True, null=True, verbose_name='fecha de resolución')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('resuelto_por', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='reclamaciones_resueltas', to=settings.AUTH_USER_MODEL, verbose_name='resuelto por')),
-                ('solicitud', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reclamaciones', to='applications.solicitud', verbose_name='solicitud')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "uuid",
+                    models.UUIDField(
+                        db_index=True, default=uuid.uuid4, editable=False, unique=True
+                    ),
+                ),
+                (
+                    "tipo",
+                    models.CharField(
+                        choices=[
+                            ("puntaje", "Puntaje incorrecto"),
+                            ("requisito", "Requisito mal validado"),
+                            ("otro", "Otro"),
+                        ],
+                        max_length=20,
+                        verbose_name="tipo de reclamación",
+                    ),
+                ),
+                (
+                    "descripcion",
+                    models.TextField(
+                        help_text="Motivo de la reclamación", verbose_name="descripción"
+                    ),
+                ),
+                (
+                    "evidencia",
+                    models.FileField(
+                        blank=True,
+                        null=True,
+                        upload_to="reclamaciones/%Y/%m/",
+                        verbose_name="evidencia",
+                    ),
+                ),
+                (
+                    "estado",
+                    models.CharField(
+                        choices=[
+                            ("presentada", "Presentada"),
+                            ("en_revision", "En revisión"),
+                            ("resuelta", "Resuelta"),
+                            ("rechazada", "Rechazada"),
+                        ],
+                        default="presentada",
+                        max_length=20,
+                        verbose_name="estado",
+                    ),
+                ),
+                (
+                    "respuesta",
+                    models.TextField(
+                        blank=True,
+                        help_text="Fundamentación de la resolución",
+                        verbose_name="respuesta",
+                    ),
+                ),
+                (
+                    "fecha_resolucion",
+                    models.DateTimeField(blank=True, null=True, verbose_name="fecha de resolución"),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "resuelto_por",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="reclamaciones_resueltas",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="resuelto por",
+                    ),
+                ),
+                (
+                    "solicitud",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="reclamaciones",
+                        to="applications.solicitud",
+                        verbose_name="solicitud",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Reclamación',
-                'verbose_name_plural': 'Reclamaciones',
-                'ordering': ['-created_at'],
+                "verbose_name": "Reclamación",
+                "verbose_name_plural": "Reclamaciones",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='ReclamacionHistorial',
+            name="ReclamacionHistorial",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('estado_anterior', models.CharField(max_length=20, verbose_name='estado anterior')),
-                ('estado_nuevo', models.CharField(max_length=20, verbose_name='estado nuevo')),
-                ('observacion', models.TextField(blank=True, verbose_name='observación')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('actor', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='actor')),
-                ('reclamacion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='historial', to='claims.reclamacion', verbose_name='reclamación')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "estado_anterior",
+                    models.CharField(max_length=20, verbose_name="estado anterior"),
+                ),
+                ("estado_nuevo", models.CharField(max_length=20, verbose_name="estado nuevo")),
+                ("observacion", models.TextField(blank=True, verbose_name="observación")),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "actor",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="actor",
+                    ),
+                ),
+                (
+                    "reclamacion",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="historial",
+                        to="claims.reclamacion",
+                        verbose_name="reclamación",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Historial de reclamación',
-                'verbose_name_plural': 'Historial de reclamaciones',
-                'ordering': ['created_at'],
+                "verbose_name": "Historial de reclamación",
+                "verbose_name_plural": "Historial de reclamaciones",
+                "ordering": ["created_at"],
             },
         ),
     ]

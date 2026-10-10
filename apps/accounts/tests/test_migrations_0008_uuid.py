@@ -3,6 +3,7 @@
 Verifica idempotencia, no-op cuando ya es UUID, y determinismo del namespace.
 No incluye datos personales (AGENTS.md §6 regla 1).
 """
+
 import importlib
 import inspect
 import uuid

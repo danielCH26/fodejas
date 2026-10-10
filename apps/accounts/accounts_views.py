@@ -1,4 +1,5 @@
 """Views for accounts app."""
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -55,20 +56,26 @@ class LoginView(BaseLoginView):
 
         roles_data = []
         for ur in user_roles:
-            roles_data.append({
-                "code": ur.role.code,
-                "name": ur.role.name,
-                "type": ur.role.type,
-                "convocation": ur.convocation_scope_id,
-            })
+            roles_data.append(
+                {
+                    "code": ur.role.code,
+                    "name": ur.role.name,
+                    "type": ur.role.type,
+                    "convocation": ur.convocation_scope_id,
+                }
+            )
 
         # If AJAX request, return JSON with tokens
         if self.request.headers.get("HX-Request"):
             # For HTMX requests, just return success
-            return render(self.request, "accounts/partials/login_success.html", {
-                "user": user,
-                "roles": roles_data,
-            })
+            return render(
+                self.request,
+                "accounts/partials/login_success.html",
+                {
+                    "user": user,
+                    "roles": roles_data,
+                },
+            )
 
         # For regular form submission, redirect to dashboard
         login(self.request, user)
@@ -128,8 +135,7 @@ class RegisterView(View):
                 messages.warning(request, "Rol de aspirante no encontrado.")
 
             messages.success(
-                request,
-                "Registro exitoso. Ya puede iniciar sesión con sus credenciales."
+                request, "Registro exitoso. Ya puede iniciar sesión con sus credenciales."
             )
             return redirect("accounts:login")
 
@@ -183,12 +189,14 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
 
         roles_data = []
         for ur in user_roles:
-            roles_data.append({
-                "code": ur.role.code,
-                "name": ur.role.name,
-                "type": ur.role.type,
-                "convocation": ur.convocation_scope_id,
-            })
+            roles_data.append(
+                {
+                    "code": ur.role.code,
+                    "name": ur.role.name,
+                    "type": ur.role.type,
+                    "convocation": ur.convocation_scope_id,
+                }
+            )
 
         context["user"] = user
         context["roles"] = roles_data
@@ -204,45 +212,121 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
 
         for role in roles:
             if role["code"] == "R-ASPIRANTE":
-                nav_items.extend([
-                    {"label": "Mis Postulaciones", "icon": "bi-file-earmark-text", "url": "/applications/"},
-                    {"label": "Estado de Selección", "icon": "bi-graph-up", "url": "/applications/"},
-                    {"label": "Convocatorias Abiertas", "icon": "bi-megaphone", "url": "/convocatorias/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Mis Postulaciones",
+                            "icon": "bi-file-earmark-text",
+                            "url": "/applications/",
+                        },
+                        {
+                            "label": "Estado de Selección",
+                            "icon": "bi-graph-up",
+                            "url": "/applications/",
+                        },
+                        {
+                            "label": "Convocatorias Abiertas",
+                            "icon": "bi-megaphone",
+                            "url": "/convocatorias/",
+                        },
+                    ]
+                )
             elif role["code"] == "R-REVISOR":
-                nav_items.extend([
-                    {"label": "Revisar Requisitos", "icon": "bi-clipboard-check", "url": "/applications/"},
-                    {"label": "Convocatorias", "icon": "bi-megaphone", "url": "/convocatorias/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Revisar Requisitos",
+                            "icon": "bi-clipboard-check",
+                            "url": "/applications/",
+                        },
+                        {
+                            "label": "Convocatorias",
+                            "icon": "bi-megaphone",
+                            "url": "/convocatorias/",
+                        },
+                    ]
+                )
             elif role["code"] == "R-COMITE":
-                nav_items.extend([
-                    {"label": "Evaluaciones", "icon": "bi-clipboard-data", "url": "/applications/"},
-                    {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Evaluaciones",
+                            "icon": "bi-clipboard-data",
+                            "url": "/applications/",
+                        },
+                        {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
+                    ]
+                )
             elif role["code"] == "R-TESORERO":
-                nav_items.extend([
-                    {"label": "Gestión de Pagos", "icon": "bi-currency-dollar", "url": "/convocatorias/"},
-                    {"label": "Convocatorias", "icon": "bi-megaphone", "url": "/convocatorias/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Gestión de Pagos",
+                            "icon": "bi-currency-dollar",
+                            "url": "/convocatorias/",
+                        },
+                        {
+                            "label": "Convocatorias",
+                            "icon": "bi-megaphone",
+                            "url": "/convocatorias/",
+                        },
+                    ]
+                )
             elif role["code"] == "R-COORDINADOR":
-                nav_items.extend([
-                    {"label": "Mis Convocatorias", "icon": "bi-megaphone", "url": "/convocatorias/"},
-                    {"label": "Postulaciones", "icon": "bi-file-earmark-text", "url": "/applications/"},
-                    {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Mis Convocatorias",
+                            "icon": "bi-megaphone",
+                            "url": "/convocatorias/",
+                        },
+                        {
+                            "label": "Postulaciones",
+                            "icon": "bi-file-earmark-text",
+                            "url": "/applications/",
+                        },
+                        {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
+                    ]
+                )
             elif role["code"] == "R-ADMIN":
-                nav_items.extend([
-                    {"label": "Gestión de Usuarios", "icon": "bi-people", "url": "/accounts/admin/users/"},
-                    {"label": "Roles y Permisos", "icon": "bi-shield-check", "url": "/accounts/admin/roles/"},
-                    {"label": "Convocatorias", "icon": "bi-megaphone", "url": "/convocatorias/"},
-                    {"label": "Postulaciones", "icon": "bi-file-earmark-text", "url": "/applications/"},
-                    {"label": "Auditoría", "icon": "bi-journal-text", "url": "/accounts/audit/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Gestión de Usuarios",
+                            "icon": "bi-people",
+                            "url": "/accounts/admin/users/",
+                        },
+                        {
+                            "label": "Roles y Permisos",
+                            "icon": "bi-shield-check",
+                            "url": "/accounts/admin/roles/",
+                        },
+                        {
+                            "label": "Convocatorias",
+                            "icon": "bi-megaphone",
+                            "url": "/convocatorias/",
+                        },
+                        {
+                            "label": "Postulaciones",
+                            "icon": "bi-file-earmark-text",
+                            "url": "/applications/",
+                        },
+                        {
+                            "label": "Auditoría",
+                            "icon": "bi-journal-text",
+                            "url": "/accounts/audit/",
+                        },
+                    ]
+                )
 
         # Add common items for all users
         nav_items.append({"label": "Mi Perfil", "icon": "bi-person", "url": "/accounts/profile/"})
-        nav_items.append({"label": "Mis Notificaciones", "icon": "bi-bell", "url": "/accounts/notifications/"})
-        nav_items.append({"label": "Cerrar Sesión", "icon": "bi-box-arrow-right", "url": "/accounts/logout/"})
+        nav_items.append(
+            {"label": "Mis Notificaciones", "icon": "bi-bell", "url": "/accounts/notifications/"}
+        )
+        nav_items.append(
+            {"label": "Cerrar Sesión", "icon": "bi-box-arrow-right", "url": "/accounts/logout/"}
+        )
 
         return nav_items
 
@@ -280,20 +364,24 @@ class CurrentUserAPIView(APIView):
 
         roles_data = []
         for ur in user_roles:
-            roles_data.append({
-                "code": ur.role.code,
-                "name": ur.role.name,
-                "type": ur.role.type,
-            })
+            roles_data.append(
+                {
+                    "code": ur.role.code,
+                    "name": ur.role.name,
+                    "type": ur.role.type,
+                }
+            )
 
-        return JsonResponse({
-            "id": user.id,
-            "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "documento": user.documento,
-            "roles": roles_data,
-        })
+        return JsonResponse(
+            {
+                "id": user.id,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "documento": user.documento,
+                "roles": roles_data,
+            }
+        )
 
 
 def root_view(request):

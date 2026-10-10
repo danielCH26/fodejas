@@ -120,13 +120,16 @@ Pendiente:
 
 ## Etapa 4 — Aceptación MVP
 
-- [x] Suite completa verde (419✓/8⏭/0✗/0⚠) + `makemigrations --check`
-      limpio + `manage.py check` limpio. Lint (ruff) pendiente.
-- [ ] Confirmar recorrido e2e del piloto (los tests e2e de governance
-      pasan dentro de la suite; documentar el walkthrough) + deuda
-      ruff + actualizar `roadmap.md`/`CHANGES.md`.
-- [ ] Revisión del stack (chained PRs por commit) y push: decisión del
-      usuario.
+- [x] Suite completa verde (419✓/8⏭/0✗/0⚠, 22s) + `makemigrations
+      --check` limpio + `manage.py check` limpio.
+- [x] Lint: ruff auto-fix (1.440) expuso y reparó 2 NameErrors
+      latentes (`add5957`, `f647045`); 35 ítems aceptados como deuda
+      documentada. black/isort no instalados en host.
+- [x] Walkthrough e2e documentado + roadmap/CHANGES al día
+      (`07453e1`) + `docs/mvp-acceptance.md`.
+- [ ] **GATES DEL USUARIO**: push con PRs encadenados por commit y
+      revisión nativa por slice (RDD ON — global). Detalles de
+      corte en este archivo, Etapas 1-3.
 
 ## Riesgos
 

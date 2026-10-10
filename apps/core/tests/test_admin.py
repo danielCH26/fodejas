@@ -1,4 +1,5 @@
 """Tests for catalog admin interface."""
+
 from django.contrib import admin
 
 from apps.core.models import (
@@ -39,7 +40,7 @@ def test_admin_list_display():
     estrato_admin = site._registry[Estrato]
 
     # Check list_display
-    expected_list_display = ('codigo', 'nombre', 'activo', 'orden')
+    expected_list_display = ("codigo", "nombre", "activo", "orden")
     assert estrato_admin.list_display == expected_list_display
 
 
@@ -50,7 +51,7 @@ def test_admin_list_filter():
     estrato_admin = site._registry[Estrato]
 
     # Check list_filter includes activo
-    assert 'activo' in estrato_admin.list_filter
+    assert "activo" in estrato_admin.list_filter
 
 
 def test_admin_search_fields():
@@ -60,7 +61,7 @@ def test_admin_search_fields():
     estrato_admin = site._registry[Estrato]
 
     # Check search_fields
-    expected_search_fields = ('codigo', 'nombre')
+    expected_search_fields = ("codigo", "nombre")
     assert estrato_admin.search_fields == expected_search_fields
 
 
@@ -71,5 +72,5 @@ def test_admin_ordering():
     estrato_admin = site._registry[Estrato]
 
     # Check ordering
-    expected_ordering = ('orden', 'nombre')
+    expected_ordering = ("orden", "nombre")
     assert estrato_admin.ordering == expected_ordering

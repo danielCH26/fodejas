@@ -1,6 +1,7 @@
 """Test for AUD-006 fix: ``apps.accounts.permissions.HasRole`` is defined
 exactly once and accepts ``role_code`` as a constructor kwarg.
 """
+
 import ast
 import inspect
 from pathlib import Path
@@ -37,9 +38,7 @@ class HasRoleUniquenessTest(SimpleTestCase):
         tree = ast.parse(source)
 
         hasrole_classes = [
-            node
-            for node in tree.body
-            if isinstance(node, ast.ClassDef) and node.name == "HasRole"
+            node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "HasRole"
         ]
         self.assertEqual(
             len(hasrole_classes),

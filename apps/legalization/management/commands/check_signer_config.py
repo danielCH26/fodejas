@@ -14,6 +14,7 @@ Exit codes:
     0  — provider is correct for this environment.
     1  — misconfiguration detected; fix SIGNATURE_PROVIDER and retry.
 """
+
 from __future__ import annotations
 
 import sys

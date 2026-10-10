@@ -1,4 +1,5 @@
 """Tests for seed migration idempotency."""
+
 import pytest
 from django.db import connection
 
@@ -45,26 +46,26 @@ class TestSeedMigration:
 
         # Check migration status
         out = StringIO()
-        call_command('showmigrations', '--plan', stdout=out)
+        call_command("showmigrations", "--plan", stdout=out)
         plan = out.getvalue()
 
         # Verify core app has migrations applied
-        assert 'core.0001_initial' in plan
+        assert "core.0001_initial" in plan
 
     def test_catalog_tables_exist(self):
         """Test that all catalog tables exist in the database."""
 
         expected_tables = [
-            'core_estrato',
-            'core_gruposisben',
-            'core_etnia',
-            'core_municipioisla',
-            'core_nivelformacion',
-            'core_modalidadapoyo',
-            'core_tipoies',
-            'core_tipodocumento',
-            'core_estadodocumento',
-            'core_causalterminacionconvenio',
+            "core_estrato",
+            "core_gruposisben",
+            "core_etnia",
+            "core_municipioisla",
+            "core_nivelformacion",
+            "core_modalidadapoyo",
+            "core_tipoies",
+            "core_tipodocumento",
+            "core_estadodocumento",
+            "core_causalterminacionconvenio",
         ]
 
         with connection.cursor() as cursor:
@@ -79,18 +80,16 @@ class TestSeedMigration:
 
         # First creation
         estrato1, created1 = Estrato.objects.get_or_create(
-            codigo='test-1',
-            defaults={'nombre': 'Test Estrato', 'activo': True, 'orden': 99}
+            codigo="test-1", defaults={"nombre": "Test Estrato", "activo": True, "orden": 99}
         )
         assert created1 is True
 
         # Second creation with same code - should not fail
         estrato2, created2 = Estrato.objects.get_or_create(
-            codigo='test-1',
-            defaults={'nombre': 'Test Estrato', 'activo': True, 'orden': 99}
+            codigo="test-1", defaults={"nombre": "Test Estrato", "activo": True, "orden": 99}
         )
         assert created2 is False
         assert estrato1.id == estrato2.id
 
         # Cleanup
-        Estrato.objects.filter(codigo='test-1').delete()
+        Estrato.objects.filter(codigo="test-1").delete()

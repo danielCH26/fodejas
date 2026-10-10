@@ -3,11 +3,10 @@
 Verifica que la limpieza de apps stub se aplicó correctamente y que
 el placeholder de CAP-017 está en su lugar. Sin DB, sin PII.
 """
+
 import os
 
-REPO_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
-)
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 APPS_DIR = os.path.join(REPO_ROOT, "apps")
 DOCS_DIR = os.path.join(REPO_ROOT, "docs")
 
@@ -22,9 +21,9 @@ class TestStubsRemoved:
         )
 
     def test_psychosocial_directory_does_not_exist(self):
-        assert not os.path.isdir(os.path.join(APPS_DIR, "psychosocial")), (
-            "apps/psychosocial/ debería haber sido removida por CHG-806."
-        )
+        assert not os.path.isdir(
+            os.path.join(APPS_DIR, "psychosocial")
+        ), "apps/psychosocial/ debería haber sido removida por CHG-806."
 
     def test_governance_sessions_package_exists(self):
         path = os.path.join(APPS_DIR, "governance", "sessions")
@@ -50,11 +49,14 @@ class TestInstalledApps:
         # Importación lazy: si el proyecto no carga (sin venv),
         # marcamos el test como xfail y verificamos manualmente abajo.
         import os
+
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
         try:
             import django
+
             django.setup()
             from django.conf import settings
+
             return list(settings.INSTALLED_APPS)
         except Exception:
             return None  # el proyecto no carga; verificar por grep
@@ -99,8 +101,7 @@ class TestNoLingeringImports:
         for root, _dirs, files in os.walk(REPO_ROOT):
             # Excluir directorios irrelevantes.
             if any(
-                skip in root
-                for skip in (".git", "node_modules", ".venv", "venv", "__pycache__")
+                skip in root for skip in (".git", "node_modules", ".venv", "venv", "__pycache__")
             ):
                 continue
             for filename in files:
@@ -113,15 +114,11 @@ class TestNoLingeringImports:
                     content = open(filepath, encoding="utf-8").read()
                 except (UnicodeDecodeError, OSError):
                     continue
-                assert "from apps.reporting" not in content, (
-                    f"Removed app imported in {filepath}"
-                )
-                assert "from apps.psychosocial" not in content, (
-                    f"Removed app imported in {filepath}"
-                )
-                assert "import apps.reporting" not in content, (
-                    f"Removed app imported in {filepath}"
-                )
-                assert "import apps.psychosocial" not in content, (
-                    f"Removed app imported in {filepath}"
-                )
+                assert "from apps.reporting" not in content, f"Removed app imported in {filepath}"
+                assert (
+                    "from apps.psychosocial" not in content
+                ), f"Removed app imported in {filepath}"
+                assert "import apps.reporting" not in content, f"Removed app imported in {filepath}"
+                assert (
+                    "import apps.psychosocial" not in content
+                ), f"Removed app imported in {filepath}"

@@ -1,16 +1,16 @@
 <div id="wizard-step-4">
     <p class="text-muted mb-4">Sube los documentos de soporte requeridos para tu postulación.</p>
-    
+
     <div class="alert alert-warning mb-4">
         <i class="bi bi-exclamation-triangle me-2"></i>
-        <strong>Atención:</strong> Todos los documentos deben estar legibles y en formato PDF, JPG o PNG. 
+        <strong>Atención:</strong> Todos los documentos deben estar legibles y en formato PDF, JPG o PNG.
         Tamaño máximo por archivo: 10MB.
     </div>
-    
+
     <form id="step-4-form" enctype="multipart/form-data">
         <div class="mb-4">
             <h6>Documentos Obligatorios</h6>
-            
+
             <!-- Documento de Identidad -->
             <div class="card mb-3">
                 <div class="card-body">
@@ -32,9 +32,9 @@
                                 </span>
                                 {% endif %}
                             {% endfor %}
-                            <input type="file" 
-                                   class="form-control form-control-sm" 
-                                   id="cedula" 
+                            <input type="file"
+                                   class="form-control form-control-sm"
+                                   id="cedula"
                                    name="cedula"
                                    accept=".pdf,.jpg,.jpeg,.png"
                                    style="width: 250px;">
@@ -42,7 +42,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Certificado de Notas -->
             <div class="card mb-3">
                 <div class="card-body">
@@ -64,9 +64,9 @@
                                 </span>
                                 {% endif %}
                             {% endfor %}
-                            <input type="file" 
-                                   class="form-control form-control-sm" 
-                                   id="certificado_notas" 
+                            <input type="file"
+                                   class="form-control form-control-sm"
+                                   id="certificado_notas"
                                    name="certificado_notas"
                                    accept=".pdf,.jpg,.jpeg,.png"
                                    style="width: 250px;">
@@ -74,7 +74,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Diploma o Certificación -->
             <div class="card mb-3">
                 <div class="card-body">
@@ -96,9 +96,9 @@
                                 </span>
                                 {% endif %}
                             {% endfor %}
-                            <input type="file" 
-                                   class="form-control form-control-sm" 
-                                   id="diploma" 
+                            <input type="file"
+                                   class="form-control form-control-sm"
+                                   id="diploma"
                                    name="diploma"
                                    accept=".pdf,.jpg,.jpeg,.png"
                                    style="width: 250px;">
@@ -107,10 +107,10 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="mb-4">
             <h6>Documentos Opcionales</h6>
-            
+
             <!-- Recibo de Pago -->
             <div class="card mb-3">
                 <div class="card-body">
@@ -132,9 +132,9 @@
                                 </span>
                                 {% endif %}
                             {% endfor %}
-                            <input type="file" 
-                                   class="form-control form-control-sm" 
-                                   id="recibo_pago" 
+                            <input type="file"
+                                   class="form-control form-control-sm"
+                                   id="recibo_pago"
                                    name="recibo_pago"
                                    accept=".pdf,.jpg,.jpeg,.png"
                                    style="width: 250px;">
@@ -142,7 +142,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Otros Documentos -->
             <div class="card mb-3">
                 <div class="card-body">
@@ -157,9 +157,9 @@
                             </p>
                         </div>
                         <div>
-                            <input type="file" 
-                                   class="form-control form-control-sm" 
-                                   id="otros_documentos" 
+                            <input type="file"
+                                   class="form-control form-control-sm"
+                                   id="otros_documentos"
                                    name="otros_documentos"
                                    accept=".pdf,.jpg,.jpeg,.png"
                                    style="width: 250px;">
@@ -168,26 +168,26 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Drag and Drop Area -->
         <div class="card border-dashed mb-4">
             <div class="card-body text-center py-5">
                 <i class="bi bi-cloud-arrow-up fs-1 text-muted mb-3"></i>
                 <h5 class="text-muted mb-3">Arrastra y suelta archivos aquí</h5>
                 <p class="text-muted mb-4">o haz clic para seleccionar archivos</p>
-                <input type="file" 
-                       class="d-none" 
-                       id="file-dropzone" 
+                <input type="file"
+                       class="d-none"
+                       id="file-dropzone"
                        multiple
                        accept=".pdf,.jpg,.jpeg,.png">
-                <button type="button" 
+                <button type="button"
                         class="btn btn-outline-primary"
                         onclick="document.getElementById('file-dropzone').click()">
                     <i class="bi bi-upload me-2"></i>Seleccionar Archivos
                 </button>
             </div>
         </div>
-        
+
         <!-- Upload Progress -->
         <div id="upload-progress" class="d-none">
             <div class="card">
@@ -196,19 +196,19 @@
                 </div>
                 <div class="card-body">
                     <div class="progress mb-3">
-                        <div id="upload-progress-bar" 
-                             class="progress-bar" 
-                             role="progressbar" 
+                        <div id="upload-progress-bar"
+                             class="progress-bar"
+                             role="progressbar"
                              style="width: 0%"
-                             aria-valuenow="0" 
-                             aria-valuemin="0" 
+                             aria-valuenow="0"
+                             aria-valuemin="0"
                              aria-valuemax="100">0%</div>
                     </div>
                     <p id="upload-status" class="text-muted mb-0">Preparando subida...</p>
                 </div>
             </div>
         </div>
-        
+
         <!-- Uploaded Files List -->
         {% if application.anexos.exists %}
         <div class="card">
@@ -248,21 +248,21 @@
         const progressContainer = document.getElementById('upload-progress');
         const progressBar = document.getElementById('upload-progress-bar');
         const statusText = document.getElementById('upload-status');
-        
+
         // Handle file selection
         dropzone.addEventListener('change', handleFileUpload);
-        
+
         // Drag and drop handlers
         const card = document.querySelector('.card.border-dashed');
         card.addEventListener('dragover', function(e) {
             e.preventDefault();
             card.classList.add('border-primary');
         });
-        
+
         card.addEventListener('dragleave', function() {
             card.classList.remove('border-primary');
         });
-        
+
         card.addEventListener('drop', function(e) {
             e.preventDefault();
             card.classList.remove('border-primary');
@@ -270,25 +270,25 @@
             handleFileUpload();
         });
     });
-    
+
     function handleFileUpload() {
         const dropzone = document.getElementById('file-dropzone');
         const progressContainer = document.getElementById('upload-progress');
         const progressBar = document.getElementById('upload-progress-bar');
         const statusText = document.getElementById('upload-status');
-        
+
         if (dropzone.files.length === 0) return;
-        
+
         const file = dropzone.files[0];
-        
+
         // Show progress container
         progressContainer.classList.remove('d-none');
-        
+
         // Create form data
         const formData = new FormData();
         formData.append('file', file);
         formData.append('file_type', 'otro');  // Default type for drag-drop
-        
+
         // Real upload via fetch
         fetch('{% url "applications:upload" application.uuid %}', {
             method: 'POST',
@@ -304,7 +304,7 @@
                 progressBar.textContent = '100%';
                 progressBar.classList.add('bg-success');
                 statusText.textContent = '¡Archivo subido exitosamente!';
-                
+
                 // Reload to show updated file list
                 setTimeout(() => {
                     htmx.ajax('GET', window.location.href, {
@@ -325,7 +325,7 @@
             statusText.textContent = 'Error: ' + error.message;
         });
     }
-    
+
     // Auto-save when leaving the step
     document.addEventListener('htmx:beforeSwap', function(event) {
         if (event.detail.target.id === 'wizard-step-content') {
@@ -337,11 +337,11 @@
             }
         }
     });
-    
+
     function validateStep4() {
         // Check if required documents are uploaded
         const requiredUploaded = {% if application.anexos.count >= 3 %}true{% else %}false{% endif %};
-        
+
         // In a real implementation, would check for specific document types
         return requiredUploaded;
     }

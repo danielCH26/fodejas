@@ -12,6 +12,7 @@ these tests on SQLite and run them on PostgreSQL, which is the
 production target (CHG-801 used the same skipif pattern for
 ``audit/tests/test_concurrency.py``).
 """
+
 from __future__ import annotations
 
 import threading
@@ -44,9 +45,7 @@ class TestAuthorizeConcurrency:
             user = user_factory()
             try:
                 barrier.wait(timeout=5)
-                result = TreasuryService.authorize(
-                    auth.id, user, "president"
-                )
+                result = TreasuryService.authorize(auth.id, user, "president")
                 results.append(("ok", result))
             except BaseException as exc:  # noqa: BLE001 - we want any error type
                 results.append(("err", exc))
@@ -63,9 +62,9 @@ class TestAuthorizeConcurrency:
 
         assert len(oks) == 1, f"expected 1 success, got {len(oks)} ({results})"
         assert len(errs) == 1, f"expected 1 failure, got {len(errs)} ({results})"
-        assert isinstance(errs[0], ValueError), (
-            f"loser should raise ValueError; got {type(errs[0]).__name__}: {errs[0]}"
-        )
+        assert isinstance(
+            errs[0], ValueError
+        ), f"loser should raise ValueError; got {type(errs[0]).__name__}: {errs[0]}"
 
         auth.refresh_from_db()
         assert auth.authorized_by_president is not None

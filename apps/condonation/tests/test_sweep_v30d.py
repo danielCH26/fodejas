@@ -1,4 +1,5 @@
 """Sweep tests for the 30-calendar-day exoneration window (CHG-802 / CAP-016)."""
+
 from __future__ import annotations
 
 import pytest

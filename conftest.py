@@ -25,6 +25,7 @@ Tradeoff: the shared cache persists for the duration of the session,
   improvement is that the DB is clean at session start (no db.sqlite3
   contamination) and gone at session end.
 """
+
 from __future__ import annotations
 
 import pytest

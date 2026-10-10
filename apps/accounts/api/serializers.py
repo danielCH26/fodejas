@@ -1,4 +1,5 @@
 """Serializers for accounts API."""
+
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
@@ -78,6 +79,7 @@ class SolicitudHabeasDataSerializer(serializers.ModelSerializer):
     def get_dias_restantes(self, obj):
         """Calculate remaining days until deadline."""
         from django.utils import timezone
+
         if obj.fecha_limite:
             remaining = obj.fecha_limite - timezone.now()
             return max(0, remaining.days)
@@ -127,6 +129,7 @@ class SolicitudHabeasDataCreateSerializer(serializers.ModelSerializer):
             # TODO: Calculate fecha_limite based on 30 business days
             # This will be implemented when the calcular_fecha_limite_habil function is created
             from django.utils import timezone
+
             validated_data["fecha_limite"] = timezone.now()
         return super().create(validated_data)
 
@@ -150,14 +153,14 @@ class SolicitudHabeasDataUpdateSerializer(serializers.ModelSerializer):
         motivo_rechazo = attrs.get("motivo_rechazo")
 
         if estado == "resuelta" and not respuesta:
-            raise serializers.ValidationError({
-                "respuesta": _("La respuesta es obligatoria para marcar como resuelta.")
-            })
+            raise serializers.ValidationError(
+                {"respuesta": _("La respuesta es obligatoria para marcar como resuelta.")}
+            )
 
         if estado == "rechazada" and not motivo_rechazo:
-            raise serializers.ValidationError({
-                "motivo_rechazo": _("El motivo es obligatorio para marcar como rechazada.")
-            })
+            raise serializers.ValidationError(
+                {"motivo_rechazo": _("El motivo es obligatorio para marcar como rechazada.")}
+            )
 
         return attrs
 

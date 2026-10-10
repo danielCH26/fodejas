@@ -1,4 +1,5 @@
 """Tests for check_signer_config management command (CHG-301)."""
+
 from __future__ import annotations
 
 from io import StringIO

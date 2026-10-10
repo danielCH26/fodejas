@@ -1,4 +1,5 @@
 """Admin configuration for core models."""
+
 from django.contrib import admin
 
 from .models import (
@@ -17,10 +18,11 @@ from .models import (
 
 class CatalogoAdmin(admin.ModelAdmin):
     """Base admin for all catalog models."""
-    list_display = ('codigo', 'nombre', 'activo', 'orden')
-    list_filter = ('activo',)
-    search_fields = ('codigo', 'nombre')
-    ordering = ('orden', 'nombre')
+
+    list_display = ("codigo", "nombre", "activo", "orden")
+    list_filter = ("activo",)
+    search_fields = ("codigo", "nombre")
+    ordering = ("orden", "nombre")
 
 
 @admin.register(Estrato)

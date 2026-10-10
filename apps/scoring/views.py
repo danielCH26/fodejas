@@ -1,4 +1,5 @@
 """HTML views for scoring (CHG-204)."""
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
@@ -34,12 +35,11 @@ class ScoringListView(LoginRequiredMixin, CommitteePermissionMixin, ListView):
 
     def get_queryset(self):
         """Return verified solicitudes that need scoring."""
-        return Solicitud.objects.filter(
-            estado=Solicitud.Estado.VERIFICADA
-        ).select_related(
-            "convocatoria",
-            "aspirante"
-        ).order_by("-created_at")
+        return (
+            Solicitud.objects.filter(estado=Solicitud.Estado.VERIFICADA)
+            .select_related("convocatoria", "aspirante")
+            .order_by("-created_at")
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -121,11 +121,13 @@ class ScoringEvaluateView(LoginRequiredMixin, UpdateView):
         # Recalculate total score
         calcular_puntaje_total(evaluacion.solicitud, request.user)
 
-        return JsonResponse({
-            "success": True,
-            "evaluacion_id": evaluacion.id,
-            "puntaje": str(evaluacion.puntaje),
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "evaluacion_id": evaluacion.id,
+                "puntaje": str(evaluacion.puntaje),
+            }
+        )
 
 
 class ScoringCalculateView(LoginRequiredMixin, View):
@@ -140,10 +142,12 @@ class ScoringCalculateView(LoginRequiredMixin, View):
 
         messages.success(request, f"Puntaje total calculado: {puntaje.puntaje_total}")
 
-        return JsonResponse({
-            "success": True,
-            "puntaje_total": str(puntaje.puntaje_total),
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "puntaje_total": str(puntaje.puntaje_total),
+            }
+        )
 
 
 class RankingView(LoginRequiredMixin, TemplateView):
@@ -170,13 +174,11 @@ class RankingView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         # Get all puntajes with rankings
-        puntajes = PuntajeTotal.objects.filter(
-            solicitud__estado=Solicitud.Estado.VERIFICADA
-        ).select_related(
-            "solicitud",
-            "solicitud__convocatoria",
-            "solicitud__aspirante"
-        ).order_by("ranking_general")
+        puntajes = (
+            PuntajeTotal.objects.filter(solicitud__estado=Solicitud.Estado.VERIFICADA)
+            .select_related("solicitud", "solicitud__convocatoria", "solicitud__aspirante")
+            .order_by("ranking_general")
+        )
 
         context["puntajes"] = puntajes
 
@@ -207,10 +209,12 @@ class RankingGenerateView(LoginRequiredMixin, View):
 
         messages.success(request, "Rankings generados correctamente")
 
-        return JsonResponse({
-            "success": True,
-            "result": result,
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "result": result,
+            }
+        )
 
 
 class ScoringExportView(LoginRequiredMixin, View):
@@ -222,40 +226,42 @@ class ScoringExportView(LoginRequiredMixin, View):
         from django.http import HttpResponse
 
         # Get all puntajes
-        puntajes = PuntajeTotal.objects.filter(
-            solicitud__estado=Solicitud.Estado.VERIFICADA
-        ).select_related(
-            "solicitud",
-            "solicitud__convocatoria",
-            "solicitud__aspirante"
-        ).order_by("ranking_general")
+        puntajes = (
+            PuntajeTotal.objects.filter(solicitud__estado=Solicitud.Estado.VERIFICADA)
+            .select_related("solicitud", "solicitud__convocatoria", "solicitud__aspirante")
+            .order_by("ranking_general")
+        )
 
         # Create CSV response
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="ranking.csv"'
 
         writer = csv.writer(response)
-        writer.writerow([
-            "Ranking",
-            "Radicado",
-            "Aspirante",
-            "Municipio",
-            "Puntaje Socioeconómico",
-            "Puntaje Académico",
-            "Puntaje Excelencia",
-            "Puntaje Total",
-        ])
+        writer.writerow(
+            [
+                "Ranking",
+                "Radicado",
+                "Aspirante",
+                "Municipio",
+                "Puntaje Socioeconómico",
+                "Puntaje Académico",
+                "Puntaje Excelencia",
+                "Puntaje Total",
+            ]
+        )
 
         for p in puntajes:
-            writer.writerow([
-                p.ranking_general,
-                p.solicitud.radicado,
-                f"{p.solicitud.aspirante.first_name} {p.solicitud.aspirante.last_name}",
-                p.solicitud.datos_personales.get("municipio", ""),
-                p.puntaje_socioeconomico,
-                p.puntaje_academico,
-                p.puntaje_excelencia,
-                p.puntaje_total,
-            ])
+            writer.writerow(
+                [
+                    p.ranking_general,
+                    p.solicitud.radicado,
+                    f"{p.solicitud.aspirante.first_name} {p.solicitud.aspirante.last_name}",
+                    p.solicitud.datos_personales.get("municipio", ""),
+                    p.puntaje_socioeconomico,
+                    p.puntaje_academico,
+                    p.puntaje_excelencia,
+                    p.puntaje_total,
+                ]
+            )
 
         return response

@@ -1,4 +1,5 @@
 """Models for audit app."""
+
 import hashlib
 import json
 import uuid

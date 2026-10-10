@@ -1,4 +1,5 @@
 """Models for applications (FUI)."""
+
 import uuid
 
 from django.conf import settings
@@ -211,6 +212,7 @@ class RequisitoValidacion(models.Model):
 
     class Estado(models.TextChoices):
         """Validation states for each requirement."""
+
         PENDIENTE = "pendiente", _("Pendiente")
         VERIFICADO = "verificado", _("Verificado")
         RECHAZADO = "rechazado", _("Rechazado")

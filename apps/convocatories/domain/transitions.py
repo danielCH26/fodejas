@@ -3,6 +3,7 @@
 This module implements the Finite State Machine (FSM) for convocation lifecycle
 as defined in CAP-002 and the CHG-201 specification.
 """
+
 from django.core.exceptions import ValidationError
 
 
@@ -121,16 +122,16 @@ def transicionar(convocatoria, estado_destino: str, *, actor, motivo: str = "") 
     es_valida, error_code = validar_transicion(estado_origen, estado_destino)
 
     if not es_valida:
-        raise ValidationError({
-            "estado": f"Transición inválida: {estado_origen} → {estado_destino} ({error_code})"
-        })
+        raise ValidationError(
+            {"estado": f"Transición inválida: {estado_origen} → {estado_destino} ({error_code})"}
+        )
 
     # Special validation for CANCELADA
     if estado_destino == Estado.CANCELADA:
         if not motivo:
-            raise ValidationError({
-                "motivo": "El motivo es requerido para cancelar una convocatoria"
-            })
+            raise ValidationError(
+                {"motivo": "El motivo es requerido para cancelar una convocatoria"}
+            )
 
     # Execute transition
     convocatoria.estado = estado_destino

@@ -1,4 +1,5 @@
 """Tests for JWT authentication flows."""
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -129,8 +130,7 @@ class JWTUserRolesTests(TestCase):
 
         # Assign role (use seeded role)
         self.role, _ = Role.objects.get_or_create(
-            code="R-ADMIN",
-            defaults={"name": "Administrador", "type": "interno"}
+            code="R-ADMIN", defaults={"name": "Administrador", "type": "interno"}
         )
         UserRole.objects.get_or_create(
             user=self.user,

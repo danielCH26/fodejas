@@ -1,4 +1,5 @@
 """Management command to sync roles and permissions with Django auth system."""
+
 from django.core.management.base import BaseCommand
 
 from apps.accounts.models import Permission, Role, RolePermission
@@ -37,14 +38,10 @@ class Command(BaseCommand):
                 try:
                     group = sync_role_to_group(role)
                     if verbosity > 1:
-                        self.stdout.write(
-                            f"  Synced role '{role.name}' -> group '{group.name}'"
-                        )
+                        self.stdout.write(f"  Synced role '{role.name}' -> group '{group.name}'")
                     roles_synced += 1
                 except Exception as e:
-                    self.stderr.write(
-                        f"  ERROR syncing role '{role.name}': {e}"
-                    )
+                    self.stderr.write(f"  ERROR syncing role '{role.name}': {e}")
 
         # Sync permissions to auth permissions
         self.stdout.write("\n=== Syncing Permissions to Django Auth ===")
@@ -65,20 +62,18 @@ class Command(BaseCommand):
                         )
                     permissions_synced += 1
                 except Exception as e:
-                    self.stderr.write(
-                        f"  ERROR syncing permission '{perm.action}': {e}"
-                    )
+                    self.stderr.write(f"  ERROR syncing permission '{perm.action}': {e}")
 
         # Sync role permissions to group permissions
         self.stdout.write("\n=== Syncing Role Permissions to Groups ===")
-        role_perms = RolePermission.objects.select_related("role__group", "permission__auth_permission")
+        role_perms = RolePermission.objects.select_related(
+            "role__group", "permission__auth_permission"
+        )
 
         for rp in role_perms:
             if rp.role.group is None:
                 if verbosity > 1:
-                    self.stdout.write(
-                        f"  SKIP: Role '{rp.role.name}' has no group yet"
-                    )
+                    self.stdout.write(f"  SKIP: Role '{rp.role.name}' has no group yet")
                 continue
 
             if rp.permission.auth_permission is None:
@@ -102,17 +97,19 @@ class Command(BaseCommand):
                         )
                     role_perms_synced += 1
                 except Exception as e:
-                    self.stderr.write(
-                        f"  ERROR syncing role permission: {e}"
-                    )
+                    self.stderr.write(f"  ERROR syncing role permission: {e}")
 
         # Summary
         self.stdout.write("\n" + "=" * 40)
         if dry_run:
-            self.stdout.write(self.style.SUCCESS(
-                f"[DRY-RUN] Would sync: {roles_synced} roles, {permissions_synced} permissions, {role_perms_synced} role-permissions"
-            ))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"[DRY-RUN] Would sync: {roles_synced} roles, {permissions_synced} permissions, {role_perms_synced} role-permissions"
+                )
+            )
         else:
-            self.stdout.write(self.style.SUCCESS(
-                f"Synced: {roles_synced} roles, {permissions_synced} permissions, {role_perms_synced} role-permissions"
-            ))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Synced: {roles_synced} roles, {permissions_synced} permissions, {role_perms_synced} role-permissions"
+                )
+            )

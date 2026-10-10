@@ -5,6 +5,7 @@
 handlers must read the actor from the
 ``apps.core.logging_config.actor_var`` contextvar.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -32,9 +33,7 @@ class TestRoleSignal:
             description="Synthetic role for signal test.",
         )
 
-        events = list(
-            AuditEvent.objects.filter(entity="role")
-        )
+        events = list(AuditEvent.objects.filter(entity="role"))
         assert len(events) == 1
         evt = events[0]
         assert evt.action == "CREATE"
@@ -55,9 +54,7 @@ class TestRoleSignal:
             description="Synthetic role for system test.",
         )
 
-        events = list(
-            AuditEvent.objects.filter(entity="role")
-        )
+        events = list(AuditEvent.objects.filter(entity="role"))
         assert len(events) == 1
         evt = events[0]
         assert evt.actor is None
@@ -69,9 +66,7 @@ class TestRoleSignal:
 class TestEstratoSignal:
     """Catalog models in ``apps.core`` must be auto-audited."""
 
-    def test_estrato_save_emits_audit_event_with_core_module(
-        self, admin_user_with_role
-    ):
+    def test_estrato_save_emits_audit_event_with_core_module(self, admin_user_with_role):
         AuditEvent.objects.all().delete()
         set_actor(admin_user_with_role)
 
@@ -87,9 +82,7 @@ class TestEstratoSignal:
         # so we filter by entity name only and check the module
         # label. The full PK roundtrip is exercised in
         # ``test_chain.py``.
-        events = list(
-            AuditEvent.objects.filter(entity="estrato")
-        )
+        events = list(AuditEvent.objects.filter(entity="estrato"))
         assert len(events) >= 1, "expected at least one audit event"
         evt = events[0]
         assert evt.module == "core"
@@ -110,9 +103,7 @@ class TestChainRemainsValidAcrossSignals:
         # the ``changes`` payload.
         set_actor(None)
         AuditEvent.objects.all().delete()
-        assert AuditEvent.objects.count() == 0, (
-            "delete did not clear the chain"
-        )
+        assert AuditEvent.objects.count() == 0, "delete did not clear the chain"
 
         # Bind the actor to the user fixture AFTER the cleanup so
         # any audit events emitted by the user fixture (if any)
@@ -136,18 +127,16 @@ class TestChainRemainsValidAcrossSignals:
         # fixtures or migrations.)
         from apps.audit.models import AuditEvent as AE
 
-        events = list(
-            AE.objects.filter(entity="role").order_by("timestamp", "id")
-        )
+        events = list(AE.objects.filter(entity="role").order_by("timestamp", "id"))
         assert len(events) == 3, (
             f"expected 3 role events, got {len(events)}; total events: "
             f"{[(e.entity, e.entity_id, e.action) for e in AuditEvent.objects.all()]}"
         )
         prev = "0" * 64
         for evt in events:
-            assert evt.previous_hash == prev, (
-                f"previous_hash mismatch at {evt.id}: got {evt.previous_hash}"
-            )
+            assert (
+                evt.previous_hash == prev
+            ), f"previous_hash mismatch at {evt.id}: got {evt.previous_hash}"
             prev = evt.current_hash
 
         # And each event's stored current_hash matches what

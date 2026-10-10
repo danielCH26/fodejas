@@ -1,4 +1,5 @@
 """Scoring service for CAP-005."""
+
 from decimal import Decimal
 
 from django.db import transaction
@@ -48,17 +49,11 @@ def calcular_puntaje_total(solicitud, actor=None):
     weights = get_weights(solicitud.convocatoria)
 
     # Get evaluations
-    eval_socio = solicitud.evaluaciones.filter(
-        criterio=Evaluacion.Criterio.SOCIOECONOMICO
-    ).first()
+    eval_socio = solicitud.evaluaciones.filter(criterio=Evaluacion.Criterio.SOCIOECONOMICO).first()
 
-    eval_acad = solicitud.evaluaciones.filter(
-        criterio=Evaluacion.Criterio.ACADEMICO
-    ).first()
+    eval_acad = solicitud.evaluaciones.filter(criterio=Evaluacion.Criterio.ACADEMICO).first()
 
-    eval_excel = solicitud.evaluaciones.filter(
-        criterio=Evaluacion.Criterio.EXCELENCIA
-    ).first()
+    eval_excel = solicitud.evaluaciones.filter(criterio=Evaluacion.Criterio.EXCELENCIA).first()
 
     # Get puntajes (default to 0 if not evaluated)
     socio = eval_socio.puntaje or Decimal("0")
@@ -66,18 +61,18 @@ def calcular_puntaje_total(solicitud, actor=None):
     excel = eval_excel.puntaje or Decimal("0")
 
     # Calculate total
-    total = (socio * weights["socioeconomico"]) + \
-            (acad * weights["academico"]) + \
-            (excel * weights["excelencia"])
+    total = (
+        (socio * weights["socioeconomico"])
+        + (acad * weights["academico"])
+        + (excel * weights["excelencia"])
+    )
 
     # Get or create PuntajeTotal with row-level lock.
     # select_for_update() requires PostgreSQL/MySQL — callers on
     # SQLite will raise NotSupportedError, which is the expected
     # signal to use a real RDBMS for concurrent scoring.
-    puntaje, _ = (
-        PuntajeTotal.objects
-        .select_for_update()
-        .get_or_create(solicitud=solicitud, defaults={"calculado_por": actor})
+    puntaje, _ = PuntajeTotal.objects.select_for_update().get_or_create(
+        solicitud=solicitud, defaults={"calculado_por": actor}
     )
 
     # Update values
@@ -103,19 +98,16 @@ def generar_ranking_municipio(convocatoria, municipio_codigo=None):
 
     # Get verified solicitudes
     queryset = Solicitud.objects.filter(
-        convocatoria=convocatoria,
-        estado=Solicitud.Estado.VERIFICADA
+        convocatoria=convocatoria, estado=Solicitud.Estado.VERIFICADA
     ).select_related("puntaje_total")
 
     if municipio_codigo:
-        queryset = queryset.filter(
-            datos_personales__municipio=municipio_codigo
-        )
+        queryset = queryset.filter(datos_personales__municipio=municipio_codigo)
 
     # Get puntajes and sort
-    puntajes = PuntajeTotal.objects.filter(
-        solicitud__in=queryset
-    ).order_by("-puntaje_total", "solicitud__created_at")
+    puntajes = PuntajeTotal.objects.filter(solicitud__in=queryset).order_by(
+        "-puntaje_total", "solicitud__created_at"
+    )
 
     # Assign rankings
     for rank, puntaje in enumerate(puntajes, 1):
@@ -135,20 +127,23 @@ def generar_ranking_general(convocatoria):
 
     # Get verified solicitudes
     queryset = Solicitud.objects.filter(
-        convocatoria=convocatoria,
-        estado=Solicitud.Estado.VERIFICADA
+        convocatoria=convocatoria, estado=Solicitud.Estado.VERIFICADA
     ).select_related("puntaje_total")
 
     # Get all puntajes ordered by score (desc) then by created_at (asc)
-    all_puntajes = list(PuntajeTotal.objects.filter(
-        solicitud__in=queryset
-    ).select_related("solicitud").order_by("-puntaje_total", "solicitud__created_at"))
+    all_puntajes = list(
+        PuntajeTotal.objects.filter(solicitud__in=queryset)
+        .select_related("solicitud")
+        .order_by("-puntaje_total", "solicitud__created_at")
+    )
 
     # Sort with Providencia priority only in case of tie
     # Primary: score (desc), Secondary: Providencia comes first on tie
     def sort_key(p):
         score = p.puntaje_total or 0
-        is_providencia = 1 if p.solicitud.datos_personales.get("municipio") == PROVIDENCIA_MUNICIPIO else 0
+        is_providencia = (
+            1 if p.solicitud.datos_personales.get("municipio") == PROVIDENCIA_MUNICIPIO else 0
+        )
         # Return tuple: (negative score, non-providencia flag) - lower is better
         # For desc order, we use negative score; for Providencia priority on tie, 0 (Providencia) comes before 1 (others)
         return (-score, is_providencia)
@@ -202,7 +197,7 @@ def create_default_evaluaciones(solicitud):
         eval_obj, created_flag = Evaluacion.objects.get_or_create(
             solicitud=solicitud,
             criterio=crit["criterio"],
-            defaults={"criterio_nombre": crit["nombre"]}
+            defaults={"criterio_nombre": crit["nombre"]},
         )
         if created_flag:
             created.append(eval_obj)

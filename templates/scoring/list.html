@@ -56,11 +56,11 @@
                             <td>{{ solicitud.datos_personales.municipio|default:"-" }}</td>
                             <td>
                                 <div class="progress" style="height: 20px; width: 120px;">
-                                    <div class="progress-bar bg-primary" 
-                                         role="progressbar" 
+                                    <div class="progress-bar bg-primary"
+                                         role="progressbar"
                                          style="width: {{ solicitud.progress }}%"
-                                         aria-valuenow="{{ solicitud.progress }}" 
-                                         aria-valuemin="0" 
+                                         aria-valuenow="{{ solicitud.progress }}"
+                                         aria-valuemin="0"
                                          aria-valuemax="100">
                                         {{ solicitud.progress }}%
                                     </div>
@@ -74,7 +74,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{% url 'scoring:detail' solicitud.uuid %}" 
+                                <a href="{% url 'scoring:detail' solicitud.uuid %}"
                                    class="btn btn-sm btn-primary">
                                     <i class="bi bi-pencil-square me-1"></i>Evaluar
                                 </a>

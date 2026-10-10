@@ -1,4 +1,5 @@
 """Models for scoring (CAP-005)."""
+
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -9,6 +10,7 @@ class Evaluacion(models.Model):
 
     class Criterio(models.TextChoices):
         """Evaluation criteria groups."""
+
         SOCIOECONOMICO = "socioeconomico", _("Socioeconómico")
         ACADEMICO = "academico", _("Académico")
         EXCELENCIA = "excelencia", _("Excelencia")

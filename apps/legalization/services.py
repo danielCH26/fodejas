@@ -1,4 +1,5 @@
 """Legalization service for managing legal documents (CHG-302, CAP-009)."""
+
 from __future__ import annotations
 
 import hashlib
@@ -26,6 +27,7 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------------------------
 try:
     from weasyprint import HTML as _WeasyHTML  # noqa: N813
+
     _WASYPRINT_AVAILABLE = True
 except Exception:  # noqa: BLE001
     _WASYPRINT_AVAILABLE = False
@@ -35,6 +37,7 @@ except Exception:  # noqa: BLE001
 # -------------------------------------------------------------------
 # LegalizationService
 # -------------------------------------------------------------------
+
 
 class LegalizationService:
     """Service for managing legal document workflow (CHG-302, CAP-009).
@@ -97,13 +100,8 @@ class LegalizationService:
         Returns:
             dict mapping document_type → LegalDocument instance
         """
-        process = LegalizationService.create_process_for_beneficiary(
-            beneficiary, convocatoria
-        )
-        return {
-            doc.document_type: doc
-            for doc in process.documents.all()
-        }
+        process = LegalizationService.create_process_for_beneficiary(beneficiary, convocatoria)
+        return {doc.document_type: doc for doc in process.documents.all()}
 
     @staticmethod
     def generate_pdf(document, context: dict, actor=None):
@@ -132,16 +130,12 @@ class LegalizationService:
                 has been injected.
         """
         template_map = {
-            LegalDocument.DocumentType.PAGARE:
-                "legalization/pdf/pagare.html",
-            LegalDocument.DocumentType.CARTA_INSTRUCCIONES:
-                "legalization/pdf/carta_instrucciones.html",
-            LegalDocument.DocumentType.CONTRATO:
-                "legalization/pdf/contrato.html",
+            LegalDocument.DocumentType.PAGARE: "legalization/pdf/pagare.html",
+            LegalDocument.DocumentType.CARTA_INSTRUCCIONES: "legalization/pdf/carta_instrucciones.html",
+            LegalDocument.DocumentType.CONTRATO: "legalization/pdf/contrato.html",
             # CHG-303: ACTO_ADMINISTRATIVO uses the contrato template as
             # a placeholder; Batch B provides a dedicated acto template.
-            LegalDocument.DocumentType.ACTO_ADMINISTRATIVO:
-                "legalization/pdf/contrato.html",
+            LegalDocument.DocumentType.ACTO_ADMINISTRATIVO: "legalization/pdf/contrato.html",
         }
         template_name = template_map.get(document.document_type)
         if not template_name:
@@ -220,14 +214,10 @@ class LegalizationService:
         documents = list(process.documents.all())
         if not documents:
             raise ValueError(
-                f"Process {process.id} has no documents; "
-                f"cannot complete legalization."
+                f"Process {process.id} has no documents; " f"cannot complete legalization."
             )
 
-        not_firmado = [
-            d for d in documents
-            if d.status != LegalDocument.Status.FIRMADO
-        ]
+        not_firmado = [d for d in documents if d.status != LegalDocument.Status.FIRMADO]
         if not_firmado:
             doc_statuses = {d.document_type: d.status for d in not_firmado}
             raise ValueError(
@@ -273,15 +263,11 @@ class LegalizationService:
         """
         if is_document_terminal(document.status):
             raise ValueError(
-                f"Cannot cancel document {document.id} in terminal "
-                f"status {document.status!r}."
+                f"Cannot cancel document {document.id} in terminal " f"status {document.status!r}."
             )
-        if not is_valid_document_transition(
-            document.status, LegalDocument.Status.CANCELADO
-        ):
+        if not is_valid_document_transition(document.status, LegalDocument.Status.CANCELADO):
             raise ValueError(
-                f"Invalid transition {document.status} → CANCELADO "
-                f"for document {document.id}."
+                f"Invalid transition {document.status} → CANCELADO " f"for document {document.id}."
             )
 
         old_status = document.status
@@ -302,6 +288,7 @@ class LegalizationService:
 # Helpers
 # -------------------------------------------------------------------
 
+
 def _log_transition_audit(doc, action, old_status, new_status, actor=None):
     """Log a document state transition to the audit trail."""
     try:
@@ -319,14 +306,14 @@ def _log_transition_audit(doc, action, old_status, new_status, actor=None):
         )
     except Exception:  # noqa: BLE001
         logger.exception(
-            "audit: transition audit log failed for %s (%s → %s)",
-            doc.id, old_status, new_status
+            "audit: transition audit log failed for %s (%s → %s)", doc.id, old_status, new_status
         )
 
 
 # -------------------------------------------------------------------
 # Backwards-compatible module-level function (CHG-301)
 # -------------------------------------------------------------------
+
 
 def sign_legal_document(
     document: LegalDocument,

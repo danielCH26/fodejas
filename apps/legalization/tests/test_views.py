@@ -5,6 +5,7 @@ Tests:
     unauthenticated → redirect
   - Detail view: process + documents in context; status badges; sign link
 """
+
 from __future__ import annotations
 
 import uuid
@@ -21,6 +22,7 @@ from apps.legalization.models import LegalDocument, LegalizationProcess
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_user(email=None, role_codes=("R-JUNTA",)):
     email = email or f"{uuid.uuid4().hex}@example.com"
     user = CustomUser.objects.create(
@@ -35,9 +37,7 @@ def _make_user(email=None, role_codes=("R-JUNTA",)):
             code=code,
             defaults={"name": code, "type": "interno", "description": code},
         )
-        UserRole.objects.get_or_create(
-            user=user, role=role, convocation_scope_id=None
-        )
+        UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
     return user
 
 
@@ -79,6 +79,7 @@ def _session_client(user):
 # ---------------------------------------------------------------------------
 # List view
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestLegalizationListView:
@@ -138,6 +139,7 @@ class TestLegalizationListView:
 # ---------------------------------------------------------------------------
 # Detail view
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestLegalizationDetailView:

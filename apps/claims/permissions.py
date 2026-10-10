@@ -1,4 +1,5 @@
 """Custom permissions for claims and appeals."""
+
 from rest_framework.permissions import BasePermission
 
 
@@ -7,7 +8,7 @@ class IsTitularOrReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed for titular, OFIJUR, and admin
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+        if request.method in ["GET", "HEAD", "OPTIONS"]:
             return True
 
         # Write permissions only for titular
@@ -29,6 +30,7 @@ class HasOFIJURRole(BasePermission):
             return True
 
         from apps.accounts.models import Role, UserRole
+
         ofijur_role = Role.objects.filter(code="R-OFIJUR").first()
         if not ofijur_role:
             return False
@@ -47,6 +49,7 @@ class HasASPIRANTERole(BasePermission):
             return True
 
         from apps.accounts.models import Role, UserRole
+
         aspirante_role = Role.objects.filter(code="R-ASPIRANTE").first()
         if not aspirante_role:
             return False

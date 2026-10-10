@@ -1,4 +1,5 @@
 """Validadores para la migración de datos legacy (CHG-099)."""
+
 from __future__ import annotations
 
 import csv
@@ -31,9 +32,7 @@ def _is_pii(value: str) -> bool:
     if any(stripped.startswith(p) for p in _SAFE_PREFIXES):
         return False
     return bool(
-        _EMAIL_RE.match(stripped)
-        or _DOCUMENTO_RE.match(stripped)
-        or _TELEFONO_RE.match(stripped)
+        _EMAIL_RE.match(stripped) or _DOCUMENTO_RE.match(stripped) or _TELEFONO_RE.match(stripped)
     )
 
 
@@ -60,13 +59,9 @@ def validate_schema(filepath: Path, expected_headers: Iterable[str]) -> list[str
     missing = [h for h in expected if h not in actual]
     extra = [h for h in actual if h not in expected]
     if missing:
-        errors.append(
-            f"{filepath.name}: columnas faltantes: {sorted(missing)}"
-        )
+        errors.append(f"{filepath.name}: columnas faltantes: {sorted(missing)}")
     if extra:
-        errors.append(
-            f"{filepath.name}: columnas no esperadas: {sorted(extra)}"
-        )
+        errors.append(f"{filepath.name}: columnas no esperadas: {sorted(extra)}")
     return errors
 
 
@@ -119,7 +114,5 @@ def validate_fk_resolution(
     for idx, row in enumerate(rows, start=2):
         value = row.get(foreign_key, "").strip()
         if value and value not in lookup:
-            errors.append(
-                f"row {idx}: {foreign_key}={value!r} no existe en lookup"
-            )
+            errors.append(f"row {idx}: {foreign_key}={value!r} no existe en lookup")
     return errors

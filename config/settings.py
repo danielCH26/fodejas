@@ -350,9 +350,7 @@ AWS_DEFAULT_ACL = env("AWS_DEFAULT_ACL", default=None)
 AWS_S3_FILE_OVERWRITE = env.bool("AWS_S3_FILE_OVERWRITE", default=False)
 
 # Electronic Signature Service (CHG-301)
-ELECTRONIC_SIGNATURE_PROVIDER = env(
-    "ELECTRONIC_SIGNATURE_PROVIDER", default="mock"
-)
+ELECTRONIC_SIGNATURE_PROVIDER = env("ELECTRONIC_SIGNATURE_PROVIDER", default="mock")
 
 # Development settings
 INTERNAL_IPS = [

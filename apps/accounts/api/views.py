@@ -1,4 +1,5 @@
 """Views for accounts API."""
+
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
@@ -23,7 +24,7 @@ class ConsentimientoViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Consentimiento.objects.select_related("titular").order_by("-otorgado_en")
     serializer_class = ConsentimientoSerializer
-    permission_classes = [IsAdminOrHasRole('R-ADMIN')]
+    permission_classes = [IsAdminOrHasRole("R-ADMIN")]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["tipo", "revocado_en"]
     search_fields = ["titular__email", "version_etiqueta"]
@@ -34,7 +35,9 @@ class ConsentimientoViewSet(viewsets.ReadOnlyModelViewSet):
 class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
     """ViewSet for SolicitudHabeasData model."""
 
-    queryset = SolicitudHabeasData.objects.select_related("titular", "resuelto_por").order_by("-fecha_radicacion")
+    queryset = SolicitudHabeasData.objects.select_related("titular", "resuelto_por").order_by(
+        "-fecha_radicacion"
+    )
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["tipo", "estado"]
     search_fields = ["titular__email", "descripcion"]
@@ -45,14 +48,14 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
         """Return appropriate permissions based on action."""
         if self.action in ["list", "retrieve"]:
             # Admin users or users with R-ADMIN role can list/retrieve all
-            return [IsAdminOrHasRole('R-ADMIN')]
+            return [IsAdminOrHasRole("R-ADMIN")]
         elif self.action in ["create"]:
             # Authenticated users can create requests
             return [IsAuthenticated()]
         elif self.action in ["update", "partial_update", "destroy"]:
             # Admin users or users with R-ADMIN role can update
-            return [IsAdminOrHasRole('R-ADMIN')]
-        return [IsAdminOrHasRole('R-ADMIN')]
+            return [IsAdminOrHasRole("R-ADMIN")]
+        return [IsAdminOrHasRole("R-ADMIN")]
 
     def get_serializer_class(self):
         """Return appropriate serializer based on action."""
@@ -80,7 +83,7 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
         if request.user != serializer.validated_data.get("titular", request.user):
             return Response(
                 {"detail": _("No puedes crear solicitudes para otros usuarios.")},
-                status=status.HTTP_403_FORBIDDEN
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         self.perform_create(serializer)
@@ -88,6 +91,7 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
 
         # Send notification for new habeas data request
         from apps.accounts.services.notifications import get_notifiers
+
         notifiers = get_notifiers()
         solicitud = serializer.instance
 
@@ -102,11 +106,7 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
                 },
             )
 
-        return Response(
-            serializer.data,
-            status=status.HTTP_201_CREATED,
-            headers=headers
-        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def update(self, request, *args, **kwargs):
         """Update a solicitud (admin only)."""
@@ -131,7 +131,7 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
             if old_estado in valid_transitions and new_estado not in valid_transitions[old_estado]:
                 return Response(
                     {"detail": _("Transición de estado no válida.")},
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
             # Set resolver info if being resolved or rejected
@@ -143,6 +143,7 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
 
         # Send notification for updated habeas data request
         from apps.accounts.services.notifications import get_notifiers
+
         notifiers = get_notifiers()
         solicitud = serializer.instance
 
@@ -179,7 +180,7 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
         if instance.estado not in ["radicada", "en_tramite"]:
             return Response(
                 {"detail": _("Solo las solicitudes radicadas o en trámite pueden ser resueltas.")},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         respuesta = request.data.get("respuesta")
@@ -187,8 +188,7 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
 
         if not respuesta:
             return Response(
-                {"respuesta": _("La respuesta es obligatoria.")},
-                status=status.HTTP_400_BAD_REQUEST
+                {"respuesta": _("La respuesta es obligatoria.")}, status=status.HTTP_400_BAD_REQUEST
             )
 
         # Update the instance
@@ -201,6 +201,7 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
 
         # Send notification for resolved habeas data request
         from apps.accounts.services.notifications import get_notifiers
+
         notifiers = get_notifiers()
 
         for notifier in notifiers:
@@ -226,15 +227,14 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
         if instance.estado not in ["radicada", "en_tramite"]:
             return Response(
                 {"detail": _("Solo las solicitudes radicadas o en trámite pueden ser rechazadas.")},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         motivo = request.data.get("motivo")
 
         if not motivo:
             return Response(
-                {"motivo": _("El motivo es obligatorio.")},
-                status=status.HTTP_400_BAD_REQUEST
+                {"motivo": _("El motivo es obligatorio.")}, status=status.HTTP_400_BAD_REQUEST
             )
 
         # Update the instance
@@ -246,6 +246,7 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
 
         # Send notification for rejected habeas data request
         from apps.accounts.services.notifications import get_notifiers
+
         notifiers = get_notifiers()
 
         for notifier in notifiers:
@@ -256,12 +257,15 @@ class SolicitudHabeasDataViewSet(viewsets.ModelViewSet):
                     "solicitud_id": str(instance.id),
                     "estado": "rechazada",
                     "tipo": instance.tipo,
-                    "motivo": instance.motivo_rechazo[:100] if instance.motivo_rechazo else "",  # Truncate
+                    "motivo": (
+                        instance.motivo_rechazo[:100] if instance.motivo_rechazo else ""
+                    ),  # Truncate
                 },
             )
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
 
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for Notification model."""
@@ -286,11 +290,12 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
         if notification.recipient != request.user:
             return Response(
                 {"detail": _("No tienes permiso para marcar esta notificación como leída.")},
-                status=status.HTTP_403_FORBIDDEN
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         # Mark as read
         from apps.accounts.services.notifications import get_notifiers
+
         notifiers = get_notifiers()
         for notifier in notifiers:
             notifier.mark_read(notification, request.user)
@@ -307,6 +312,7 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
 
         # Mark each as read
         from apps.accounts.services.notifications import get_notifiers
+
         notifiers = get_notifiers()
         updated_count = 0
 
@@ -348,18 +354,20 @@ class MeView(APIView):
             .values("role__code", "role__name", "role__type")
         )
 
-        return JsonResponse({
-            "id": str(user.id),
-            "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "documento": user.documento,
-            "roles": [
-                {
-                    "code": r["role__code"],
-                    "name": r["role__name"],
-                    "type": r["role__type"],
-                }
-                for r in roles
-            ],
-        })
+        return JsonResponse(
+            {
+                "id": str(user.id),
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "documento": user.documento,
+                "roles": [
+                    {
+                        "code": r["role__code"],
+                        "name": r["role__name"],
+                        "type": r["role__type"],
+                    }
+                    for r in roles
+                ],
+            }
+        )

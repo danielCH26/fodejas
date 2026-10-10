@@ -1,4 +1,5 @@
 """Views for the legalization API (CHG-301, CAP-029)."""
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -48,6 +49,7 @@ class LegalDocumentViewSet(viewsets.ReadOnlyModelViewSet):
             return qs
         # R-JUNTA / R-ADMIN see all; R-ASPIRANTE sees only their own.
         from apps.accounts.permissions import has_any_role
+
         if has_any_role(user, ["R-JUNTA", "R-ADMIN"]):
             return qs
         return qs.filter(process__beneficiary=user)
@@ -82,9 +84,7 @@ class LegalDocumentViewSet(viewsets.ReadOnlyModelViewSet):
 
         # Idempotent: if already signed, return current state.
         if document.status == LegalDocument.Status.FIRMADO and document.post_sign_hash:
-            serializer = LegalDocumentSignResultSerializer(
-                document, context={"request": request}
-            )
+            serializer = LegalDocumentSignResultSerializer(document, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         if not document.pdf:
@@ -100,9 +100,7 @@ class LegalDocumentViewSet(viewsets.ReadOnlyModelViewSet):
 
         # Refresh to get persisted timestamps
         document.refresh_from_db()
-        serializer = LegalDocumentSignResultSerializer(
-            document, context={"request": request}
-        )
+        serializer = LegalDocumentSignResultSerializer(document, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(

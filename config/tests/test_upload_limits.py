@@ -15,6 +15,7 @@ accesses ``request.POST`` (the registration form at
 content. That triggers the size check via ``LimitedStream`` and
 returns 400 ``RequestDataTooBig`` before the view runs.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -100,5 +101,6 @@ def test_data_upload_max_memory_size_setting_is_10mb(settings):
     """
     # Read the real value via the module (avoids override_settings).
     from config import settings as cfg
+
     assert cfg.DATA_UPLOAD_MAX_MEMORY_SIZE == 10 * 1024 * 1024
     assert cfg.FILE_UPLOAD_MAX_MEMORY_SIZE == 10 * 1024 * 1024

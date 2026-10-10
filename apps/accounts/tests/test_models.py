@@ -1,4 +1,5 @@
 """Tests for accounts models."""
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
@@ -159,7 +160,7 @@ class RoleModelTests(TestCase):
         # This would test if group.role exists (OneToOne reverse)
         try:
             # Check if group.role exists (OneToOne reverse)
-            if hasattr(group, 'role'):
+            if hasattr(group, "role"):
                 self.assertEqual(group.role, role)
         except AttributeError:
             # It might not be a OneToOne, could be ForeignKey
@@ -211,10 +212,8 @@ class PermissionModelTests(TestCase):
         from django.contrib.contenttypes.models import ContentType
 
         from apps.accounts.models import Permission
-        content_type = ContentType.objects.create(
-            app_label='accounts',
-            model='test'
-        )
+
+        content_type = ContentType.objects.create(app_label="accounts", model="test")
         auth_perm = AuthPermission.objects.create(
             codename="test_permission",
             name="Test Permission",
@@ -235,7 +234,7 @@ class PermissionModelTests(TestCase):
         # Test reverse relationship if it exists
         try:
             # Check if auth_perm.custom_permission exists (OneToOne reverse)
-            if hasattr(auth_perm, 'custom_permission'):
+            if hasattr(auth_perm, "custom_permission"):
                 self.assertEqual(auth_perm.custom_permission, permission)
         except AttributeError:
             # It might not be a OneToOne, could be ForeignKey

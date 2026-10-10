@@ -1,4 +1,5 @@
 """Generación de PDF para actos administrativos (CHG-207)."""
+
 import hashlib
 
 from django.template.loader import get_template
@@ -34,7 +35,9 @@ def generar_pdf_acto(acto) -> bytes:
     # Renderizar contexto
     context = {
         "acto": acto,
-        "fecha_formato": acto.fecha_expedicion.strftime("%d de %B de %Y") if acto.fecha_expedicion else "",
+        "fecha_formato": (
+            acto.fecha_expedicion.strftime("%d de %B de %Y") if acto.fecha_expedicion else ""
+        ),
     }
     html_content = template.render(context)
 

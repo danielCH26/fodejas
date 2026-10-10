@@ -1,4 +1,5 @@
 """Admin for treasury app (CHG-303, CAP-010)."""
+
 from django.contrib import admin
 
 from apps.treasury.models import DisbursementAuthorization

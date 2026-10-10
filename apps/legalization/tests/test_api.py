@@ -1,4 +1,5 @@
 """Tests for legalization API endpoints (CHG-301, CAP-029)."""
+
 from __future__ import annotations
 
 import pytest
@@ -15,6 +16,7 @@ from apps.legalization.models import LegalDocument, LegalizationProcess
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 def _make_pdf(name="doc.pdf") -> SimpleUploadedFile:
     content = b"%PDF-1.4 fake content for tests " + name.encode()
@@ -90,6 +92,7 @@ def _api_client(user, force=False):
 # Document sign endpoint
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db(transaction=True)
 class TestSignEndpoint:
     """POST /api/legalization/documents/<pk>/sign/"""
@@ -101,9 +104,7 @@ class TestSignEndpoint:
         self.conv = _make_convocatoria()
         self.process = _make_process(self.conv, self.aspirante)
         # Explicitly get the PAGARE document (first() order is not guaranteed).
-        self.doc = self.process.documents.get(
-            document_type=LegalDocument.DocumentType.PAGARE
-        )
+        self.doc = self.process.documents.get(document_type=LegalDocument.DocumentType.PAGARE)
         self.doc.pdf = _make_pdf("pagare.pdf")
         self.doc.save()
         self.url = f"/api/legalization/documents/{self.doc.id}/sign/"
@@ -209,6 +210,7 @@ class TestSignEndpoint:
 # Document verify endpoint
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db(transaction=True)
 class TestVerifyEndpoint:
     """GET /api/legalization/documents/<pk>/verify/"""
@@ -262,6 +264,7 @@ class TestVerifyEndpoint:
 # End-to-end flow: process → request → sign → verify → audit
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db(transaction=True)
 class TestE2ESignatureFlow:
     """Full flow: create process → sign via API → verify hash chain → audit."""
@@ -274,9 +277,7 @@ class TestE2ESignatureFlow:
         process = _make_process(conv, user)
 
         # 2. Get the promissory note document.
-        doc = process.documents.get(
-            document_type=LegalDocument.DocumentType.PAGARE
-        )
+        doc = process.documents.get(document_type=LegalDocument.DocumentType.PAGARE)
         doc.pdf = _make_pdf("pagare-e2e.pdf")
         doc.save()
 
@@ -318,6 +319,6 @@ class TestE2ESignatureFlow:
         assert doc2_resp.status_code == status.HTTP_200_OK
         assert doc2_resp.json()["post_sign_hash"] == sign_data["post_sign_hash"]
         # No second audit event.
-        assert AuditEvent.objects.filter(
-            action="ELECTRONIC_SIGNATURE", entity_id=doc.id
-        ).count() == 1
+        assert (
+            AuditEvent.objects.filter(action="ELECTRONIC_SIGNATURE", entity_id=doc.id).count() == 1
+        )

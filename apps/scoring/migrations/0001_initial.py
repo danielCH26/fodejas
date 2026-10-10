@@ -6,56 +6,187 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('applications', '0003_add_requisito_validacion'),
+        ("applications", "0003_add_requisito_validacion"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PuntajeTotal',
+            name="PuntajeTotal",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('puntaje_socioeconomico', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='puntaje socioeconómico')),
-                ('puntaje_academico', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='puntaje académico')),
-                ('puntaje_excelencia', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='puntaje excelencia')),
-                ('puntaje_total', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='puntaje total')),
-                ('ranking_municipio', models.PositiveIntegerField(blank=True, null=True, verbose_name='ranking por municipio')),
-                ('ranking_general', models.PositiveIntegerField(blank=True, null=True, verbose_name='ranking general')),
-                ('observaciones', models.TextField(blank=True, verbose_name='observaciones')),
-                ('fecha_calculo', models.DateTimeField(auto_now_add=True, verbose_name='fecha de cálculo')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='fecha de creación')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='fecha de actualización')),
-                ('calculado_por', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='puntajes_calculados', to=settings.AUTH_USER_MODEL, verbose_name='calculado por')),
-                ('solicitud', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='puntaje_total', to='applications.solicitud', verbose_name='solicitud')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "puntaje_socioeconomico",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        max_digits=5,
+                        null=True,
+                        verbose_name="puntaje socioeconómico",
+                    ),
+                ),
+                (
+                    "puntaje_academico",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        max_digits=5,
+                        null=True,
+                        verbose_name="puntaje académico",
+                    ),
+                ),
+                (
+                    "puntaje_excelencia",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        max_digits=5,
+                        null=True,
+                        verbose_name="puntaje excelencia",
+                    ),
+                ),
+                (
+                    "puntaje_total",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        max_digits=5,
+                        null=True,
+                        verbose_name="puntaje total",
+                    ),
+                ),
+                (
+                    "ranking_municipio",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="ranking por municipio"
+                    ),
+                ),
+                (
+                    "ranking_general",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="ranking general"
+                    ),
+                ),
+                ("observaciones", models.TextField(blank=True, verbose_name="observaciones")),
+                (
+                    "fecha_calculo",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de cálculo"),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de creación"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="fecha de actualización"),
+                ),
+                (
+                    "calculado_por",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="puntajes_calculados",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="calculado por",
+                    ),
+                ),
+                (
+                    "solicitud",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="puntaje_total",
+                        to="applications.solicitud",
+                        verbose_name="solicitud",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'puntaje total',
-                'verbose_name_plural': 'puntajes totales',
-                'ordering': ['ranking_general'],
+                "verbose_name": "puntaje total",
+                "verbose_name_plural": "puntajes totales",
+                "ordering": ["ranking_general"],
             },
         ),
         migrations.CreateModel(
-            name='Evaluacion',
+            name="Evaluacion",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('criterio', models.CharField(choices=[('socioeconomico', 'Socioeconómico'), ('academico', 'Académico'), ('excelencia', 'Excelencia')], max_length=30, verbose_name='criterio')),
-                ('criterio_nombre', models.CharField(max_length=200, verbose_name='nombre del criterio')),
-                ('puntaje', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='puntaje')),
-                ('observaciones', models.TextField(blank=True, verbose_name='observaciones')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='fecha de creación')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='fecha de actualización')),
-                ('evaluado_por', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='evaluaciones_realizadas', to=settings.AUTH_USER_MODEL, verbose_name='evaluado por')),
-                ('solicitud', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='evaluaciones', to='applications.solicitud', verbose_name='solicitud')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "criterio",
+                    models.CharField(
+                        choices=[
+                            ("socioeconomico", "Socioeconómico"),
+                            ("academico", "Académico"),
+                            ("excelencia", "Excelencia"),
+                        ],
+                        max_length=30,
+                        verbose_name="criterio",
+                    ),
+                ),
+                (
+                    "criterio_nombre",
+                    models.CharField(max_length=200, verbose_name="nombre del criterio"),
+                ),
+                (
+                    "puntaje",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        max_digits=5,
+                        null=True,
+                        verbose_name="puntaje",
+                    ),
+                ),
+                ("observaciones", models.TextField(blank=True, verbose_name="observaciones")),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de creación"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="fecha de actualización"),
+                ),
+                (
+                    "evaluado_por",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="evaluaciones_realizadas",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="evaluado por",
+                    ),
+                ),
+                (
+                    "solicitud",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="evaluaciones",
+                        to="applications.solicitud",
+                        verbose_name="solicitud",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'evaluación',
-                'verbose_name_plural': 'evaluaciones',
-                'ordering': ['-created_at'],
-                'constraints': [models.UniqueConstraint(fields=('solicitud', 'criterio'), name='unique_evaluacion_per_criterio')],
+                "verbose_name": "evaluación",
+                "verbose_name_plural": "evaluaciones",
+                "ordering": ["-created_at"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("solicitud", "criterio"), name="unique_evaluacion_per_criterio"
+                    )
+                ],
             },
         ),
     ]

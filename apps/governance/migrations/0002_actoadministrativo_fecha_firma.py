@@ -1,4 +1,5 @@
 """Migration: add fecha_firma to ActoAdministrativo (CHG-208)."""
+
 from django.db import migrations, models
 
 

@@ -1,4 +1,5 @@
 """Tests for sync services."""
+
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import Permission as AuthPermission
 from django.contrib.contenttypes.models import ContentType
@@ -14,16 +15,14 @@ class SyncRoleToGroupTests(TestCase):
         """Test that sync creates a group when role doesn't have one."""
         # Given: a role without a group
         role = Role.objects.create(
-            code="R-TEST",
-            name="Test Role",
-            type="interno",
-            description="Test role for sync"
+            code="R-TEST", name="Test Role", type="interno", description="Test role for sync"
         )
         # No group exists yet
 
         # When: we call sync_role_to_group
         # The function doesn't exist yet - this will fail
         from apps.accounts.services.sync import sync_role_to_group
+
         result = sync_role_to_group(role)
 
         # Then: a group should be created and linked to the role
@@ -41,11 +40,12 @@ class SyncRoleToGroupTests(TestCase):
             name="Existing Role",
             type="interno",
             description="Role with existing group",
-            group=group
+            group=group,
         )
 
         # When: we call sync_role_to_group
         from apps.accounts.services.sync import sync_role_to_group
+
         result = sync_role_to_group(role)
 
         # Then: the existing group should be returned
@@ -60,11 +60,12 @@ class SyncRoleToGroupTests(TestCase):
             code="R-CONFLICT",
             name="Conflict Role",
             type="interno",
-            description="Role with name conflict"
+            description="Role with name conflict",
         )
 
         # When: we call sync_role_to_group
         from apps.accounts.services.sync import sync_role_to_group
+
         result = sync_role_to_group(role)
 
         # Then: should return the existing group and link it to role
@@ -80,15 +81,13 @@ class SyncPermissionToAuthPermTests(TestCase):
         """Test that sync creates auth.Permission for custom permission."""
         # Given: a custom permission without auth_permission
         permission = Permission.objects.create(
-            app_label="applications",
-            action="add_solicitud",
-            convocation_scope_id=None,
-            stage=None
+            app_label="applications", action="add_solicitud", convocation_scope_id=None, stage=None
         )
 
         # When: we call sync_permission_to_auth_perm
         # The function doesn't exist yet - this will fail
         from apps.accounts.services.sync import sync_permission_to_auth_perm
+
         result = sync_permission_to_auth_perm(permission)
 
         # Then: an auth.Permission should be created and linked
@@ -103,20 +102,19 @@ class SyncPermissionToAuthPermTests(TestCase):
         # Given: a custom permission with existing auth_permission
         content_type = ContentType.objects.get_for_model(Permission)
         auth_perm = AuthPermission.objects.create(
-            content_type=content_type,
-            codename="add_solicitud",
-            name="Can add solicitud"
+            content_type=content_type, codename="add_solicitud", name="Can add solicitud"
         )
         permission = Permission.objects.create(
             app_label="applications",
             action="add_solicitud",
             convocation_scope_id=None,
             stage=None,
-            auth_permission=auth_perm
+            auth_permission=auth_perm,
         )
 
         # When: we call sync_permission_to_auth_perm
         from apps.accounts.services.sync import sync_permission_to_auth_perm
+
         result = sync_permission_to_auth_perm(permission)
 
         # Then: existing auth_permission should be returned
@@ -129,11 +127,12 @@ class SyncPermissionToAuthPermTests(TestCase):
             app_label="applications",
             action="view_solicitud",
             convocation_scope_id="CONV-2025-001",
-            stage="revision"
+            stage="revision",
         )
 
         # When: we call sync_permission_to_auth_perm
         from apps.accounts.services.sync import sync_permission_to_auth_perm
+
         result = sync_permission_to_auth_perm(permission)
 
         # Then: auth.Permission should be created

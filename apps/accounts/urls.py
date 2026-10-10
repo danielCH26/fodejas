@@ -1,4 +1,5 @@
 """URL configuration for accounts app."""
+
 app_name = "accounts"
 
 from django.urls import include, path
@@ -8,7 +9,11 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from apps.audit.views import AuditChainVerifyHtmlView, AuditDashboardView, AuditEventDetailView
+from apps.audit.views import (
+    AuditChainVerifyHtmlView,
+    AuditDashboardView,
+    AuditEventHtmlDetailView,
+)
 
 from . import accounts_views as views
 
@@ -17,30 +22,32 @@ urlpatterns = [
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("token/blacklist/", TokenBlacklistView.as_view(), name="token_blacklist"),
-
     # Auth views (HTML)
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     path("register/", views.RegisterView.as_view(), name="register"),
-
     # Password reset
     path("password-reset/", views.PasswordResetRequestView.as_view(), name="password_reset"),
     path("password-reset/done/", views.PasswordResetDoneView.as_view(), name="password_reset_done"),
-    path("password-reset/confirm/<uidb64>/<token>/", views.PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
-    path("password-reset/complete/", views.PasswordResetCompleteView.as_view(), name="password_reset_complete"),
-
+    path(
+        "password-reset/confirm/<uidb64>/<token>/",
+        views.PasswordResetConfirmView.as_view(),
+        name="password_reset_confirm",
+    ),
+    path(
+        "password-reset/complete/",
+        views.PasswordResetCompleteView.as_view(),
+        name="password_reset_complete",
+    ),
     # App views
     path("dashboard/", views.DashboardView.as_view(), name="dashboard"),
     path("profile/", views.ProfileView.as_view(), name="profile"),
-
     # Admin views (accounts/admin/)
     path("admin/", include("apps.accounts.admin_urls", namespace="accounts_admin")),
-
     # Audit views (accounts/audit/)
     path("audit/", AuditDashboardView.as_view(), name="audit_dashboard"),
-    path("audit/<uuid:id>/", AuditEventDetailView.as_view(), name="audit_detail"),
+    path("audit/<uuid:id>/", AuditEventHtmlDetailView.as_view(), name="audit_detail"),
     path("audit/verify/", AuditChainVerifyHtmlView.as_view(), name="audit_verify"),
-
     # API
     path("me/", views.CurrentUserAPIView.as_view(), name="current_user"),
     path("api/", include("apps.accounts.api.urls")),

@@ -1,4 +1,5 @@
 """Views for Convocatory management."""
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
@@ -26,6 +27,7 @@ class ConvocatoryViewMixin(LoginRequiredMixin, PermissionMixin, TemplateView):
 
 class BaseConvocatoryView(ConvocatoryViewMixin, AdminPermissionMixin):
     """Base view for admin/coordinator actions on convocatories."""
+
     pass
 
 
@@ -146,21 +148,15 @@ class ConvocatoryUpdateView(BaseConvocatoryView):
         convocatory = get_object_or_404(Convocatory, pk=pk)
 
         if convocatory.estado != Convocatory.Estado.BORRADOR:
-            messages.error(
-                request, "Solo se pueden editar convocatorias en estado borrador."
-            )
+            messages.error(request, "Solo se pueden editar convocatorias en estado borrador.")
             return redirect("convocatories:detail", pk=pk)
 
         # Update fields
         convocatory.nombre = request.POST.get("nombre", "").strip()
         convocatory.tipo = request.POST.get("tipo", Convocatory.Tipo.PUBLICA)
         convocatory.periodo = request.POST.get("periodo", "").strip()
-        convocatory.monto_semestre_smlmv = request.POST.get(
-            "monto_semestre_smlmv", "5"
-        )
-        convocatory.duracion_maxima_semestres = request.POST.get(
-            "duracion_maxima_semestres", "4"
-        )
+        convocatory.monto_semestre_smlmv = request.POST.get("monto_semestre_smlmv", "5")
+        convocatory.duracion_maxima_semestres = request.POST.get("duracion_maxima_semestres", "4")
         convocatory.cupo_total = request.POST.get("cupo_total", "100")
         convocatory.save()
 
@@ -223,21 +219,15 @@ class ConvocatoryTransitionView(BaseConvocatoryView):
 
         # Check permissions for close transition
         if transition == "cerrar":
-            has_admin = request.user.user_roles.filter(
-                role__code="R-ADMIN"
-            ).exists()
+            has_admin = request.user.user_roles.filter(role__code="R-ADMIN").exists()
             is_superuser = request.user.is_superuser
             if not (has_admin or is_superuser):
-                messages.error(
-                    request, "Solo R-ADMIN puede cerrar una convocatoria."
-                )
+                messages.error(request, "Solo R-ADMIN puede cerrar una convocatoria.")
                 return redirect("convocatories:detail", pk=pk)
 
         try:
             transicionar_estado(convocatory, estado_destino, request.user)
-            messages.success(
-                request, f"Convocatoria movida a '{transition}' exitosamente."
-            )
+            messages.success(request, f"Convocatoria movida a '{transition}' exitosamente.")
         except Exception as e:
             messages.error(request, str(e))
 

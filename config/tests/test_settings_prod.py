@@ -15,6 +15,7 @@ verifies the new security settings work.
 
 No PII: only synthetic env-var placeholders.
 """
+
 from __future__ import annotations
 
 import os

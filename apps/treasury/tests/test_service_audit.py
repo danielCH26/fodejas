@@ -8,6 +8,7 @@ Covers:
   - Reject, mark_as_received, confirm_payment with/without proof.
   - Monetary field: amount > 0 validation, immutability after auth.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -25,6 +26,7 @@ from apps.treasury.services import TreasuryService
 # ---------------------------------------------------------------------------
 # Fixture helpers
 # ---------------------------------------------------------------------------
+
 
 def _sign_all_docs(process, actor):
     """Mark all 4 documents FIRMADO + LEGALIZADO."""
@@ -121,6 +123,7 @@ def four_doc_process(db, user_factory, legalization_process, president_user):
 # 5.1 Guard — create_authorization refuses non-LEGALIZADO
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestCreateAuthorizationGuard:
     def test_refuses_non_legalizado_process(self, legalization_process):
@@ -139,16 +142,12 @@ class TestCreateAuthorizationGuard:
 
     def test_accepts_legalizado_process(self, legalization_process):
         # Status is already LEGALIZADO per fixture.
-        auth = TreasuryService.create_authorization(
-            legalization_process, "1500000.00"
-        )
+        auth = TreasuryService.create_authorization(legalization_process, "1500000.00")
         assert auth.status == DisbursementAuthorization.Status.PENDIENTE
         assert auth.amount == "1500000.00"
 
     def test_emits_audit_event_on_create(self, legalization_process, president_user):
-        auth = TreasuryService.create_authorization(
-            legalization_process, "2000000.00"
-        )
+        auth = TreasuryService.create_authorization(legalization_process, "2000000.00")
         event = AuditEvent.objects.filter(
             action="AUDIT_DISBURSEMENT_CREATE",
             entity_id=auth.id,
@@ -161,6 +160,7 @@ class TestCreateAuthorizationGuard:
 # ---------------------------------------------------------------------------
 # Doble firma — authorization workflow
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestDobleFirmaHappyPath:
@@ -199,9 +199,7 @@ class TestDobleFirmaHappyPath:
         with pytest.raises(ValueError, match="Already authorized by president"):
             TreasuryService.authorize(auth.id, u2, "president")
 
-    def test_emits_audit_per_signature(
-        self, legalization_process, president_user, secretary_user
-    ):
+    def test_emits_audit_per_signature(self, legalization_process, president_user, secretary_user):
         auth = TreasuryService.create_authorization(legalization_process, "500000.00")
         TreasuryService.authorize(auth.id, president_user, "president")
         TreasuryService.authorize(auth.id, secretary_user, "secretary")
@@ -253,6 +251,7 @@ class TestDobleFirmaSelfSigning:
 # ---------------------------------------------------------------------------
 #  Adjuntos normativos — send_to_treasury
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestSendToTreasuryAttachments:
@@ -345,6 +344,7 @@ class TestSendToTreasuryAttachments:
 #  mark_as_received
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestMarkAsReceived:
     def test_transitions_to_recibido(self, auth_factory):
@@ -372,6 +372,7 @@ class TestMarkAsReceived:
 # ---------------------------------------------------------------------------
 #  confirm_payment (design.md D2)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestConfirmPayment:
@@ -408,6 +409,7 @@ class TestConfirmPayment:
 #  reject
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestReject:
     def test_rejects_pending_authorization(self, auth_factory):
@@ -441,6 +443,7 @@ class TestReject:
 # ---------------------------------------------------------------------------
 #  Monetary field validation
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestMonetaryField:
@@ -480,6 +483,7 @@ class TestMonetaryField:
 #  VENCIDO sweep integration
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestVencidoSweepIntegration:
     def test_sweep_transitions_ordenado_to_vencido(self, auth_factory):
@@ -504,6 +508,7 @@ class TestVencidoSweepIntegration:
 # ---------------------------------------------------------------------------
 #  Reconciliation permission check
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestReconciliationPermission:

@@ -10,6 +10,7 @@ This avoids loading ``config.urls`` (which transitively imports
 ``django_prometheus.urls`` — not available in every setup) while
 still testing the production permission contract.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -25,8 +26,14 @@ class TestAuditApiPermissions:
     def _request(self, user=None):
         factory = APIRequestFactory()
         request = factory.get("/api/audit/events/")
-        request.user = user if user is not None else (
-            type("_A", (), {"is_authenticated": False, "is_superuser": False, "is_staff": False})()
+        request.user = (
+            user
+            if user is not None
+            else (
+                type(
+                    "_A", (), {"is_authenticated": False, "is_superuser": False, "is_staff": False}
+                )()
+            )
         )
         return request
 

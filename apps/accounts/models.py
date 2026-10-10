@@ -1,4 +1,5 @@
 """Models for accounts app."""
+
 import uuid
 from datetime import timedelta
 
@@ -502,11 +503,15 @@ class SolicitudHabeasData(models.Model):
         ]
         constraints = [
             models.CheckConstraint(
-                check=models.Q(tipo__in=["consulta", "rectificacion", "actualizacion", "supresion"]),
+                check=models.Q(
+                    tipo__in=["consulta", "rectificacion", "actualizacion", "supresion"]
+                ),
                 name="solicitud_tipo_valid",
             ),
             models.CheckConstraint(
-                check=models.Q(estado__in=["radicada", "en_tramite", "resuelta", "rechazada", "vencida"]),
+                check=models.Q(
+                    estado__in=["radicada", "en_tramite", "resuelta", "rechazada", "vencida"]
+                ),
                 name="solicitud_estado_valid",
             ),
         ]
@@ -534,15 +539,10 @@ class SolicitudHabeasData(models.Model):
         """
         if self.pk is None and getattr(self, "fecha_radicacion", None) is None:
             self.fecha_radicacion = timezone.now()
-        if (
-            self.fecha_limite is None
-            and getattr(self, "fecha_radicacion", None) is not None
-        ):
+        if self.fecha_limite is None and getattr(self, "fecha_radicacion", None) is not None:
             # 30 working days = up to 42 calendar days. Walk forward
             # one calendar day at a time, counting only Mon-Fri.
-            self.fecha_limite = _add_working_days(
-                self.fecha_radicacion, 30
-            )
+            self.fecha_limite = _add_working_days(self.fecha_radicacion, 30)
         super().save(*args, **kwargs)
 
 

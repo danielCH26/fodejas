@@ -1,4 +1,5 @@
 """Services for apelaciones (CHG-206)."""
+
 from django.utils import timezone
 
 
@@ -34,7 +35,7 @@ def validar_apelacion(reclamacion, actor):
     # Check no existing pending apelacion
     existing = Apelacion.objects.filter(
         reclamacion=reclamacion,
-        estado__in=[Apelacion.Estado.PRESENTADA, Apelacion.Estado.EN_ANALISIS]
+        estado__in=[Apelacion.Estado.PRESENTADA, Apelacion.Estado.EN_ANALISIS],
     ).exists()
     if existing:
         return False, "Ya existe una apelación en curso para esta reclamación."
