@@ -41,6 +41,10 @@ def django_db_modify_db_settings(
     """
     from django.conf import settings
 
+    # Speed: tests create many users via fixtures; default PBKDF2
+    # (720k iterations) dominated runtime. MD5 is test-only.
+    settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
     # Use SQLite URI with shared cache so multiple connections
     # (setup connection, test connection) share the same DB.
     settings.DATABASES["default"] = {
