@@ -1,0 +1,72 @@
+{% extends "legalization/base.html" %}
+
+{% block legal_title %}Mis Procesos de Legalización{% endblock %}
+
+{% block legal_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-file-earmark-text me-2"></i>Procesos de Legalización</h2>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% if processes %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Convocatoria</th>
+                        <th>Beneficiario</th>
+                        <th>Estado</th>
+                        <th>Documentos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in processes %}
+                    <tr>
+                        <td>
+                            <strong>{{ process.convocatoria.nombre }}</strong>
+                            <br><small class="text-muted">{{ process.convocatoria.codigo }}</small>
+                        </td>
+                        <td>{{ process.beneficiary.email }}</td>
+                        <td>
+                            <span class="badge
+                                {% if process.status == 'LEGALIZADO' %}bg-success
+                                {% elif process.status == 'EN_PROCESO' %}bg-primary
+                                {% elif process.status == 'CANCELADO' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ process.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-dark">{{ process.documents.count }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'legalization:detail' process.pk %}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>
+    No tienes procesos de legalización aún.
+</div>
+{% endif %}
+{% endblock %}

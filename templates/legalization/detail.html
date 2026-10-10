@@ -1,0 +1,132 @@
+{% extends "legalization/base.html" %}
+
+{% block legal_title %}Detalle de Legalización{% endblock %}
+
+{% block legal_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-file-earmark-text me-2"></i>
+        Proceso de Legalización
+    </h2>
+    <a href="{% url 'legalization:list' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Process Info -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-info-circle me-2"></i>Datos del Proceso
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <strong>Convocatoria:</strong><br>
+                {{ process.convocatoria.nombre }} ({{ process.convocatoria.codigo }})
+            </div>
+            <div class="col-md-4">
+                <strong>Beneficiario:</strong><br>
+                {{ process.beneficiary.email }}
+            </div>
+            <div class="col-md-2">
+                <strong>Estado:</strong><br>
+                <span class="badge
+                    {% if process.status == 'LEGALIZADO' %}bg-success
+                    {% elif process.status == 'EN_PROCESO' %}bg-primary
+                    {% elif process.status == 'CANCELADO' %}bg-danger
+                    {% else %}bg-secondary{% endif %}">
+                    {{ process.get_status_display }}
+                </span>
+            </div>
+            <div class="col-md-2">
+                <strong>Creado:</strong><br>
+                {{ process.created_at|date:"d/m/Y" }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Documents -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-files me-2"></i>Documentos Legales
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Hash Pre-firma</th>
+                        <th>Hash Post-firma</th>
+                        <th>Firmado el</th>
+                        <th>Proveedor</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for document in process.documents.all %}
+                    <tr id="doc-row-{{ document.id }}">
+                        <td><strong>{{ document.get_document_type_display }}</strong></td>
+                        <td>
+                            <span class="badge
+                                {% if document.status == 'FIRMADO' %}bg-success
+                                {% elif document.status == 'LEGALIZADO' %}bg-primary
+                                {% elif document.status == 'CANCELADO' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ document.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if document.pre_sign_hash %}
+                            <code class="small">{{ document.pre_sign_hash|truncatechars:20 }}</code>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>
+                            {% if document.post_sign_hash %}
+                            <code class="small">{{ document.post_sign_hash|truncatechars:20 }}</code>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>
+                            {% if document.signed_at %}
+                            {{ document.signed_at|date:"d/m/Y H:i" }}
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>
+                            {% with document.changes.provider as prov %}
+                            {% if prov %}<span class="badge bg-dark">{{ prov }}</span>{% else %}—{% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% if document.status == 'PENDIENTE' and document.pdf %}
+                            <button
+                                hx-get="{% url 'legalization:sign_document' document.id %}"
+                                hx-target="#doc-row-{{ document.id }}"
+                                hx-swap="innerHTML"
+                                class="btn btn-sm btn-success">
+                                <i class="bi bi-pen"></i> Firmar
+                            </button>
+                            {% elif document.status == 'PENDIENTE' and not document.pdf %}
+                            <span class="text-muted small">Sin PDF</span>
+                            {% else %}
+                            <span class="text-success small"><i class="bi bi-check-circle"></i> Firmado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
