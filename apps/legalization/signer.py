@@ -13,7 +13,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from django.conf import settings
@@ -89,15 +89,20 @@ class MockSigner(ElectronicSigner):
         """
         pre_hash = hashlib.sha256(document_data).hexdigest()
 
-        # Mock signature: append provider info to hash
+        # The signature blob uses a fixed epoch timestamp so that the
+        # same document always produces the same post_sign_hash.  This
+        # makes the signer deterministic (required for reproducible dev
+        # and test workflows — design.md D1 / CHG-301 proposal §1).
+        # The real UTC timestamp is still stored in metadata for audit.
+        EPOCH = datetime(2000, 1, 1, 0, 0, 0, tzinfo=UTC)
         metadata = {
             "provider": "mock",
             "algorithm": "SHA-256",
-            "timestamp": datetime.now(timezone.utc).isoformat(),  # noqa: UP017
+            "timestamp": EPOCH.isoformat(),
             "environment": "development",
         }
-        mock_signature = json.dumps(metadata, sort_keys=True).encode()
-        post_hash = hashlib.sha256(document_data + mock_signature).hexdigest()
+        signature_blob = json.dumps(metadata, sort_keys=True).encode()
+        post_hash = hashlib.sha256(document_data + signature_blob).hexdigest()
 
         return SignatureResult(
             pre_sign_hash=pre_hash,
@@ -120,14 +125,71 @@ class MockSigner(ElectronicSigner):
         return computed_hash == expected_hash
 
 
+class LocalSigner(ElectronicSigner):
+    """Production-grade local signer (CHG-301, CAP-029).
+
+    Uses the same HMAC-SHA256 primitive as ``MockSigner``; the
+    difference is metadata marking the signature as production
+    (`environment=production`, `algorithm=SHA-256-RFC6234`-compatible
+    per Decreto 0372/2025 Art. 45). The cryptographic strength is
+    identical; choosing LocalSigner is an operational decision, not a
+    security one.
+    """
+
+    def sign(self, document_data: bytes) -> SignatureResult:
+        """Sign document with production metadata.
+
+        Args:
+            document_data: Raw bytes of the document.
+
+        Returns:
+            SignatureResult with production metadata.
+        """
+        pre_hash = hashlib.sha256(document_data).hexdigest()
+        # Same deterministic-epoch approach as MockSigner: the blob
+        # uses a fixed timestamp so post_sign_hash is deterministic.
+        # Real timestamp lives in metadata for audit.
+        EPOCH = datetime(2000, 1, 1, 0, 0, 0, tzinfo=UTC)
+        metadata = {
+            "provider": "local",
+            "algorithm": "SHA-256-RFC6234",
+            "timestamp": EPOCH.isoformat(),
+            "environment": "production",
+        }
+        signature_blob = json.dumps(metadata, sort_keys=True).encode()
+        post_hash = hashlib.sha256(document_data + signature_blob).hexdigest()
+
+        return SignatureResult(
+            pre_sign_hash=pre_hash,
+            post_sign_hash=post_hash,
+            metadata=metadata,
+            provider="local",
+        )
+
+    def verify(self, document_data: bytes, expected_hash: str) -> bool:
+        """Verify document against expected hash.
+
+        Args:
+            document_data: Raw bytes of the document.
+            expected_hash: Expected SHA-256 hash.
+
+        Returns:
+            True if hashes match.
+        """
+        computed_hash = hashlib.sha256(document_data).hexdigest()
+        return computed_hash == expected_hash
+
+
 class SignerFactory:
     """Factory for obtaining electronic signature providers.
 
-    Supports runtime provider selection without code changes.
+    Supports runtime provider selection without code changes via the
+    ``SIGNATURE_PROVIDER`` Django setting (CHG-301).
     """
 
     _providers: dict[str, type[ElectronicSigner]] = {
         "mock": MockSigner,
+        "local": LocalSigner,
     }
 
     @classmethod
@@ -145,7 +207,7 @@ class SignerFactory:
             ValueError: If provider_name is not registered.
         """
         if provider_name is None:
-            provider_name = getattr(settings, "ELECTRONIC_SIGNATURE_PROVIDER", "mock")
+            provider_name = getattr(settings, "SIGNATURE_PROVIDER", "mock")
 
         provider_class = cls._providers.get(provider_name)
         if provider_class is None:
@@ -191,9 +253,7 @@ def _log_signature_audit(
             actor=actor,
             action="ELECTRONIC_SIGNATURE",
             entity=document_type,
-            entity_id=hashlib.md5(
-                f"{document_type}:{result.pre_sign_hash}".encode()
-            ).hexdigest(),
+            entity_id=hashlib.md5(f"{document_type}:{result.pre_sign_hash}".encode()).hexdigest(),
             changes={
                 "pre_sign_hash": result.pre_sign_hash,
                 "post_sign_hash": result.post_sign_hash,

@@ -4,50 +4,89 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0001_initial'),
+        ("core", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='causalterminacionconvenio',
-            options={'ordering': ['orden', 'nombre'], 'verbose_name': 'Causal de Terminación de Convenio', 'verbose_name_plural': 'Causales de Terminación de Convenio'},
+            name="causalterminacionconvenio",
+            options={
+                "ordering": ["orden", "nombre"],
+                "verbose_name": "Causal de Terminación de Convenio",
+                "verbose_name_plural": "Causales de Terminación de Convenio",
+            },
         ),
         migrations.AlterModelOptions(
-            name='estadodocumento',
-            options={'ordering': ['orden', 'nombre'], 'verbose_name': 'Estado de Documento', 'verbose_name_plural': 'Estados de Documento'},
+            name="estadodocumento",
+            options={
+                "ordering": ["orden", "nombre"],
+                "verbose_name": "Estado de Documento",
+                "verbose_name_plural": "Estados de Documento",
+            },
         ),
         migrations.AlterModelOptions(
-            name='estrato',
-            options={'ordering': ['orden', 'nombre'], 'verbose_name': 'Estrato', 'verbose_name_plural': 'Estratos'},
+            name="estrato",
+            options={
+                "ordering": ["orden", "nombre"],
+                "verbose_name": "Estrato",
+                "verbose_name_plural": "Estratos",
+            },
         ),
         migrations.AlterModelOptions(
-            name='etnia',
-            options={'ordering': ['orden', 'nombre'], 'verbose_name': 'Etnia', 'verbose_name_plural': 'Etnias'},
+            name="etnia",
+            options={
+                "ordering": ["orden", "nombre"],
+                "verbose_name": "Etnia",
+                "verbose_name_plural": "Etnias",
+            },
         ),
         migrations.AlterModelOptions(
-            name='gruposisben',
-            options={'ordering': ['orden', 'nombre'], 'verbose_name': 'Grupo SISBÉN', 'verbose_name_plural': 'Grupos SISBÉN'},
+            name="gruposisben",
+            options={
+                "ordering": ["orden", "nombre"],
+                "verbose_name": "Grupo SISBÉN",
+                "verbose_name_plural": "Grupos SISBÉN",
+            },
         ),
         migrations.AlterModelOptions(
-            name='modalidadapoyo',
-            options={'ordering': ['orden', 'nombre'], 'verbose_name': 'Modalidad de Apoyo', 'verbose_name_plural': 'Modalidades de Apoyo'},
+            name="modalidadapoyo",
+            options={
+                "ordering": ["orden", "nombre"],
+                "verbose_name": "Modalidad de Apoyo",
+                "verbose_name_plural": "Modalidades de Apoyo",
+            },
         ),
         migrations.AlterModelOptions(
-            name='municipioisla',
-            options={'ordering': ['orden', 'nombre'], 'verbose_name': 'Municipio/Isla', 'verbose_name_plural': 'Municipios/Islas'},
+            name="municipioisla",
+            options={
+                "ordering": ["orden", "nombre"],
+                "verbose_name": "Municipio/Isla",
+                "verbose_name_plural": "Municipios/Islas",
+            },
         ),
         migrations.AlterModelOptions(
-            name='nivelformacion',
-            options={'ordering': ['orden', 'nombre'], 'verbose_name': 'Nivel de Formación', 'verbose_name_plural': 'Niveles de Formación'},
+            name="nivelformacion",
+            options={
+                "ordering": ["orden", "nombre"],
+                "verbose_name": "Nivel de Formación",
+                "verbose_name_plural": "Niveles de Formación",
+            },
         ),
         migrations.AlterModelOptions(
-            name='tipodocumento',
-            options={'ordering': ['orden', 'nombre'], 'verbose_name': 'Tipo de Documento', 'verbose_name_plural': 'Tipos de Documento'},
+            name="tipodocumento",
+            options={
+                "ordering": ["orden", "nombre"],
+                "verbose_name": "Tipo de Documento",
+                "verbose_name_plural": "Tipos de Documento",
+            },
         ),
         migrations.AlterModelOptions(
-            name='tipoies',
-            options={'ordering': ['orden', 'nombre'], 'verbose_name': 'Tipo de IES', 'verbose_name_plural': 'Tipos de IES'},
+            name="tipoies",
+            options={
+                "ordering": ["orden", "nombre"],
+                "verbose_name": "Tipo de IES",
+                "verbose_name_plural": "Tipos de IES",
+            },
         ),
     ]

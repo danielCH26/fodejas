@@ -1,5 +1,7 @@
 """Custom template tags for audit."""
+
 import json
+
 from django import template
 
 register = template.Library()

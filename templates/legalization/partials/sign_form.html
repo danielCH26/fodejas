@@ -1,0 +1,41 @@
+{# HTMX signing confirmation form — swapped into #doc-row-<id> on GET #}
+{# On POST success, the response HX-Retarget replaces this with document_row.html #}
+
+<div class="p-3 border rounded bg-light">
+    <h6 class="mb-3">
+        <i class="bi bi-pen me-2"></i>Firmar:
+        <strong>{{ document.get_document_type_display }}</strong>
+    </h6>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} py-2">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <p class="small text-muted mb-3">
+        Al firmar, se generará un hash SHA-256 del documento que garantiza
+        su integridad. Esta acción es irreversible y genera un evento de auditoría.
+    </p>
+
+    <div class="d-flex gap-2">
+        {# POST submits the actual signing #}
+        <form method="post"
+              hx-post="{% url 'legalization:sign_document' document.id %}"
+              hx-target="#doc-row-{{ document.id }}"
+              hx-swap="innerHTML">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-sm">
+                <i class="bi bi-pen"></i> Confirmar Firma
+            </button>
+        </form>
+        {# Cancel button restores the original row state via reload #}
+        <button type="button"
+                class="btn btn-outline-secondary btn-sm"
+                hx-get="{{ request.path }}"
+                hx-target="#doc-row-{{ document.id }}"
+                hx-swap="innerHTML">
+            Cancelar
+        </button>
+    </div>
+</div>

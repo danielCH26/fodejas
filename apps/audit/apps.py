@@ -28,4 +28,5 @@ class AuditConfig(AppConfig):
         filter is checked inside the receiver body.
         """
         import apps.audit.signals  # noqa: F401
+
         apps.audit.signals.register_audit_signals()

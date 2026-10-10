@@ -1,5 +1,7 @@
 """Models for claims (CHG-205)."""
+
 import uuid
+
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -207,14 +209,13 @@ class Apelacion(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
+
         # Validar que la reclamación esté en estado terminal
         if self.reclamacion.estado not in [
             Reclamacion.Estado.RESUELTA,
             Reclamacion.Estado.RECHAZADA,
         ]:
-            raise ValidationError(
-                _("Solo se puede apelar una reclamación resuelta o rechazada.")
-            )
+            raise ValidationError(_("Solo se puede apelar una reclamación resuelta o rechazada."))
 
 
 class ApelacionHistorial(models.Model):

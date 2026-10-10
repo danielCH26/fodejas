@@ -1,16 +1,17 @@
 """API views for Convocatory."""
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from apps.convocatories.models import Convocatory
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+
+from apps.accounts.permissions import IsAdminOrHasRole
 from apps.convocatories.api.serializers import (
     ConvocatorySerializer,
     TransitionSerializer,
 )
+from apps.convocatories.models import Convocatory
 from apps.convocatories.services import convocatoria_service
-from apps.accounts.permissions import HasRole, HasAnyRole, IsAdminOrHasRole
 
 
 class ConvocatoryViewSet(viewsets.ModelViewSet):
@@ -33,13 +34,17 @@ class ConvocatoryViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         elif self.action in ["create"]:
             # Only admins and coordinators can create
-            return [IsAdminOrHasRole('R-ADMIN'), IsAdminOrHasRole('R-COORDINADOR')]
+            return [IsAdminOrHasRole("R-ADMIN"), IsAdminOrHasRole("R-COORDINADOR")]
         elif self.action in ["update", "partial_update", "destroy"]:
             # Only admins and coordinators can modify
-            return [IsAdminOrHasRole('R-ADMIN'), IsAdminOrHasRole('R-COORDINADOR')]
+            return [IsAdminOrHasRole("R-ADMIN"), IsAdminOrHasRole("R-COORDINADOR")]
         elif self.action in ["transicionar"]:
             # Only admins, coordinators and committee can transition
-            return [IsAdminOrHasRole('R-ADMIN'), IsAdminOrHasRole('R-COORDINADOR'), IsAdminOrHasRole('R-COMITE')]
+            return [
+                IsAdminOrHasRole("R-ADMIN"),
+                IsAdminOrHasRole("R-COORDINADOR"),
+                IsAdminOrHasRole("R-COMITE"),
+            ]
         return [IsAuthenticated()]
 
     def get_serializer_class(self):

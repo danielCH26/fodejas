@@ -3,12 +3,10 @@
 Espejo de apps/accounts/tests/test_migrations_0008_uuid.py pero para la
 migración de Convocatory.
 """
+
 import importlib
 import inspect
 import uuid
-
-import pytest
-
 
 NAMESPACE_URL = uuid.UUID("6ba7b811-9dad-11d1-80b4-00c04fd430c8")
 

@@ -2,21 +2,21 @@
 
 ## 1. Modelo de Acto Administrativo
 
-- [ ] Crear modelo `ActoAdministrativo` en `apps/governance/models.py`
-- [ ] Crear modelo `SecuencialActo` para numeración
-- [ ] Crear migración
+- [x] Crear modelo `ActoAdministrativo` en `apps/governance/models.py`
+- [x] Crear modelo `SecuencialActo` para numeración
+- [x] Crear migración
 - [ ] Registrar en admin
 
 ## 2. Generador de Consecutivos
 
-- [ ] Crear servicio `generar_numero_acto(tipo)` en `apps/governance/services/`
-- [ ] Formato: `FODEJAS-YYYY-NNNNN`
-- [ ] Thread-safe con select_for_update
+- [x] Crear servicio `generar_numero_acto(tipo)` en `apps/governance/services/`
+- [x] Formato: `FODEJAS-YYYY-NNNNN`
+- [x] Thread-safe con select_for_update
 
 ## 3. Vista de Listado Definitivo
 
-- [ ] Crear vista `ListadoDefinitivoView` en `apps/convocatories/views.py`
-- [ ] Generar ranking final (post-apelaciones)
+- [x] Crear vista `ListadoDefinitivoView` en `apps/convocatories/views.py`
+- [x] Generar ranking final (post-apelaciones)
 - [ ] Mostrar en template
 
 ## 4. Generación de PDF

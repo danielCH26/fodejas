@@ -1,6 +1,7 @@
 """Test for AUD-011 fix: no entry of ``apps.convocatories.domain.normativa.NORMATIVA``
 carries the literal placeholder ``Art. ...`` in its ``articulo`` field.
 """
+
 from django.test import SimpleTestCase
 
 from apps.convocatories.domain.normativa import NORMATIVA

@@ -15,13 +15,13 @@ verifies the new security settings work.
 
 No PII: only synthetic env-var placeholders.
 """
+
 from __future__ import annotations
 
 import os
 import subprocess
 import sys
 import textwrap
-
 
 # Minimal env needed to make ``config.settings`` import successfully
 # under DJANGO_ENV=production. Values are synthetic; the test never

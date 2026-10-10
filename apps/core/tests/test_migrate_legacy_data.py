@@ -6,19 +6,18 @@ Verifies:
 - Validation aborts on bad schema
 - PII detection aborts
 """
+
 import csv
 from pathlib import Path
 
+import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
-
-import pytest
 
 from apps.accounts.models import CustomUser
 from apps.applications.models import Solicitud
 from apps.convocatories.models import Convocatory
 from apps.governance.models import ActoAdministrativo, ListadoDefinitivo
-
 
 SALT = "x" * 32
 
@@ -36,10 +35,18 @@ def _populate_legacy_source(source: Path):
     _write_csv(
         source / "convocatorias.csv",
         [
-            "codigo", "nombre", "tipo", "periodo", "estado",
-            "fecha_apertura", "fecha_cierre",
-            "fecha_publicacion_preliminar", "fecha_publicacion_definitiva",
-            "monto_semestre_smlmv", "duracion_maxima_semestres", "cupo_total",
+            "codigo",
+            "nombre",
+            "tipo",
+            "periodo",
+            "estado",
+            "fecha_apertura",
+            "fecha_cierre",
+            "fecha_publicacion_preliminar",
+            "fecha_publicacion_definitiva",
+            "monto_semestre_smlmv",
+            "duracion_maxima_semestres",
+            "cupo_total",
             "modalidad_codigo",
         ],
         [
@@ -81,9 +88,14 @@ def _populate_legacy_source(source: Path):
     _write_csv(
         source / "solicitudes.csv",
         [
-            "radicado", "convocatoria_codigo", "aspirante_documento_hash",
-            "estado", "radicado_en", "datos_academicos_json",
-            "datos_socioeconomicos_json", "datos_personales_json",
+            "radicado",
+            "convocatoria_codigo",
+            "aspirante_documento_hash",
+            "estado",
+            "radicado_en",
+            "datos_academicos_json",
+            "datos_socioeconomicos_json",
+            "datos_personales_json",
         ],
         [
             {
@@ -101,9 +113,16 @@ def _populate_legacy_source(source: Path):
     _write_csv(
         source / "actos_legacy.csv",
         [
-            "numero", "tipo", "fecha_expedicion", "fecha_publicacion",
-            "asunto", "considerandos_json", "resolutivo",
-            "convocatoria_codigo", "firmantes_json", "estado",
+            "numero",
+            "tipo",
+            "fecha_expedicion",
+            "fecha_publicacion",
+            "asunto",
+            "considerandos_json",
+            "resolutivo",
+            "convocatoria_codigo",
+            "firmantes_json",
+            "estado",
         ],
         [
             {
@@ -123,8 +142,10 @@ def _populate_legacy_source(source: Path):
     _write_csv(
         source / "listados_legacy.csv",
         [
-            "convocatoria_codigo", "ranking_json",
-            "fecha_publicacion", "acto_numero",
+            "convocatoria_codigo",
+            "ranking_json",
+            "fecha_publicacion",
+            "acto_numero",
         ],
         [
             {
@@ -163,12 +184,8 @@ class TestMigrateLegacyData:
         assert CustomUser.objects.filter(documento="anon-test-doc-001").exists()
         assert CustomUser.objects.filter(documento="anon-test-doc-002").exists()
         assert Solicitud.objects.filter(radicado="RAD-2025-0001").exists()
-        assert ActoAdministrativo.objects.filter(
-            numero="FODEJAS-RESO-2025-00001"
-        ).exists()
-        assert ListadoDefinitivo.objects.filter(
-            convocatoria__codigo="CONV-001-2025"
-        ).exists()
+        assert ActoAdministrativo.objects.filter(numero="FODEJAS-RESO-2025-00001").exists()
+        assert ListadoDefinitivo.objects.filter(convocatoria__codigo="CONV-001-2025").exists()
 
     def test_idempotent(self, tmp_path, monkeypatch):
         source = tmp_path / "legacy"
@@ -206,8 +223,13 @@ class TestMigrateLegacyData:
             writer = csv.DictWriter(
                 f,
                 fieldnames=[
-                    "codigo", "nombre", "tipo", "periodo", "estado",
-                    "fecha_apertura", "fecha_cierre",
+                    "codigo",
+                    "nombre",
+                    "tipo",
+                    "periodo",
+                    "estado",
+                    "fecha_apertura",
+                    "fecha_cierre",
                     "fecha_publicacion_preliminar",
                     "fecha_publicacion_definitiva",
                     "monto_semestre_smlmv",
@@ -281,6 +303,4 @@ class TestMigrateLegacyData:
                     content,
                     flags=re.MULTILINE,
                 ):
-                    pytest.fail(
-                        f"possible PII in test fixture {csv_file}: {match.group()!r}"
-                    )
+                    pytest.fail(f"possible PII in test fixture {csv_file}: {match.group()!r}")

@@ -14,12 +14,14 @@ in ``AUDIT_MODELS``. Using ``@receiver(post_save)`` without a
 ``sender`` would also catch every model save in the project and
 double-fire for the audited ones, polluting the chain.
 """
+
 import logging
 
 from django.apps import apps as django_apps
 from django.db.models.signals import post_delete, post_save
 
 from apps.core.logging_config import get_actor
+
 from .services import log_audit_event
 
 logger = logging.getLogger(__name__)

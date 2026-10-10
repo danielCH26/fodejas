@@ -8,6 +8,7 @@ orchestrate these; they MUST NOT call ``objects.update()`` /
 Per AGENTS.md §6 regla 6, business logic lives in ``services/`` /
 ``domain/`` and NEVER in views or templates.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -40,11 +41,7 @@ def firmar_acto(acto_uuid, firmantes: list[str], usuario=None) -> ActoAdministra
         raise ValueError("firmar_acto requiere al menos un firmante")
     with transaction.atomic():
         try:
-            acto = (
-                ActoAdministrativo.objects
-                .select_for_update()
-                .get(uuid=acto_uuid)
-            )
+            acto = ActoAdministrativo.objects.select_for_update().get(uuid=acto_uuid)
         except ActoAdministrativo.DoesNotExist as exc:
             raise ValueError(f"acto {acto_uuid} no existe") from exc
         if acto.estado != ActoAdministrativo.Estado.BORRADOR:
@@ -92,15 +89,9 @@ def crear_modificatorio(
     """
     with transaction.atomic():
         try:
-            original = (
-                ActoAdministrativo.objects
-                .select_for_update()
-                .get(uuid=acto_original_uuid)
-            )
+            original = ActoAdministrativo.objects.select_for_update().get(uuid=acto_original_uuid)
         except ActoAdministrativo.DoesNotExist as exc:
-            raise ValueError(
-                f"acto original {acto_original_uuid} no existe"
-            ) from exc
+            raise ValueError(f"acto original {acto_original_uuid} no existe") from exc
         if original.tipo == ActoAdministrativo.Tipo.MODIFICATORIO:
             raise ValueError(
                 "no se puede crear un modificatorio de otro modificatorio "

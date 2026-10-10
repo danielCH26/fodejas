@@ -3,12 +3,12 @@
 End-to-end: tras reclamación resuelta favorable → crear apelación →
 transicionar a EN_ANALISIS → confirmar (o revocar).
 """
-from __future__ import annotations
 
-from django.utils import timezone
+from __future__ import annotations
 
 import pytest
 from django.test import TestCase
+from django.utils import timezone
 
 from apps.accounts.models import CustomUser, Role, UserRole
 from apps.applications.models import Solicitud
@@ -33,9 +33,7 @@ def _make_user(email, codes):
             code=code,
             defaults={"name": code, "type": "interno", "description": code},
         )
-        UserRole.objects.get_or_create(
-            user=user, role=role, convocation_scope_id=None
-        )
+        UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
     return user
 
 

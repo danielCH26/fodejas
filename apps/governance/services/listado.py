@@ -1,9 +1,8 @@
 """Generación del listado definitivo de beneficiarios (CHG-207)."""
+
 import logging
 
 from django.db import transaction
-from django.utils import timezone
-
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +34,7 @@ def generar_listado_definitivo(convocatoria, acto, ranking_data):
         # Cualquier otro fallo de transición se registra de forma explícita en logs
         # en lugar de tragarse la excepción silenciosamente.
         from apps.convocatories.models import Convocatory
+
         try:
             convocatoria.estado = Convocatory.Estado.DEFINITIVA
             convocatoria.save(update_fields=["estado", "updated_at"])
@@ -55,13 +55,13 @@ def generar_listado_definitivo(convocatoria, acto, ranking_data):
 def obtener_ranking_final(convocatoria):
     """
     Obtiene el ranking final de solicitudes para una convocatoria.
-    
+
     Ordena por puntaje total (mayor a menor).
     Aplica regla de Providencia Isla si aplica.
-    
+
     Args:
         convocatoria: Instancia de Convocatory
-    
+
     Returns:
         Lista de dicts con información de cada solicitud
     """
@@ -82,29 +82,33 @@ def obtener_ranking_final(convocatoria):
     for sol in solicitudes:
         try:
             puntaje = PuntajeTotal.objects.get(solicitud=sol)
-            ranking.append({
-                "solicitud_id": str(sol.uuid),
-                "radicado": sol.radicado,
-                "aspirante": sol.aspirante.get_full_name() or sol.aspirante.email,
-                "puntaje": puntaje.puntaje_total,
-                "puntaje_detallado": {
-                    "excelencia": puntaje.puntaje_excelencia,
-                    "academico": puntaje.puntaje_academico,
-                    "socioeconomico": puntaje.puntaje_socioeconomico,
-                },
-            })
+            ranking.append(
+                {
+                    "solicitud_id": str(sol.uuid),
+                    "radicado": sol.radicado,
+                    "aspirante": sol.aspirante.get_full_name() or sol.aspirante.email,
+                    "puntaje": puntaje.puntaje_total,
+                    "puntaje_detallado": {
+                        "excelencia": puntaje.puntaje_excelencia,
+                        "academico": puntaje.puntaje_academico,
+                        "socioeconomico": puntaje.puntaje_socioeconomico,
+                    },
+                }
+            )
         except PuntajeTotal.DoesNotExist:
-            ranking.append({
-                "solicitud_id": str(sol.uuid),
-                "radicado": sol.radicado,
-                "aspirante": sol.aspirante.get_full_name() or sol.aspirante.email,
-                "puntaje": 0,
-                "puntaje_detallado": {
-                    "excelencia": 0,
-                    "academico": 0,
-                    "socioeconomico": 0,
-                },
-            })
+            ranking.append(
+                {
+                    "solicitud_id": str(sol.uuid),
+                    "radicado": sol.radicado,
+                    "aspirante": sol.aspirante.get_full_name() or sol.aspirante.email,
+                    "puntaje": 0,
+                    "puntaje_detallado": {
+                        "excelencia": 0,
+                        "academico": 0,
+                        "socioeconomico": 0,
+                    },
+                }
+            )
 
     # Ordenar por puntaje (mayor a menor)
     ranking.sort(key=lambda x: x["puntaje"], reverse=True)

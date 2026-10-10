@@ -6,11 +6,11 @@ and extends the ``Status`` enum with ``RECIBIDO`` (set when
 Tesorería acknowledges receipt of the order) and ``VENCIDO`` (set
 by the sweep when the 5-working-day window has elapsed).
 """
+
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("treasury", "0001_initial"),
     ]

@@ -7,32 +7,32 @@
 ```python
 class Reclamacion(models.Model):
     """Reclamación en 1ª instancia ante la Junta Directiva."""
-    
+
     class TipoReclamacion(models.TextChoices):
         PUNTAJE = "puntaje", _("Puntaje incorrecto")
         REQUISITO = "requisito", _("Requisito mal validado")
         OTRO = "otro", _("Otro")
-    
+
     class Estado(models.TextChoices):
         PRESENTADA = "presentada", _("Presentada")
         EN_REVISION = "en_revision", _("En revisión")
         RESUELTA = "resuelta", _("Resuelta")
         RECHAZADA = "rechazada", _("Rechazada")
-    
+
     # UUID para URLs públicas
     uuid = models.UUIDField(
         unique=True,
         editable=False,
         db_index=True,
     )
-    
+
     # Relación con la postulación
     solicitud = models.ForeignKey(
         "applications.Solicitud",
         on_delete=models.CASCADE,
         related_name="reclamaciones",
     )
-    
+
     # Datos de la reclamación
     tipo = models.CharField(
         max_length=20,
@@ -46,7 +46,7 @@ class Reclamacion(models.Model):
         blank=True,
         null=True,
     )
-    
+
     # Estado y resolución
     estado = models.CharField(
         max_length=20,
@@ -68,16 +68,16 @@ class Reclamacion(models.Model):
         null=True,
         blank=True,
     )
-    
+
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         ordering = ["-created_at"]
         verbose_name = _("Reclamación")
         verbose_name_plural = _("Reclamaciones")
-    
+
     def __str__(self):
         return f"Reclamación {self.uuid} - {self.solicitud.radicado}"
 ```
@@ -87,7 +87,7 @@ class Reclamacion(models.Model):
 ```python
 class ReclamacionHistorial(models.Model):
     """Historial de cambios de estado de una reclamación."""
-    
+
     reclamacion = models.ForeignKey(
         Reclamacion,
         on_delete=models.CASCADE,
@@ -102,7 +102,7 @@ class ReclamacionHistorial(models.Model):
         null=True,
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         ordering = ["created_at"]
 ```

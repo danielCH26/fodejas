@@ -56,16 +56,16 @@
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        
+
                         <div class="mb-3">
                             <label for="id_descripcion" class="form-label">
                                 <strong>Fundamentos de la Apelación *</strong>
                             </label>
-                            <textarea 
-                                name="descripcion" 
-                                id="id_descripcion" 
-                                class="form-control" 
-                                rows="6" 
+                            <textarea
+                                name="descripcion"
+                                id="id_descripcion"
+                                class="form-control"
+                                rows="6"
                                 required
                                 placeholder="Explique los fundamentos de su apelación contra la decisión de la Junta Directiva..."
                             ></textarea>
@@ -78,10 +78,10 @@
                             <label for="id_evidencia" class="form-label">
                                 <strong>Evidencia (opcional)</strong>
                             </label>
-                            <input 
-                                type="file" 
-                                name="evidencia" 
-                                id="id_evidencia" 
+                            <input
+                                type="file"
+                                name="evidencia"
+                                id="id_evidencia"
                                 class="form-control"
                                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                             >

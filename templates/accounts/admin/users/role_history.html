@@ -23,7 +23,7 @@
             </div>
             <div class="col-md-6">
                 <p><strong>Documento:</strong> {{ view_user.documento|default:"—" }}</p>
-                <p><strong>Estado:</strong> 
+                <p><strong>Estado:</strong>
                     {% if view_user.is_active %}
                         <span class="badge bg-success">Activo</span>
                     {% else %}

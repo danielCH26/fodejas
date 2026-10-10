@@ -1,7 +1,6 @@
 """Sweep tests for the 5-working-day Tesorería window (CHG-802 / CAP-010)."""
-from __future__ import annotations
 
-from datetime import timedelta
+from __future__ import annotations
 
 import pytest
 from django.utils import timezone

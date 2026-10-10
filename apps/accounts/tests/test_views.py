@@ -1,4 +1,5 @@
 """Integration tests for accounts views."""
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -20,7 +21,7 @@ class LoginViewTests(TestCase):
             first_name="Login",
             last_name="Test",
         )
-        self.url = reverse("login")
+        self.url = reverse("accounts:login")
 
     def test_login_page_loads(self):
         """Test that login page loads successfully."""
@@ -34,7 +35,7 @@ class LoginViewTests(TestCase):
             self.url,
             {"username": "login@test.com", "password": "Login123!"},
         )
-        self.assertRedirects(response, reverse("dashboard"))
+        self.assertRedirects(response, reverse("accounts:dashboard"))
 
     def test_login_failure_shows_error(self):
         """Test that login failure shows error message."""
@@ -50,7 +51,7 @@ class LoginViewTests(TestCase):
         """Test that authenticated user is redirected from login page."""
         self.client.login(username="login@test.com", password="Login123!")
         response = self.client.get(self.url)
-        self.assertRedirects(response, reverse("dashboard"))
+        self.assertRedirects(response, reverse("accounts:dashboard"))
 
 
 class RegisterViewTests(TestCase):
@@ -63,7 +64,7 @@ class RegisterViewTests(TestCase):
             code="R-ASPIRANTE",
             defaults={"name": "Aspirante", "type": "externo"},
         )
-        self.url = reverse("register")
+        self.url = reverse("accounts:register")
 
     def test_register_page_loads(self):
         """Test that register page loads successfully."""
@@ -73,7 +74,7 @@ class RegisterViewTests(TestCase):
 
     def test_register_success_creates_user(self):
         """Test that successful registration creates a user."""
-        response = self.client.post(
+        self.client.post(
             self.url,
             {
                 "email": "new@example.com",
@@ -130,7 +131,7 @@ class RegisterViewTests(TestCase):
 
     def test_authenticated_user_redirected_from_register(self):
         """Test that authenticated user is redirected from register."""
-        user = User.objects.create_user(
+        User.objects.create_user(
             email="auth@example.com",
             password="Auth123!",
             documento="55555555",
@@ -139,7 +140,7 @@ class RegisterViewTests(TestCase):
         )
         self.client.login(username="auth@example.com", password="Auth123!")
         response = self.client.get(self.url)
-        self.assertRedirects(response, reverse("dashboard"))
+        self.assertRedirects(response, reverse("accounts:dashboard"))
 
 
 class DashboardViewTests(TestCase):
@@ -156,7 +157,7 @@ class DashboardViewTests(TestCase):
         )
         # Use get_or_create because roles are seeded
         self.role, _ = Role.objects.get_or_create(
-            code="R-COORD",
+            code="R-COORDINADOR",
             defaults={"name": "Coordinador", "type": "interno"},
         )
         UserRole.objects.get_or_create(
@@ -164,12 +165,12 @@ class DashboardViewTests(TestCase):
             role=self.role,
             convocation_scope_id=None,
         )
-        self.url = reverse("dashboard")
+        self.url = reverse("accounts:dashboard")
 
     def test_dashboard_requires_login(self):
         """Test that dashboard requires authentication."""
         response = self.client.get(self.url)
-        self.assertRedirects(response, f"{reverse('login')}?next={self.url}")
+        self.assertRedirects(response, f"{reverse('accounts:login')}?next={self.url}")
 
     def test_dashboard_loads_for_authenticated_user(self):
         """Test that dashboard loads for authenticated user."""
@@ -190,7 +191,7 @@ class DashboardViewTests(TestCase):
         self.client.login(username="dashboard@test.com", password="Dash123!")
         response = self.client.get(self.url)
         self.assertContains(response, "Convocatorias")
-        self.assertContains(response, "Evaluación")
+        self.assertContains(response, "Postulaciones")
 
 
 class ProfileViewTests(TestCase):
@@ -205,12 +206,12 @@ class ProfileViewTests(TestCase):
             first_name="Profile",
             last_name="Test",
         )
-        self.url = reverse("profile")
+        self.url = reverse("accounts:profile")
 
     def test_profile_requires_login(self):
         """Test that profile requires authentication."""
         response = self.client.get(self.url)
-        self.assertRedirects(response, f"{reverse('login')}?next={self.url}")
+        self.assertRedirects(response, f"{reverse('accounts:login')}?next={self.url}")
 
     def test_profile_loads_for_authenticated_user(self):
         """Test that profile loads for authenticated user."""
@@ -239,18 +240,20 @@ class LogoutViewTests(TestCase):
             first_name="Logout",
             last_name="Test",
         )
-        self.url = reverse("logout")
+        self.url = reverse("accounts:logout")
 
     def test_logout_redirects_to_login(self):
         """Test that logout redirects to login page."""
         self.client.login(username="logout@test.com", password="Logout123!")
         response = self.client.post(self.url)
-        self.assertRedirects(response, reverse("login"))
+        self.assertRedirects(response, reverse("accounts:login"))
 
     def test_logout_clears_session(self):
         """Test that logout clears the session."""
         self.client.login(username="logout@test.com", password="Logout123!")
         self.client.post(self.url)
         # After logout, accessing a protected view should redirect
-        response = self.client.get(reverse("dashboard"))
-        self.assertRedirects(response, f"{reverse('login')}?next={reverse('dashboard')}")
+        response = self.client.get(reverse("accounts:dashboard"))
+        self.assertRedirects(
+            response, f"{reverse('accounts:login')}?next={reverse('accounts:dashboard')}"
+        )

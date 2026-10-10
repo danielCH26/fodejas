@@ -3,18 +3,18 @@
 ``select_for_update()``. Two interleaved calls against the same
 ``Solicitud`` produce a consistent ``PuntajeTotal``.
 """
+
 from decimal import Decimal
 
 import pytest
 from django.contrib.auth import get_user_model
-from django.db import OperationalError, connection, transaction
+from django.db import connection, transaction
 from django.test import TestCase, skipIfDBFeature
 
 from apps.applications.models import Solicitud
 from apps.convocatories.models import Convocatory
 from apps.scoring.models import Evaluacion, PuntajeTotal
 from apps.scoring.services.scoring_service import calcular_puntaje_total
-
 
 User = get_user_model()
 
@@ -104,7 +104,9 @@ class ScoringAtomicTest(TestCase):
             + Decimal("0.20") * puntaje.puntaje_excelencia
         )
         # ``puntaje_total`` must equal the weighted sum to within rounding.
-        self.assertEqual(puntaje.puntaje_total.quantize(Decimal("0.01")), weights.quantize(Decimal("0.01")))
+        self.assertEqual(
+            puntaje.puntaje_total.quantize(Decimal("0.01")), weights.quantize(Decimal("0.01"))
+        )
         # The components themselves must be intact (not overwritten with zero).
         self.assertEqual(puntaje.puntaje_socioeconomico, Decimal("60.00"))
         self.assertEqual(puntaje.puntaje_academico, Decimal("50.00"))
@@ -115,7 +117,6 @@ class ScoringAtomicTest(TestCase):
         detects this implicitly: a failure inside the function rolls back any
         outer transaction. We assert by reading the wrapping closer.
         """
-        from django.db import transaction as dj_transaction
 
         # ``calcular_puntaje_total`` reads the wrapped callable; with
         # ``@transaction.atomic`` applied, it is no longer the bare function.

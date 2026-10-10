@@ -1,4 +1,5 @@
 """Integration tests for the treasury reconciliation view (CHG-802)."""
+
 from __future__ import annotations
 
 import io
@@ -30,9 +31,7 @@ def authorized_user(user_factory):
 class TestTreasuryReconciliationView:
     """CAP-010: R-TESORERO can list and confirm ordered payments."""
 
-    def test_get_lists_ordenado_rows(
-        self, auth_factory, tesorero_user_with_role
-    ):
+    def test_get_lists_ordenado_rows(self, auth_factory, tesorero_user_with_role):
         auth = auth_factory(
             status=DisbursementAuthorization.Status.ORDENADO,
             treasury_order_date=timezone.now().date(),
@@ -85,9 +84,7 @@ class TestTreasuryReconciliationView:
         assert audit is not None
         assert audit.actor_id == tesorero_user_with_role.id
 
-    def test_non_tesorero_user_is_forbidden(
-        self, auth_factory, user_factory
-    ):
+    def test_non_tesorero_user_is_forbidden(self, auth_factory, user_factory):
         auth_factory(
             status=DisbursementAuthorization.Status.ORDENADO,
             treasury_order_date=timezone.now().date(),

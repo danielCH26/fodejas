@@ -1,7 +1,7 @@
 """HTML views for governance app (CHG-207 + CHG-208)."""
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -12,10 +12,9 @@ from django.views.generic import (
     FormView,
     ListView,
     TemplateView,
-    UpdateView,
 )
 
-from apps.accounts.permissions_mixin import PermissionMixin, JuntaPermissionMixin
+from apps.accounts.permissions_mixin import JuntaPermissionMixin, PermissionMixin
 from apps.convocatories.models import Convocatory
 from apps.governance.domain.transitions import crear_modificatorio, firmar_acto
 from apps.governance.models import ActoAdministrativo, ListadoDefinitivo
@@ -43,7 +42,15 @@ class ActoCreateView(JuntaPermissionMixin, CreateView):
     """Create a new administrative act."""
 
     model = ActoAdministrativo
-    fields = ["tipo", "fecha_expedicion", "asunto", "considerandos", "resolutivo", "convocatoria", "firmantes"]
+    fields = [
+        "tipo",
+        "fecha_expedicion",
+        "asunto",
+        "considerandos",
+        "resolutivo",
+        "convocatoria",
+        "firmantes",
+    ]
     template_name = "governance/acto_create.html"
 
     def get_success_url(self):
@@ -142,9 +149,7 @@ class ActoModificatorioCreateView(JuntaPermissionMixin, FormView):
     template_name = "governance/acto_modificatorio_create.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.original = get_object_or_404(
-            ActoAdministrativo, uuid=kwargs.get("pk")
-        )
+        self.original = get_object_or_404(ActoAdministrativo, uuid=kwargs.get("pk"))
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -160,34 +165,30 @@ class ActoModificatorioCreateView(JuntaPermissionMixin, FormView):
 
         if not asunto or not resolutivo:
             messages.error(request, "Asunto y resolutivo son obligatorios.")
-            return redirect(
-                "governance:acto_modificatorio_create", pk=self.original.uuid
-            )
+            return redirect("governance:acto_modificatorio_create", pk=self.original.uuid)
 
         try:
             import json
+
             considerandos = json.loads(considerandos_raw)
             if not isinstance(considerandos, list):
                 raise ValueError
         except (ValueError, json.JSONDecodeError):
             messages.error(request, "Considerandos debe ser JSON válido (lista).")
-            return redirect(
-                "governance:acto_modificatorio_create", pk=self.original.uuid
-            )
+            return redirect("governance:acto_modificatorio_create", pk=self.original.uuid)
 
         fecha_expedicion = None
         if fecha_str:
             try:
                 from datetime import date
+
                 fecha_expedicion = date.fromisoformat(fecha_str)
             except ValueError:
                 messages.error(
                     request,
                     "fecha_expedicion debe estar en formato AAAA-MM-DD.",
                 )
-                return redirect(
-                    "governance:acto_modificatorio_create", pk=self.original.uuid
-                )
+                return redirect("governance:acto_modificatorio_create", pk=self.original.uuid)
 
         try:
             modificatorio = crear_modificatorio(
@@ -199,9 +200,7 @@ class ActoModificatorioCreateView(JuntaPermissionMixin, FormView):
             )
         except ValueError as exc:
             messages.error(request, str(exc))
-            return redirect(
-                "governance:acto_modificatorio_create", pk=self.original.uuid
-            )
+            return redirect("governance:acto_modificatorio_create", pk=self.original.uuid)
 
         messages.success(
             request,
@@ -222,9 +221,7 @@ class ListadoDefinitivoCreateView(JuntaPermissionMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["convocatorias"] = Convocatory.objects.filter(
-            estado=Convocatory.Estado.DEFINITIVA
-        )
+        context["convocatorias"] = Convocatory.objects.filter(estado=Convocatory.Estado.DEFINITIVA)
         return context
 
     def post(self, request):
@@ -242,8 +239,14 @@ class ListadoDefinitivoCreateView(JuntaPermissionMixin, TemplateView):
             fecha_expedicion=timezone.now().date(),
             asunto=f"Listado definitivo de beneficiarios - {convocatoria.nombre}",
             considerandos=[
-                {"numeral": "1", "texto": "Que mediante convocatoria se establecieron los criterios de selección..."},
-                {"numeral": "2", "texto": "Que agotado el proceso de reclamaciones y apelaciones..."},
+                {
+                    "numeral": "1",
+                    "texto": "Que mediante convocatoria se establecieron los criterios de selección...",
+                },
+                {
+                    "numeral": "2",
+                    "texto": "Que agotado el proceso de reclamaciones y apelaciones...",
+                },
             ],
             resolutivo=f"Se APRUEBA el listado definitivo de {len(ranking_data)} beneficiarios...",
             convocatoria=convocatoria,
@@ -253,7 +256,9 @@ class ListadoDefinitivoCreateView(JuntaPermissionMixin, TemplateView):
         # Crear listado definitivo
         listado = generar_listado_definitivo(convocatoria, acto, ranking_data)
 
-        messages.success(request, f"Listado definitivo generado con {len(ranking_data)} beneficiarios.")
+        messages.success(
+            request, f"Listado definitivo generado con {len(ranking_data)} beneficiarios."
+        )
         return redirect("governance:listado_detail", pk=listado.uuid)
 
 
@@ -285,20 +290,24 @@ class ListadoPublicoView(TemplateView):
             # Obtener información de beneficiarios (solo datos públicos)
             beneficiaries = []
             for item in lst.ranking[:10]:  # Solo top 10 para vista pública
-                beneficiaries.append({
-                    "rank": item["rank"],
-                    "radicado": item["radicado"],
-                    # No mostrar nombre - solo posición en ranking
-                })
+                beneficiaries.append(
+                    {
+                        "rank": item["rank"],
+                        "radicado": item["radicado"],
+                        # No mostrar nombre - solo posición en ranking
+                    }
+                )
 
-            listings.append({
-                "uuid": str(lst.uuid),
-                "convocatoria": lst.convocatoria.nombre,
-                "fecha_publicacion": lst.fecha_publicacion,
-                "acto_numero": lst.acto.numero,
-                "total_beneficiarios": len(lst.ranking),
-                "top_beneficiaries": beneficiaries,
-            })
+            listings.append(
+                {
+                    "uuid": str(lst.uuid),
+                    "convocatoria": lst.convocatoria.nombre,
+                    "fecha_publicacion": lst.fecha_publicacion,
+                    "acto_numero": lst.acto.numero,
+                    "total_beneficiarios": len(lst.ranking),
+                    "top_beneficiaries": beneficiaries,
+                }
+            )
 
         context["listados"] = listings
         return context

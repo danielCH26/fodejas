@@ -6,6 +6,7 @@ The app autodiscovers ``tasks`` modules from every installed
 Django app, so adding ``@shared_task`` to any
 ``apps/<x>/tasks.py`` is picked up automatically.
 """
+
 import os
 
 from celery import Celery

@@ -4,6 +4,7 @@ End-to-end flow: crear solicitud → presentar reclamación →
 transicionar a EN_REVISION → resolver favorable → verificar
 historial.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -28,9 +29,7 @@ def _make_user(email, codes):
             code=code,
             defaults={"name": code, "type": "interno", "description": code},
         )
-        UserRole.objects.get_or_create(
-            user=user, role=role, convocation_scope_id=None
-        )
+        UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
     return user
 
 

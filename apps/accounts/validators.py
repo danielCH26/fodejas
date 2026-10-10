@@ -1,5 +1,7 @@
 """Custom validators for accounts app."""
+
 import re
+
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -23,28 +25,21 @@ class FodejasPasswordValidator:
         # Check minimum length
         if len(password) < self.min_length:
             errors.append(
-                _(
-                    "La contraseña debe tener al menos %(min_length)d caracteres."
-                ) % {"min_length": self.min_length}
+                _("La contraseña debe tener al menos %(min_length)d caracteres.")
+                % {"min_length": self.min_length}
             )
 
         # Check for at least one uppercase letter
         if not re.search(r"[A-Z]", password):
-            errors.append(
-                _("La contraseña debe contener al menos una letra mayúscula.")
-            )
+            errors.append(_("La contraseña debe contener al menos una letra mayúscula."))
 
         # Check for at least one digit
         if not re.search(r"\d", password):
-            errors.append(
-                _("La contraseña debe contener al menos un número.")
-            )
+            errors.append(_("La contraseña debe contener al menos un número."))
 
         # Check for at least one symbol
         if not re.search(r'[!@#$%^&*()_+\-=\[\]{};\'":\\|,.<>\/?]', password):
-            errors.append(
-                _("La contraseña debe contener al menos un símbolo especial.")
-            )
+            errors.append(_("La contraseña debe contener al menos un símbolo especial."))
 
         if errors:
             raise ValidationError(errors)

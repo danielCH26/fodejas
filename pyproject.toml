@@ -61,6 +61,27 @@ exclude = '''
 line-length = 100
 target-version = "py312"
 
+[tool.ruff.lint.per-file-ignores]
+# Documented lint debt (MVP acceptance, docs/mvp-acceptance.md §2).
+# E402: modules that configure Django before importing app modules.
+"apps/accounts/urls.py" = ["E402"]
+"apps/applications/views.py" = ["E402"]
+"apps/audit/urls.py" = ["E402"]
+"apps/audit/views.py" = ["E402"]
+"debug_models.py" = ["E402"]
+"qa_claims_test.py" = ["E402"]
+"qa_test.py" = ["E402"]
+# C901: complex legacy/admin handlers pending refactor.
+"apps/accounts/management/commands/sync_roles.py" = ["C901"]
+"apps/accounts/views/admin_views.py" = ["C901"]
+"apps/audit/tests/test_views_permissions.py" = ["C901"]
+"apps/convocatories/domain/validators.py" = ["C901"]
+"apps/core/management/commands/migrate_legacy_data.py" = ["C901"]
+"apps/treasury/services.py" = ["C901"]
+# B017: tests asserting a generic failure signal on purpose.
+"apps/accounts/tests/test_models.py" = ["B017"]
+"apps/applications/tests/test_views.py" = ["B017"]
+
 [tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors

@@ -28,7 +28,7 @@
         <div class="card-body">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                
+
                 <div class="mb-3">
                     <label for="tipo" class="form-label">Tipo de Reclamación *</label>
                     <select class="form-select" id="tipo" name="tipo" required>
@@ -41,7 +41,7 @@
 
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción *</label>
-                    <textarea class="form-control" id="descripcion" name="descripcion" 
+                    <textarea class="form-control" id="descripcion" name="descripcion"
                               rows="6" required
                               placeholder="Explique detalladamente el motivo de su reclamación..."></textarea>
                     <div class="form-text">

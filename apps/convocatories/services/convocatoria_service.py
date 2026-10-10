@@ -3,8 +3,8 @@
 This module implements the business logic for publishing, closing,
 and canceling convocation, integrating with audit and notifications.
 """
+
 from django.db import transaction
-from django.utils import timezone
 
 from apps.convocatories.domain import (
     Estado,
@@ -34,19 +34,20 @@ def publicar(convocatoria, actor) -> None:
         ValidationError: If validation fails
     """
     from django.core.exceptions import ValidationError
-    from apps.convocatories.models import ConfiguracionConvocatoria
 
     # Validate current state
     if convocatoria.estado != Estado.BORRADOR:
-        raise ValidationError({
-            "estado": f"Solo se puede publicar desde estado BORRADOR, actual: {convocatoria.estado}"
-        })
+        raise ValidationError(
+            {
+                "estado": f"Solo se puede publicar desde estado BORRADOR, actual: {convocatoria.estado}"
+            }
+        )
 
     # Validate config exists (CHG-104 requirement)
     if not hasattr(convocatoria, "config") or convocatoria.config is None:
-        raise ValidationError({
-            "config": "La convocatoria debe tener una configuración (receta) antes de publicar"
-        })
+        raise ValidationError(
+            {"config": "La convocatoria debe tener una configuración (receta) antes de publicar"}
+        )
 
     # Execute transition
     with transaction.atomic():
@@ -81,9 +82,11 @@ def cerrar(convocatoria, actor) -> None:
 
     # Validate current state
     if convocatoria.estado != Estado.DEFINITIVA:
-        raise ValidationError({
-            "estado": f"Solo se puede cerrar desde estado DEFINITIVA, actual: {convocatoria.estado}"
-        })
+        raise ValidationError(
+            {
+                "estado": f"Solo se puede cerrar desde estado DEFINITIVA, actual: {convocatoria.estado}"
+            }
+        )
 
     # Execute transition
     with transaction.atomic():
@@ -116,9 +119,9 @@ def cancelar(convocatoria, actor, motivo: str) -> None:
 
     # Validate current state is active (not terminal)
     if convocatoria.estado in {Estado.CERRADA, Estado.CANCELADA}:
-        raise ValidationError({
-            "estado": f"No se puede cancelar una convocatoria en estado {convocatoria.estado}"
-        })
+        raise ValidationError(
+            {"estado": f"No se puede cancelar una convocatoria en estado {convocatoria.estado}"}
+        )
 
     # Execute transition
     with transaction.atomic():
@@ -146,9 +149,9 @@ def transicionar_estado(convocatoria, estado_destino: str, actor, motivo: str = 
     es_valida, error_code = validar_transicion(convocatoria.estado, estado_destino)
 
     if not es_valida:
-        raise ValidationError({
-            "estado": f"Transición no permitida: {convocatoria.estado} → {estado_destino}"
-        })
+        raise ValidationError(
+            {"estado": f"Transición no permitida: {convocatoria.estado} → {estado_destino}"}
+        )
 
     # Execute with audit and notifications
     with transaction.atomic():

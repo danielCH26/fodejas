@@ -6,7 +6,7 @@
 {% block breadcrumb %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
         <li class="breadcrumb-item"><a href="{% url 'accounts_admin:user_list' %}">Usuarios</a></li>
         <li class="breadcrumb-item"><a href="{% url 'accounts_admin:user_detail' user.pk %}">{{ user.email }}</a></li>
         <li class="breadcrumb-item active" aria-current="page">Roles</li>
@@ -21,10 +21,10 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">Asignar Nuevo Rol</h5>
-                
+
                 <form method="post">
                     {% csrf_token %}
-                    
+
                     {% if form.non_field_errors %}
                     <div class="alert alert-danger">
                         {% for error in form.non_field_errors %}
@@ -32,7 +32,7 @@
                         {% endfor %}
                     </div>
                     {% endif %}
-                    
+
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="{{ form.role.id_for_label }}" class="form-label">
@@ -53,7 +53,7 @@
                             {% endif %}
                             <div class="form-text">{{ form.role.help_text }}</div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <label for="{{ form.convocation_scope_id.id_for_label }}" class="form-label">
                                 {{ form.convocation_scope_id.label }}
@@ -69,7 +69,7 @@
                             <div class="form-text">{{ form.convocation_scope_id.help_text }}</div>
                         </div>
                     </div>
-                    
+
                     <div class="d-flex justify-content-end">
                         <a href="{% url 'accounts_admin:user_detail' user.pk %}" class="btn btn-outline-secondary me-2">
                             <i class="bi bi-arrow-left"></i> Volver
@@ -81,12 +81,12 @@
                 </form>
             </div>
         </div>
-        
+
         <!-- Current Roles -->
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Roles Actuales</h5>
-                
+
                 {% if user_roles %}
                 <div class="table-responsive">
                     <table class="table table-hover">
@@ -123,7 +123,7 @@
                                 </td>
                                 <td>{{ user_role.created_at|date:"d/m/Y" }}</td>
                                 <td>
-                                    <form method="post" action="{% url 'accounts_admin:user_role_revoke' user.pk user_role.role.pk %}" 
+                                    <form method="post" action="{% url 'accounts_admin:user_role_revoke' user.pk user_role.role.pk %}"
                                           class="d-inline"
                                           onsubmit="return confirm('¿Está seguro de revocar el rol {{ user_role.role.code }}?');">
                                         {% csrf_token %}
@@ -146,28 +146,28 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <!-- User Info -->
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Información del Usuario</h5>
-                
+
                 <div class="mb-3">
                     <strong>Email:</strong><br>
                     <code>{{ user.email }}</code>
                 </div>
-                
+
                 <div class="mb-3">
                     <strong>Documento:</strong><br>
                     <code>{{ user.documento }}</code>
                 </div>
-                
+
                 <div class="mb-3">
                     <strong>Nombre:</strong><br>
                     {{ user.first_name }} {{ user.last_name }}
                 </div>
-                
+
                 <div class="mb-3">
                     <strong>Estado:</strong><br>
                     {% if user.is_active %}
@@ -176,14 +176,14 @@
                         <span class="badge bg-danger">Inactivo</span>
                     {% endif %}
                 </div>
-                
+
                 <div class="mb-3">
                     <strong>Total de roles:</strong><br>
                     <span class="badge bg-primary">{{ user_roles|length }}</span>
                 </div>
-                
+
                 <hr>
-                
+
                 <div class="d-grid gap-2">
                     <a href="{% url 'accounts_admin:user_detail' user.pk %}" class="btn btn-outline-info">
                         <i class="bi bi-eye"></i> Ver Detalle
@@ -194,12 +194,12 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Available Roles -->
         <div class="card mt-4">
             <div class="card-body">
                 <h5 class="card-title">Roles Disponibles</h5>
-                
+
                 {% if available_roles %}
                 <div class="list-group">
                     {% for role in available_roles %}

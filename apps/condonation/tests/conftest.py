@@ -1,4 +1,5 @@
 """Shared pytest fixtures for condonation tests (CHG-802)."""
+
 from __future__ import annotations
 
 import uuid

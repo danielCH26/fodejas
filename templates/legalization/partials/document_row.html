@@ -1,0 +1,36 @@
+{# Replaces #doc-row-<id> after successful signing (HX-Retarget) #}
+<tr id="doc-row-{{ document.id }}">
+    <td><strong>{{ document.get_document_type_display }}</strong></td>
+    <td>
+        <span class="badge bg-success">{{ document.get_status_display }}</span>
+    </td>
+    <td>
+        {% if document.pre_sign_hash %}
+        <code class="small" title="{{ document.pre_sign_hash }}">
+            {{ document.pre_sign_hash|truncatechars:20 }}
+        </code>
+        {% else %}—{% endif %}
+    </td>
+    <td>
+        {% if document.post_sign_hash %}
+        <code class="small" title="{{ document.post_sign_hash }}">
+            {{ document.post_sign_hash|truncatechars:20 }}
+        </code>
+        {% else %}—{% endif %}
+    </td>
+    <td>
+        {% if document.signed_at %}
+        {{ document.signed_at|date:"d/m/Y H:i" }}
+        {% else %}—{% endif %}
+    </td>
+    <td>
+        {% with document.changes.provider as prov %}
+        {% if prov %}<span class="badge bg-dark">{{ prov }}</span>{% else %}—{% endif %}
+        {% endwith %}
+    </td>
+    <td>
+        <span class="text-success small">
+            <i class="bi bi-check-circle"></i> Firmado
+        </span>
+    </td>
+</tr>

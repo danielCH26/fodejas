@@ -10,6 +10,7 @@ máximo de 5 días hábiles contados a partir de la radicación de
 la orden. ``tesoreria_sweep_v5d`` marca como ``VENCIDO`` cualquier
 orden que haya superado esa ventana sin confirmación de pago.
 """
+
 from __future__ import annotations
 
 import logging
@@ -90,9 +91,7 @@ def tesoreria_sweep_v5d() -> int:
     for auth_id in qs:
         with transaction.atomic():
             try:
-                auth = DisbursementAuthorization.objects.select_for_update().get(
-                    id=auth_id
-                )
+                auth = DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
             except DisbursementAuthorization.DoesNotExist:
                 continue
             if auth.status != DisbursementAuthorization.Status.ORDENADO:
@@ -108,9 +107,7 @@ def tesoreria_sweep_v5d() -> int:
                 changes={
                     "reason": "Tesorería 5 días hábiles excedidos",
                     "treasury_order_date": (
-                        auth.treasury_order_date.isoformat()
-                        if auth.treasury_order_date
-                        else None
+                        auth.treasury_order_date.isoformat() if auth.treasury_order_date else None
                     ),
                     "cutoff_date": cutoff.isoformat(),
                 },
@@ -148,9 +145,7 @@ def tesoreria_alert_v5d() -> int:
     for auth_id in qs:
         with transaction.atomic():
             try:
-                auth = DisbursementAuthorization.objects.select_for_update().get(
-                    id=auth_id
-                )
+                auth = DisbursementAuthorization.objects.select_for_update().get(id=auth_id)
             except DisbursementAuthorization.DoesNotExist:
                 continue
             # Idempotency: skip if already alerted today.

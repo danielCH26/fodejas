@@ -3,6 +3,7 @@
 This service handles the publish/revert workflow for convocatory configurations
 as defined in the design document.
 """
+
 from django.db import transaction
 from django.utils import timezone
 
@@ -42,9 +43,9 @@ def publicar_version(
         raise ValueError("La convocatoria no tiene configuración para publicar") from err
 
     # Get the latest version number
-    latest_version = ConvocatoriaVersion.objects.filter(
-        convocatoria=convocatoria
-    ).order_by("-version").first()
+    latest_version = (
+        ConvocatoriaVersion.objects.filter(convocatoria=convocatoria).order_by("-version").first()
+    )
 
     new_version_number = (latest_version.version + 1) if latest_version else 1
 
@@ -77,8 +78,7 @@ def publicar_version(
     with transaction.atomic():
         # Mark previous versions as expired
         ConvocatoriaVersion.objects.filter(
-            convocatoria=convocatoria,
-            valida_hasta__isnull=True
+            convocatoria=convocatoria, valida_hasta__isnull=True
         ).update(valida_hasta=timezone.now())
 
         # Create new version

@@ -1,0 +1,90 @@
+{% extends "treasury/base.html" %}
+
+{% block treasury_title %}Autorizaciones de desembolso{% endblock %}
+
+{% block treasury_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-pen me-2"></i>Autorizaciones de desembolso
+    </h2>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% if authorizations %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Convocatoria</th>
+                        <th>Beneficiario</th>
+                        <th>Monto</th>
+                        <th>Estado firma</th>
+                        <th>Estado</th>
+                        <th>Fecha creación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for auth in authorizations %}
+                    <tr>
+                        <td><code>{{ auth.id|truncatechars:8 }}</code></td>
+                        <td>
+                            {{ auth.legalization_process.convocatoria.nombre }}
+                            <br><small class="text-muted">{{ auth.legalization_process.convocatoria.codigo }}</small>
+                        </td>
+                        <td>{{ auth.legalization_process.beneficiary.email }}</td>
+                        <td><strong>${{ auth.amount|floatformat:0 }}</strong></td>
+                        <td>
+                            {% if auth.is_fully_authorized %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Ambas firmas
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">
+                                    {% if auth.authorized_by_president %}Presid.✓{% else %}Presid.pend.{% endif %}
+                                    /
+                                    {% if auth.authorized_by_secretary %}Sec.✓{% else %}Sec.pend.{% endif %}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge
+                                {% if auth.status == 'AUTORIZADO' %}bg-success
+                                {% elif auth.status == 'PENDIENTE' %}bg-warning text-dark
+                                {% elif auth.status == 'VENCIDO' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ auth.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ auth.created_at|date:"d/m/Y" }}</td>
+                        <td>
+                            <a href="{% url 'treasury:disbursement_detail' auth.pk %}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>
+    No hay autorizaciones pendientes ni autorizadas en este momento.
+</div>
+{% endif %}
+{% endblock %}

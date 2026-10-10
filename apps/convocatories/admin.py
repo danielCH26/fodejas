@@ -1,4 +1,5 @@
 """Admin configuration for convocatories app."""
+
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
@@ -49,34 +50,44 @@ class ConvocatoryAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at", "estado")
 
     fieldsets = (
-        (_("Información básica"), {
-            "fields": ("codigo", "nombre", "tipo", "periodo")
-        }),
-        (_("Fechas"), {
-            "fields": (
-                "fecha_publicacion",
-                "fecha_apertura",
-                "fecha_cierre",
-                "fecha_publicacion_preliminar",
-                "fecha_publicacion_definitiva",
-            )
-        }),
-        (_("Configuración"), {
-            "fields": (
-                "modalidad_apoyo",
-                "monto_semestre_smlmv",
-                "duracion_maxima_semestres",
-                "cupo_total",
-            )
-        }),
-        (_("Estado"), {
-            "fields": ("estado",),
-            "description": "El estado se modifica mediante las acciones below",
-        }),
-        (_("Auditoría"), {
-            "fields": ("created_by", "created_at", "updated_at"),
-            "classes": ("collapse",),
-        }),
+        (_("Información básica"), {"fields": ("codigo", "nombre", "tipo", "periodo")}),
+        (
+            _("Fechas"),
+            {
+                "fields": (
+                    "fecha_publicacion",
+                    "fecha_apertura",
+                    "fecha_cierre",
+                    "fecha_publicacion_preliminar",
+                    "fecha_publicacion_definitiva",
+                )
+            },
+        ),
+        (
+            _("Configuración"),
+            {
+                "fields": (
+                    "modalidad_apoyo",
+                    "monto_semestre_smlmv",
+                    "duracion_maxima_semestres",
+                    "cupo_total",
+                )
+            },
+        ),
+        (
+            _("Estado"),
+            {
+                "fields": ("estado",),
+                "description": "El estado se modifica mediante las acciones below",
+            },
+        ),
+        (
+            _("Auditoría"),
+            {
+                "fields": ("created_by", "created_at", "updated_at"),
+                "classes": ("collapse",),
+            },
+        ),
     )
 
     actions = ["publicar_convocatoria", "cerrar_convocatoria", "cancelar_convocatoria"]
@@ -136,17 +147,21 @@ class ConfiguracionConvocatoriaAdmin(admin.ModelAdmin):
     inlines = [HitoInline, CupoInline]
 
     fieldsets = (
-        (_("Configuración"), {
-            "fields": ("convocatoria", "schema_version", "descripcion")
-        }),
-        (_("Payload (JSON)"), {
-            "fields": ("payload",),
-            "classes": ("collapse",),
-        }),
-        (_("Auditoría"), {
-            "fields": ("created_by", "created_at", "valida_hasta"),
-            "classes": ("collapse",),
-        }),
+        (_("Configuración"), {"fields": ("convocatoria", "schema_version", "descripcion")}),
+        (
+            _("Payload (JSON)"),
+            {
+                "fields": ("payload",),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Auditoría"),
+            {
+                "fields": ("created_by", "created_at", "valida_hasta"),
+                "classes": ("collapse",),
+            },
+        ),
     )
 
 

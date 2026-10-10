@@ -1,9 +1,11 @@
 """Notification services for accounts app."""
+
 import logging
 from typing import Protocol
+
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
-from django.contrib.auth import get_user_model
 
 from apps.accounts.models import Notification
 from apps.audit.services import log_audit_event
@@ -14,11 +16,11 @@ CustomUser = get_user_model()
 
 class NotificationPort(Protocol):
     """Protocol for notification adapters."""
-    
+
     def notify(self, user: CustomUser, event: str, payload: dict) -> Notification:
         """Send a notification to a user."""
         ...
-    
+
     def mark_read(self, notification: Notification, user: CustomUser) -> None:
         """Mark a notification as read."""
         ...
@@ -35,31 +37,31 @@ def get_notifiers() -> list[NotificationPort]:
 
 class InAppNotifier:
     """In-app notification adapter."""
-    
+
     def notify(self, user: CustomUser, event: str, payload: dict) -> Notification:
         """
         Send an in-app notification.
-        
+
         Args:
             user: The recipient user
             event: Event code (e.g., 'habeas.created')
             payload: Notification payload (PII should be masked)
-            
+
         Returns:
             The created or updated Notification instance
         """
         # Simplified payload - skipping mask_pii per user instructions
         safe_payload = self._sanitize_payload(payload)
-        
+
         # Determine notification type based on event
         tipo = self._determine_tipo(event)
-        
+
         # Generate title and message
         titulo, mensaje = self._generate_content(event, safe_payload)
-        
+
         with transaction.atomic():
             today = timezone.now().date()
-            
+
             # Idempotent upsert: only one notification per (user, event, day)
             obj, created = Notification.objects.select_for_update().get_or_create(
                 recipient=user,
@@ -73,12 +75,12 @@ class InAppNotifier:
                     "repeat_count": 1,
                 },
             )
-            
+
             if not created:
                 # Increment repeat count for duplicate event on same day
                 obj.repeat_count += 1
                 obj.save(update_fields=["repeat_count", "dispatched_at"])
-            
+
             # Log to audit - simplified without Celery
             try:
                 self._log_audit_event(
@@ -88,31 +90,31 @@ class InAppNotifier:
                     user=user,
                     changes={"event": event, "tipo": tipo},
                 )
-                
+
                 # Dispatch synchronously (skip Celery per user instructions)
                 self._dispatch_notification(obj.id)
-                
+
             except Exception as e:
                 logger.error(f"Failed to audit/dispatch notification {obj.id}: {e}")
                 # Still return the notification even if audit/dispatch fails
-            
+
             return obj
-    
+
     def mark_read(self, notification: Notification, user: CustomUser) -> None:
         """
         Mark a notification as read.
-        
+
         Args:
             notification: The notification to mark as read
             user: The user marking the notification as read
         """
         if notification.recipient != user:
             raise PermissionError("User cannot mark another user's notification as read")
-        
+
         if notification.read_at is None:
             notification.read_at = timezone.now()
             notification.save(update_fields=["read_at"])
-            
+
             # Log to audit
             try:
                 self._log_audit_event(
@@ -124,13 +126,13 @@ class InAppNotifier:
                 )
             except Exception as e:
                 logger.error(f"Failed to audit read event for notification {notification.id}: {e}")
-    
+
     def _sanitize_payload(self, payload: dict) -> dict:
         """Sanitize payload - simplified version without mask_pii."""
         # For now, just return the payload as-is
         # In a real implementation, this would mask PII
         return payload.copy() if payload else {}
-    
+
     def _determine_tipo(self, event: str) -> str:
         """Determine notification type based on event."""
         if any(x in event for x in ["error", "failed", "reject", "deny"]):
@@ -141,7 +143,7 @@ class InAppNotifier:
             return "warning"
         else:
             return "info"
-    
+
     def _generate_content(self, event: str, payload: dict) -> tuple[str, str]:
         """Generate title and message based on event and payload."""
         # Simple mapping for common events
@@ -154,7 +156,7 @@ class InAppNotifier:
             "application.approved": "Postulación aprobada",
             "application.rejected": "Postulación rechazada",
         }
-        
+
         event_messages = {
             "habeas.created": "Se ha creado una nueva solicitud de Habeas Data.",
             "habeas.updated": "Se ha actualizado una solicitud de Habeas Data.",
@@ -164,17 +166,19 @@ class InAppNotifier:
             "application.approved": "¡Felicidades! Su postulación ha sido aprobada.",
             "application.rejected": "Su postulación no ha sido aprobada en esta convocatoria.",
         }
-        
+
         titulo = event_titles.get(event, f"Evento: {event}")
         mensaje = event_messages.get(event, f"Evento: {event}")
-        
+
         # Add payload context if available
         if payload:
             mensaje += f"\n\nContexto: {str(payload)[:200]}..."
-        
+
         return titulo, mensaje
-    
-    def _log_audit_event(self, action: str, entity: str, entity_id, user: CustomUser, changes: dict = None):
+
+    def _log_audit_event(
+        self, action: str, entity: str, entity_id, user: CustomUser, changes: dict = None
+    ):
         """Log an audit event via ``apps.audit.services.log_audit_event``.
 
         The helper computes ``previous_hash`` and ``current_hash``
@@ -202,16 +206,16 @@ class InAppNotifier:
             # Don't fail notification creation if audit fails, but
             # log loudly so operators see the integrity gap.
             logger.exception("audit: notification audit log failed")
-    
+
     def _dispatch_notification(self, notification_id):
         """Dispatch notification synchronously - simplified without Celery."""
         try:
             notification = Notification.objects.get(id=notification_id)
-            
+
             if notification.dispatched_at is None:
                 notification.dispatched_at = timezone.now()
                 notification.save(update_fields=["dispatched_at"])
-                
+
                 # Log dispatch to audit
                 self._log_audit_event(
                     action="notification.dispatched",

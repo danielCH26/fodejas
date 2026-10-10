@@ -1,18 +1,18 @@
 """API views for applications."""
-from rest_framework import viewsets, status
+
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from apps.applications.models import Anexo, Solicitud
+from apps.accounts.permissions import IsAdminOrHasRole
 from apps.applications.api.serializers import (
-    AnexoSerializer,
-    SolicitudSerializer,
     SolicitudCreateSerializer,
+    SolicitudSerializer,
     SolicitudSubmitSerializer,
 )
+from apps.applications.models import Solicitud
 from apps.applications.services import save_draft, submit
-from apps.accounts.permissions import HasRole, HasAnyRole, IsAdminOrHasRole
 
 
 class SolicitudViewSet(viewsets.ModelViewSet):
@@ -28,7 +28,7 @@ class SolicitudViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated()]
         elif self.action in ["create"]:
             # Aspirantes can create solicitudes
-            return [IsAdminOrHasRole('R-ASPIRANTE')]
+            return [IsAdminOrHasRole("R-ASPIRANTE")]
         elif self.action in ["update", "partial_update"]:
             # Aspirantes can update their own drafts
             return [IsAuthenticated()]
@@ -37,21 +37,23 @@ class SolicitudViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated()]
         elif self.action in ["submit"]:
             # Aspirantes can submit
-            return [IsAdminOrHasRole('R-ASPIRANTE')]
+            return [IsAdminOrHasRole("R-ASPIRANTE")]
         return [IsAuthenticated()]
 
     def get_queryset(self):
         """Filter based on user roles."""
         user = self.request.user
-        
+
         # Admin and revisor can see all
         if user.is_superuser or user.is_staff:
             return Solicitud.objects.all()
-        
+
         # Check for internal roles
-        if user.user_roles.filter(role__code__in=['R-ADMIN', 'R-REVISOR', 'R-COMITE', 'R-COORDINADOR']).exists():
+        if user.user_roles.filter(
+            role__code__in=["R-ADMIN", "R-REVISOR", "R-COMITE", "R-COORDINADOR"]
+        ).exists():
             return Solicitud.objects.all()
-        
+
         # Aspirantes see only their own
         return Solicitud.objects.filter(aspirante=user)
 
@@ -64,9 +66,7 @@ class SolicitudViewSet(viewsets.ModelViewSet):
         from apps.convocatories.models import Convocatory
 
         try:
-            convocatoria = Convocatory.objects.get(
-                pk=serializer.validated_data["convocatoria_id"]
-            )
+            convocatoria = Convocatory.objects.get(pk=serializer.validated_data["convocatoria_id"])
         except Convocatory.DoesNotExist:
             return Response(
                 {"error": "Convocatoria no encontrada"},
@@ -74,10 +74,7 @@ class SolicitudViewSet(viewsets.ModelViewSet):
             )
 
         # Check if user already has application for this convocation
-        if Solicitud.objects.filter(
-            convocatoria=convocatoria,
-            aspirante=request.user
-        ).exists():
+        if Solicitud.objects.filter(convocatoria=convocatoria, aspirante=request.user).exists():
             return Response(
                 {"error": "Ya tienes una solicitud para esta convocatoria"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -125,9 +122,7 @@ class SolicitudViewSet(viewsets.ModelViewSet):
                 consentimiento=serializer.validated_data["consentimiento"],
                 actor=request.user,
             )
-            return Response(
-                {"status": "submitted", "radicado": solicitud.radicado}
-            )
+            return Response({"status": "submitted", "radicado": solicitud.radicado})
         except Exception as e:
             return Response(
                 {"error": str(e)},

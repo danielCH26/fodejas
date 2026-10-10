@@ -36,7 +36,6 @@ media/
 staticfiles/
 
 # Secret keys
-.secrets.baseline
 *.secrets
 
 # IDE
@@ -82,4 +81,6 @@ node_modules/
 
 # Local test artifacts (e.g. uploaded comprobantes from running the
 # treasury reconciliation view). Not part of the repo; do not commit.
-treasury/
+/treasury/
+# local test artifacts (same policy as treasury/)
+/legalization/

@@ -3,6 +3,7 @@
 Periodic deadline sweeps for the 30-calendar-day exoneration
 window. Decreto 0372/2025 Art. 17.
 """
+
 from __future__ import annotations
 
 import logging
@@ -49,9 +50,7 @@ def exoneracion_sweep_v30d() -> int:
                 changes={
                     "reason": "Exoneración 30 días calendario excedidos",
                     "fecha_limite": (
-                        sanction.fecha_limite.isoformat()
-                        if sanction.fecha_limite
-                        else None
+                        sanction.fecha_limite.isoformat() if sanction.fecha_limite else None
                     ),
                 },
                 module="condonation",

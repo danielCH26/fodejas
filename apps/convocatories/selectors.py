@@ -3,6 +3,7 @@
 These selectors provide optimized queries for fetching configuration data
 with proper prefetching.
 """
+
 from django.db.models import Q
 from django.utils import timezone
 
@@ -39,14 +40,10 @@ def get_receta_vigente(convocatoria_id: int) -> ConfiguracionConvocatoria | None
         or None if not found
     """
     return (
-        ConfiguracionConvocatoria.objects
-        .select_related("convocatoria")
+        ConfiguracionConvocatoria.objects.select_related("convocatoria")
         .prefetch_related("hitos", "cupos")
         .filter(convocatoria_id=convocatoria_id)
-        .filter(
-            Q(valida_hasta__isnull=True) |
-            Q(valida_hasta__gte=timezone.now())
-        )
+        .filter(Q(valida_hasta__isnull=True) | Q(valida_hasta__gte=timezone.now()))
         .first()
     )
 
@@ -75,9 +72,7 @@ def get_versiones(convocatoria_id: int) -> list[ConvocatoriaVersion]:
         List of ConvocatoriaVersion instances
     """
     return list(
-        ConvocatoriaVersion.objects
-        .filter(convocatoria_id=convocatoria_id)
-        .order_by("-version")
+        ConvocatoriaVersion.objects.filter(convocatoria_id=convocatoria_id).order_by("-version")
     )
 
 
@@ -91,12 +86,8 @@ def get_version_activa(convocatoria_id: int) -> ConvocatoriaVersion | None:
         ConvocatoriaVersion instance that is currently active, None if none
     """
     return (
-        ConvocatoriaVersion.objects
-        .filter(convocatoria_id=convocatoria_id)
-        .filter(
-            Q(valida_hasta__isnull=True) |
-            Q(valida_hasta__gte=timezone.now())
-        )
+        ConvocatoriaVersion.objects.filter(convocatoria_id=convocatoria_id)
+        .filter(Q(valida_hasta__isnull=True) | Q(valida_hasta__gte=timezone.now()))
         .order_by("-version")
         .first()
     )
@@ -112,8 +103,7 @@ def get_configuracion(convocatoria_id: int) -> ConfiguracionConvocatoria | None:
         ConfiguracionConvocatoria instance if exists, None otherwise
     """
     return (
-        ConfiguracionConvocatoria.objects
-        .select_related("convocatoria")
+        ConfiguracionConvocatoria.objects.select_related("convocatoria")
         .prefetch_related("hitos", "cupos")
         .filter(convocatoria_id=convocatoria_id)
         .first()

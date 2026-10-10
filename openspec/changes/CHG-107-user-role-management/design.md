@@ -32,7 +32,7 @@ Todas las vistas de admin heredan de una clase base con funcionalidades comunes:
 class BaseAdminView(LoginRequiredMixin, PermissionMixin, TemplateView):
     """Base view for admin pages."""
     permission_required = 'R-ADMIN'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['admin_section'] = self.admin_section
@@ -112,7 +112,7 @@ class RolePermission(models.Model):
 class IsAdminRole(BasePermission):
     """
     Verifica que el usuario tenga el rol R-ADMIN.
-    
+
     Diferencia con IsAdminUser:
     - IsAdminUser verifica is_staff o is_superuser
     - IsAdminRole verifica user_roles con role__code='R-ADMIN'

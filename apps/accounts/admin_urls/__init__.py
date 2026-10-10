@@ -1,19 +1,20 @@
 """URL configuration for accounts admin views."""
+
 from django.urls import path
 
 from apps.accounts.views.admin_views import (
-    UserListView,
-    UserCreateView,
-    UserUpdateView,
-    UserDetailView,
-    UserToggleActiveView,
-    UserRoleAssignView,
-    UserRoleRevokeView,
-    UserRoleHistoryView,
-    RoleListView,
     RoleCreateView,
     RoleDetailView,
+    RoleListView,
     RoleUpdateView,
+    UserCreateView,
+    UserDetailView,
+    UserListView,
+    UserRoleAssignView,
+    UserRoleHistoryView,
+    UserRoleRevokeView,
+    UserToggleActiveView,
+    UserUpdateView,
 )
 
 app_name = "accounts_admin"
@@ -27,9 +28,12 @@ urlpatterns = [
     path("users/<uuid:pk>/edit/", UserUpdateView.as_view(), name="user_edit"),
     path("users/<uuid:pk>/toggle/", UserToggleActiveView.as_view(), name="user_toggle"),
     path("users/<uuid:pk>/roles/", UserRoleAssignView.as_view(), name="user_roles"),
-    path("users/<uuid:pk>/roles/<uuid:role_id>/revocar/", UserRoleRevokeView.as_view(), name="user_role_revoke"),
+    path(
+        "users/<uuid:pk>/roles/<uuid:role_id>/revocar/",
+        UserRoleRevokeView.as_view(),
+        name="user_role_revoke",
+    ),
     path("users/<uuid:pk>/roles/history/", UserRoleHistoryView.as_view(), name="user_role_history"),
-
     # Role management
     path("roles/", RoleListView.as_view(), name="role_list"),
     path("roles/crear/", RoleCreateView.as_view(), name="role_create"),

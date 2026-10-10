@@ -1,4 +1,5 @@
 """URL configuration for accounts admin views."""
+
 from django.urls import path
 
 from apps.accounts.views import admin_views
@@ -13,8 +14,11 @@ urlpatterns = [
     path("users/<uuid:pk>/editar/", admin_views.UserUpdateView.as_view(), name="user_update"),
     path("users/<uuid:pk>/toggle/", admin_views.UserToggleActiveView.as_view(), name="user_toggle"),
     path("users/<uuid:pk>/roles/", admin_views.UserRoleAssignView.as_view(), name="user_roles"),
-    path("users/<uuid:pk>/roles/<int:role_id>/revocar/", admin_views.UserRoleRevokeView.as_view(), name="user_role_revoke"),
-
+    path(
+        "users/<uuid:pk>/roles/<int:role_id>/revocar/",
+        admin_views.UserRoleRevokeView.as_view(),
+        name="user_role_revoke",
+    ),
     # Role management
     path("roles/", admin_views.RoleListView.as_view(), name="role_list"),
     path("roles/crear/", admin_views.RoleCreateView.as_view(), name="role_create"),

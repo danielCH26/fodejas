@@ -1,6 +1,7 @@
 """Tests for AUD-005 fix: governance listado uses real ``PuntajeTotal`` fields
 and transitions ``Convocatory`` to ``DEFINITIVA``.
 """
+
 from decimal import Decimal
 from unittest.mock import MagicMock
 
@@ -13,8 +14,7 @@ from apps.governance.services.listado import (
     generar_listado_definitivo,
     obtener_ranking_final,
 )
-from apps.scoring.models import Evaluacion, PuntajeTotal
-
+from apps.scoring.models import PuntajeTotal
 
 User = get_user_model()
 

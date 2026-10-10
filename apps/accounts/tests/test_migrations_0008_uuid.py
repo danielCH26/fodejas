@@ -3,12 +3,10 @@
 Verifica idempotencia, no-op cuando ya es UUID, y determinismo del namespace.
 No incluye datos personales (AGENTS.md §6 regla 1).
 """
+
 import importlib
 import inspect
 import uuid
-
-import pytest
-
 
 NAMESPACE_URL = uuid.UUID("6ba7b811-9dad-11d1-80b4-00c04fd430c8")
 

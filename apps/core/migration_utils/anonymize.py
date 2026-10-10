@@ -20,17 +20,17 @@ Constantes:
 - ``_DEFAULT_SALT_ENV``: nombre de la variable de entorno con el
   salt por defecto. El comando de migración lee esta variable.
 """
+
 from __future__ import annotations
 
 import hashlib
 import hmac
 import os
-from typing import Optional
 
 DEFAULT_SALT_ENV = "LEGACY_DATA_SALT"
 
 
-def _get_salt(salt: Optional[str] = None) -> bytes:
+def _get_salt(salt: str | None = None) -> bytes:
     """Resolve the salt to use.
 
     If a salt is passed explicitly, use it. Otherwise read from the
@@ -57,7 +57,7 @@ def _get_salt(salt: Optional[str] = None) -> bytes:
     return resolved.encode("utf-8")
 
 
-def anonymize_hash(value: str, salt: Optional[str] = None) -> str:
+def anonymize_hash(value: str, salt: str | None = None) -> str:
     """Return a deterministic, anonymized hash for the given value.
 
     Uses HMAC-SHA256 with the salt as key, truncated to 12 hex chars.
@@ -80,7 +80,7 @@ def anonymize_hash(value: str, salt: Optional[str] = None) -> str:
     return digest[:12]
 
 
-def anonymize_optional(value: Optional[str], salt: Optional[str] = None) -> Optional[str]:
+def anonymize_optional(value: str | None, salt: str | None = None) -> str | None:
     """Anonymize a value that may be None or empty.
 
     Returns:
@@ -95,7 +95,7 @@ def anonymize_optional(value: Optional[str], salt: Optional[str] = None) -> Opti
     return anonymize_hash(stripped, salt)
 
 
-def anonymize_json(data, salt: Optional[str] = None):
+def anonymize_json(data, salt: str | None = None):
     """Recursively anonymize all string leaves in a JSON-like structure.
 
     Walks the structure (dict, list, tuple, set) and replaces every

@@ -2,6 +2,7 @@
 without ``ImportError`` and uses the existing ``validar_apelacion`` helper
 from ``apps.claims.services.apelaciones``.
 """
+
 import inspect
 
 from django.test import SimpleTestCase

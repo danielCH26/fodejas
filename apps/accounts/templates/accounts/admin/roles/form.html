@@ -14,12 +14,12 @@
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="code" class="form-label">Código del Rol *</label>
-                    <input type="text" class="form-control" id="code" name="code" 
-                           value="{{ view_role.code|default:''|upper }}" 
+                    <input type="text" class="form-control" id="code" name="code"
+                           value="{{ view_role.code|default:''|upper }}"
                            {% if action == 'editar' %}readonly{% endif %}
                            placeholder="Ej: R-ADMIN, R-COORD" required>
                     <small class="text-muted">Código único. Use el prefijo R-</small>
@@ -36,18 +36,18 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="mb-3">
                 <label for="name" class="form-label">Nombre del Rol *</label>
-                <input type="text" class="form-control" id="name" name="name" 
+                <input type="text" class="form-control" id="name" name="name"
                        value="{{ view_role.name|default:'' }}" required>
             </div>
-            
+
             <div class="mb-3">
                 <label for="description" class="form-label">Descripción</label>
                 <textarea class="form-control" id="description" name="description" rows="3">{{ view_role.description|default:'' }}</textarea>
             </div>
-            
+
             <div class="mt-4">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-check-circle me-2"></i>{% if action == 'crear' %}Crear{% else %}Guardar Cambios{% endif %}

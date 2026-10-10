@@ -5,12 +5,12 @@ Covers:
 - Invalid transitions rejected
 - Concurrent signing serialized via select_for_update
 """
+
 from __future__ import annotations
 
 import threading
 
 import pytest
-from django.db import connections, transaction
 from django.test import TestCase
 
 from apps.accounts.models import CustomUser, Role
@@ -41,9 +41,7 @@ class _TestFixturesMixin:
             )
             from apps.accounts.models import UserRole
 
-            UserRole.objects.get_or_create(
-                user=user, role=role, convocation_scope_id=None
-            )
+            UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
         return user
 
     @staticmethod
@@ -152,17 +150,13 @@ class TestActoWorkflow(_TestFixturesMixin, TestCase):
 
         def sign_a():
             try:
-                results["a"] = firmar_acto(
-                    acto.uuid, firmantes=["A"], usuario=None
-                )
+                results["a"] = firmar_acto(acto.uuid, firmantes=["A"], usuario=None)
             except Exception as exc:
                 results["a"] = exc
 
         def sign_b():
             try:
-                results["b"] = firmar_acto(
-                    acto.uuid, firmantes=["B"], usuario=None
-                )
+                results["b"] = firmar_acto(acto.uuid, firmantes=["B"], usuario=None)
             except Exception as exc:
                 results["b"] = exc
 
@@ -177,6 +171,6 @@ class TestActoWorkflow(_TestFixturesMixin, TestCase):
         # and exactly one should raise.
         a_ok = isinstance(results["a"], ActoAdministrativo)
         b_ok = isinstance(results["b"], ActoAdministrativo)
-        assert a_ok != b_ok, (
-            f"expected exactly one success; got a={results['a']!r} b={results['b']!r}"
-        )
+        assert (
+            a_ok != b_ok
+        ), f"expected exactly one success; got a={results['a']!r} b={results['b']!r}"

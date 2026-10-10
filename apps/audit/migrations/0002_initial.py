@@ -6,30 +6,35 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('audit', '0001_initial'),
+        ("audit", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='auditevent',
-            options={'ordering': ['-timestamp']},
+            name="auditevent",
+            options={"ordering": ["-timestamp"]},
         ),
         migrations.AlterField(
-            model_name='auditevent',
-            name='actor',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='audit_events', to=settings.AUTH_USER_MODEL),
+            model_name="auditevent",
+            name="actor",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="audit_events",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='auditevent',
-            name='timestamp',
+            model_name="auditevent",
+            name="timestamp",
             field=models.DateTimeField(auto_now_add=True, db_index=True),
         ),
         migrations.AlterField(
-            model_name='auditevent',
-            name='user_agent',
-            field=models.TextField(blank=True, default=''),
+            model_name="auditevent",
+            name="user_agent",
+            field=models.TextField(blank=True, default=""),
         ),
     ]

@@ -1,4 +1,5 @@
 """Selectors for domain catalogs."""
+
 from .models import (
     CausalTerminacionConvenio,
     EstadoDocumento,

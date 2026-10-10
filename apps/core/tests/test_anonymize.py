@@ -1,4 +1,5 @@
 """Tests for apps.core.migration_utils.anonymize (CHG-099)."""
+
 import os
 from unittest.mock import patch
 
@@ -45,9 +46,7 @@ class TestAnonymizeHash:
             assert a == b  # deterministic from env salt
 
     def test_handles_unicode(self):
-        result = anonymize.anonymize_hash(
-            "Pepita Pérez García", salt="y" * 32
-        )
+        result = anonymize.anonymize_hash("Pepita Pérez García", salt="y" * 32)
         assert len(result) == 12
 
 

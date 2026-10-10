@@ -1,10 +1,15 @@
 """Views for accounts app."""
+
 from django.contrib import messages
-from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
     LoginView as BaseLoginView,
+)
+from django.contrib.auth.views import (
     LogoutView as BaseLogoutView,
+)
+from django.contrib.auth.views import (
     PasswordResetCompleteView,
     PasswordResetConfirmView,
     PasswordResetDoneView,
@@ -13,13 +18,12 @@ from django.contrib.auth.views import (
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from rest_framework import permissions, status
-from rest_framework.views import APIView
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
+from rest_framework import permissions
+from rest_framework.views import APIView
 
-from .permissions_mixin import PermissionMixin
 from .forms import (
     FodejasLoginForm,
     FodejasPasswordResetForm,
@@ -27,6 +31,7 @@ from .forms import (
     FodejasSetPasswordForm,
 )
 from .models import Role, UserRole
+from .permissions_mixin import PermissionMixin
 
 User = get_user_model()
 
@@ -51,28 +56,34 @@ class LoginView(BaseLoginView):
 
         roles_data = []
         for ur in user_roles:
-            roles_data.append({
-                "code": ur.role.code,
-                "name": ur.role.name,
-                "type": ur.role.type,
-                "convocation": ur.convocation_scope_id,
-            })
+            roles_data.append(
+                {
+                    "code": ur.role.code,
+                    "name": ur.role.name,
+                    "type": ur.role.type,
+                    "convocation": ur.convocation_scope_id,
+                }
+            )
 
         # If AJAX request, return JSON with tokens
         if self.request.headers.get("HX-Request"):
             # For HTMX requests, just return success
-            return render(self.request, "accounts/partials/login_success.html", {
-                "user": user,
-                "roles": roles_data,
-            })
+            return render(
+                self.request,
+                "accounts/partials/login_success.html",
+                {
+                    "user": user,
+                    "roles": roles_data,
+                },
+            )
 
         # For regular form submission, redirect to dashboard
         login(self.request, user)
-        return redirect("dashboard")
+        return redirect("accounts:dashboard")
 
     def get_success_url(self):
         """Return success URL."""
-        return reverse_lazy("dashboard")
+        return reverse_lazy("accounts:dashboard")
 
 
 class LogoutView(BaseLogoutView):
@@ -84,7 +95,7 @@ class LogoutView(BaseLogoutView):
         """Handle logout with success message and redirect."""
         logout(request)
         messages.success(request, "Sesión cerrada correctamente.")
-        return redirect("login")
+        return redirect("accounts:login")
 
 
 class RegisterView(View):
@@ -96,7 +107,7 @@ class RegisterView(View):
     def get(self, request):
         """Show registration form."""
         if request.user.is_authenticated:
-            return redirect("dashboard")
+            return redirect("accounts:dashboard")
         form = self.form_class()
         return render(request, self.template_name, {"form": form})
 
@@ -124,10 +135,9 @@ class RegisterView(View):
                 messages.warning(request, "Rol de aspirante no encontrado.")
 
             messages.success(
-                request,
-                "Registro exitoso. Ya puede iniciar sesión con sus credenciales."
+                request, "Registro exitoso. Ya puede iniciar sesión con sus credenciales."
             )
-            return redirect("login")
+            return redirect("accounts:login")
 
         return render(request, self.template_name, {"form": form})
 
@@ -166,7 +176,7 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
     """Role-based dashboard view."""
 
     template_name = "accounts/dashboard.html"
-    login_url = "login"
+    login_url = "accounts:login"
 
     def get_context_data(self, **kwargs):
         """Add role-specific context."""
@@ -179,12 +189,14 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
 
         roles_data = []
         for ur in user_roles:
-            roles_data.append({
-                "code": ur.role.code,
-                "name": ur.role.name,
-                "type": ur.role.type,
-                "convocation": ur.convocation_scope_id,
-            })
+            roles_data.append(
+                {
+                    "code": ur.role.code,
+                    "name": ur.role.name,
+                    "type": ur.role.type,
+                    "convocation": ur.convocation_scope_id,
+                }
+            )
 
         context["user"] = user
         context["roles"] = roles_data
@@ -200,45 +212,121 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
 
         for role in roles:
             if role["code"] == "R-ASPIRANTE":
-                nav_items.extend([
-                    {"label": "Mis Postulaciones", "icon": "bi-file-earmark-text", "url": "/applications/"},
-                    {"label": "Estado de Selección", "icon": "bi-graph-up", "url": "/applications/"},
-                    {"label": "Convocatorias Abiertas", "icon": "bi-megaphone", "url": "/convocatorias/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Mis Postulaciones",
+                            "icon": "bi-file-earmark-text",
+                            "url": "/applications/",
+                        },
+                        {
+                            "label": "Estado de Selección",
+                            "icon": "bi-graph-up",
+                            "url": "/applications/",
+                        },
+                        {
+                            "label": "Convocatorias Abiertas",
+                            "icon": "bi-megaphone",
+                            "url": "/convocatorias/",
+                        },
+                    ]
+                )
             elif role["code"] == "R-REVISOR":
-                nav_items.extend([
-                    {"label": "Revisar Requisitos", "icon": "bi-clipboard-check", "url": "/applications/"},
-                    {"label": "Convocatorias", "icon": "bi-megaphone", "url": "/convocatorias/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Revisar Requisitos",
+                            "icon": "bi-clipboard-check",
+                            "url": "/applications/",
+                        },
+                        {
+                            "label": "Convocatorias",
+                            "icon": "bi-megaphone",
+                            "url": "/convocatorias/",
+                        },
+                    ]
+                )
             elif role["code"] == "R-COMITE":
-                nav_items.extend([
-                    {"label": "Evaluaciones", "icon": "bi-clipboard-data", "url": "/applications/"},
-                    {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Evaluaciones",
+                            "icon": "bi-clipboard-data",
+                            "url": "/applications/",
+                        },
+                        {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
+                    ]
+                )
             elif role["code"] == "R-TESORERO":
-                nav_items.extend([
-                    {"label": "Gestión de Pagos", "icon": "bi-currency-dollar", "url": "/convocatorias/"},
-                    {"label": "Convocatorias", "icon": "bi-megaphone", "url": "/convocatorias/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Gestión de Pagos",
+                            "icon": "bi-currency-dollar",
+                            "url": "/convocatorias/",
+                        },
+                        {
+                            "label": "Convocatorias",
+                            "icon": "bi-megaphone",
+                            "url": "/convocatorias/",
+                        },
+                    ]
+                )
             elif role["code"] == "R-COORDINADOR":
-                nav_items.extend([
-                    {"label": "Mis Convocatorias", "icon": "bi-megaphone", "url": "/convocatorias/"},
-                    {"label": "Postulaciones", "icon": "bi-file-earmark-text", "url": "/applications/"},
-                    {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Mis Convocatorias",
+                            "icon": "bi-megaphone",
+                            "url": "/convocatorias/",
+                        },
+                        {
+                            "label": "Postulaciones",
+                            "icon": "bi-file-earmark-text",
+                            "url": "/applications/",
+                        },
+                        {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
+                    ]
+                )
             elif role["code"] == "R-ADMIN":
-                nav_items.extend([
-                    {"label": "Gestión de Usuarios", "icon": "bi-people", "url": "/accounts/admin/users/"},
-                    {"label": "Roles y Permisos", "icon": "bi-shield-check", "url": "/accounts/admin/roles/"},
-                    {"label": "Convocatorias", "icon": "bi-megaphone", "url": "/convocatorias/"},
-                    {"label": "Postulaciones", "icon": "bi-file-earmark-text", "url": "/applications/"},
-                    {"label": "Auditoría", "icon": "bi-journal-text", "url": "/accounts/audit/"},
-                ])
+                nav_items.extend(
+                    [
+                        {
+                            "label": "Gestión de Usuarios",
+                            "icon": "bi-people",
+                            "url": "/accounts/admin/users/",
+                        },
+                        {
+                            "label": "Roles y Permisos",
+                            "icon": "bi-shield-check",
+                            "url": "/accounts/admin/roles/",
+                        },
+                        {
+                            "label": "Convocatorias",
+                            "icon": "bi-megaphone",
+                            "url": "/convocatorias/",
+                        },
+                        {
+                            "label": "Postulaciones",
+                            "icon": "bi-file-earmark-text",
+                            "url": "/applications/",
+                        },
+                        {
+                            "label": "Auditoría",
+                            "icon": "bi-journal-text",
+                            "url": "/accounts/audit/",
+                        },
+                    ]
+                )
 
         # Add common items for all users
         nav_items.append({"label": "Mi Perfil", "icon": "bi-person", "url": "/accounts/profile/"})
-        nav_items.append({"label": "Mis Notificaciones", "icon": "bi-bell", "url": "/accounts/notifications/"})
-        nav_items.append({"label": "Cerrar Sesión", "icon": "bi-box-arrow-right", "url": "/accounts/logout/"})
+        nav_items.append(
+            {"label": "Mis Notificaciones", "icon": "bi-bell", "url": "/accounts/notifications/"}
+        )
+        nav_items.append(
+            {"label": "Cerrar Sesión", "icon": "bi-box-arrow-right", "url": "/accounts/logout/"}
+        )
 
         return nav_items
 
@@ -247,7 +335,7 @@ class ProfileView(LoginRequiredMixin, PermissionMixin, TemplateView):
     """User profile view."""
 
     template_name = "accounts/profile.html"
-    login_url = "login"
+    login_url = "accounts:login"
 
     def get_context_data(self, **kwargs):
         """Add user profile data."""
@@ -276,22 +364,26 @@ class CurrentUserAPIView(APIView):
 
         roles_data = []
         for ur in user_roles:
-            roles_data.append({
-                "code": ur.role.code,
-                "name": ur.role.name,
-                "type": ur.role.type,
-            })
+            roles_data.append(
+                {
+                    "code": ur.role.code,
+                    "name": ur.role.name,
+                    "type": ur.role.type,
+                }
+            )
 
-        return JsonResponse({
-            "id": user.id,
-            "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "documento": user.documento,
-            "roles": roles_data,
-        })
+        return JsonResponse(
+            {
+                "id": user.id,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "documento": user.documento,
+                "roles": roles_data,
+            }
+        )
 
 
 def root_view(request):
     """Redirect root URL to login page."""
-    return redirect("login")
+    return redirect("accounts:login")

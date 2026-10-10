@@ -7,7 +7,7 @@ from django.db import migrations
 def create_ofijur_role(apps, schema_editor):
     """Create R-OFIJUR role if it doesn't exist."""
     Role = apps.get_model("accounts", "Role")
-    
+
     # Create role with get_or_create for idempotency
     role, created = Role.objects.get_or_create(
         code="R-OFIJUR",
@@ -21,7 +21,7 @@ def create_ofijur_role(apps, schema_editor):
             ),
         },
     )
-    
+
     if created:
         print(f"[OK] Created role: {role.code} - {role.name}")
     else:
@@ -31,18 +31,17 @@ def create_ofijur_role(apps, schema_editor):
 def reverse_create_ofijur_role(apps, schema_editor):
     """Reverse migration: remove R-OFIJUR role."""
     Role = apps.get_model("accounts", "Role")
-    
+
     # Only delete if it exists and we created it
     Role.objects.filter(code="R-OFIJUR").delete()
-    print(f"[OK] Removed role: R-OFIJUR")
+    print("[OK] Removed role: R-OFIJUR")
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         # Depend on the latest accounts migration
         ("accounts", "0005_permission_auth_permission"),
-        # Depend on the latest claims migration  
+        # Depend on the latest claims migration
         ("claims", "0001_initial"),
     ]
 

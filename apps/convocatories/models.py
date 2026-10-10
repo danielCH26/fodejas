@@ -1,5 +1,7 @@
 """Models for convocatories app (stub for now)."""
+
 import uuid
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -174,15 +176,23 @@ class Convocatory(models.Model):
         # Validate fecha ranges if provided
         if self.fecha_apertura and self.fecha_cierre:
             if self.fecha_cierre <= self.fecha_apertura:
-                raise ValidationError({
-                    "fecha_cierre": _("La fecha de cierre debe ser posterior a la fecha de apertura.")
-                })
+                raise ValidationError(
+                    {
+                        "fecha_cierre": _(
+                            "La fecha de cierre debe ser posterior a la fecha de apertura."
+                        )
+                    }
+                )
 
         if self.fecha_publicacion_preliminar and self.fecha_publicacion_definitiva:
             if self.fecha_publicacion_definitiva <= self.fecha_publicacion_preliminar:
-                raise ValidationError({
-                    "fecha_publicacion_definitiva": _("La fecha de publicación definitiva debe ser posterior a la fecha de publicación preliminar.")
-                })
+                raise ValidationError(
+                    {
+                        "fecha_publicacion_definitiva": _(
+                            "La fecha de publicación definitiva debe ser posterior a la fecha de publicación preliminar."
+                        )
+                    }
+                )
 
 
 class ConfiguracionConvocatoria(models.Model):
@@ -243,6 +253,7 @@ class ConfiguracionConvocatoria(models.Model):
         super().clean()
         # Import here to avoid circular imports
         from .domain.validators import validar_receta
+
         validar_receta(self)
 
 
@@ -303,9 +314,9 @@ class Hito(models.Model):
         super().clean()
 
         if self.fecha_fin <= self.fecha_inicio:
-            raise ValidationError({
-                "fecha_fin": _("La fecha de fin debe ser posterior a la fecha de inicio.")
-            })
+            raise ValidationError(
+                {"fecha_fin": _("La fecha de fin debe ser posterior a la fecha de inicio.")}
+            )
 
 
 class Cupo(models.Model):

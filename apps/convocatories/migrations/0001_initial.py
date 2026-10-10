@@ -6,113 +6,471 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('core', '0002_alter_causalterminacionconvenio_options_and_more'),
+        ("core", "0002_alter_causalterminacionconvenio_options_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Convocatory',
+            name="Convocatory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nombre', models.CharField(help_text='Nombre de la convocatoria', max_length=200, verbose_name='nombre')),
-                ('codigo', models.SlugField(help_text='Código único de identificación (slug)', max_length=32, unique=True, verbose_name='código')),
-                ('tipo', models.CharField(choices=[('cerrada', 'Cerrada'), ('publica', 'Pública'), ('merito', 'Por mérito'), ('vulnerabilidad', 'Por vulnerabilidad'), ('area_prioritaria', 'Área prioritaria')], default='publica', help_text='Tipo de convocatoria', max_length=16, verbose_name='tipo')),
-                ('periodo', models.CharField(help_text='Periodo académico (ej: 2026-1)', max_length=20, verbose_name='periodo')),
-                ('fecha_apertura', models.DateTimeField(blank=True, help_text='Fecha y hora de apertura de la convocatoria', null=True, verbose_name='fecha de apertura')),
-                ('fecha_cierre', models.DateTimeField(blank=True, help_text='Fecha y hora de cierre de la convocatoria', null=True, verbose_name='fecha de cierre')),
-                ('fecha_publicacion_preliminar', models.DateTimeField(blank=True, help_text='Fecha de publicación de resultados preliminares', null=True, verbose_name='fecha de publicación preliminar')),
-                ('fecha_publicacion_definitiva', models.DateTimeField(blank=True, help_text='Fecha de publicación de resultados definitivos', null=True, verbose_name='fecha de publicación definitiva')),
-                ('monto_semestre_smlmv', models.DecimalField(decimal_places=2, default=5.0, help_text='Monto máximo por semestre expresado en SMLMV', max_digits=5, verbose_name='monto por semestre (SMLMV)')),
-                ('duracion_maxima_semestres', models.PositiveIntegerField(default=10, help_text='Duración máxima del beneficio en semestres', verbose_name='duración máxima (semestres)')),
-                ('cupo_total', models.PositiveIntegerField(default=0, help_text='Cupo total de beneficiarios para esta convocatoria', verbose_name='cupo total')),
-                ('estado', models.CharField(choices=[('borrador', 'Borrador'), ('publicada', 'Publicada'), ('en_inscripcion', 'En inscripción'), ('en_verificacion', 'En verificación'), ('en_calificacion', 'En calificación'), ('definitiva', 'Definitiva'), ('cerrada', 'Cerrada'), ('cancelada', 'Cancelada')], default='borrador', help_text='Estado actual de la convocatoria', max_length=16, verbose_name='estado')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='fecha de creación')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='fecha de actualización')),
-                ('created_by', models.ForeignKey(help_text='Usuario que creó la convocatoria', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='convocatorias_creadas', to=settings.AUTH_USER_MODEL, verbose_name='creado por')),
-                ('modalidad_apoyo', models.ForeignKey(blank=True, help_text='Modalidad de apoyo configurada para esta convocatoria', null=True, on_delete=django.db.models.deletion.PROTECT, to='core.modalidadapoyo', verbose_name='modalidad de apoyo')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "nombre",
+                    models.CharField(
+                        help_text="Nombre de la convocatoria", max_length=200, verbose_name="nombre"
+                    ),
+                ),
+                (
+                    "codigo",
+                    models.SlugField(
+                        help_text="Código único de identificación (slug)",
+                        max_length=32,
+                        unique=True,
+                        verbose_name="código",
+                    ),
+                ),
+                (
+                    "tipo",
+                    models.CharField(
+                        choices=[
+                            ("cerrada", "Cerrada"),
+                            ("publica", "Pública"),
+                            ("merito", "Por mérito"),
+                            ("vulnerabilidad", "Por vulnerabilidad"),
+                            ("area_prioritaria", "Área prioritaria"),
+                        ],
+                        default="publica",
+                        help_text="Tipo de convocatoria",
+                        max_length=16,
+                        verbose_name="tipo",
+                    ),
+                ),
+                (
+                    "periodo",
+                    models.CharField(
+                        help_text="Periodo académico (ej: 2026-1)",
+                        max_length=20,
+                        verbose_name="periodo",
+                    ),
+                ),
+                (
+                    "fecha_apertura",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Fecha y hora de apertura de la convocatoria",
+                        null=True,
+                        verbose_name="fecha de apertura",
+                    ),
+                ),
+                (
+                    "fecha_cierre",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Fecha y hora de cierre de la convocatoria",
+                        null=True,
+                        verbose_name="fecha de cierre",
+                    ),
+                ),
+                (
+                    "fecha_publicacion_preliminar",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Fecha de publicación de resultados preliminares",
+                        null=True,
+                        verbose_name="fecha de publicación preliminar",
+                    ),
+                ),
+                (
+                    "fecha_publicacion_definitiva",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Fecha de publicación de resultados definitivos",
+                        null=True,
+                        verbose_name="fecha de publicación definitiva",
+                    ),
+                ),
+                (
+                    "monto_semestre_smlmv",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=5.0,
+                        help_text="Monto máximo por semestre expresado en SMLMV",
+                        max_digits=5,
+                        verbose_name="monto por semestre (SMLMV)",
+                    ),
+                ),
+                (
+                    "duracion_maxima_semestres",
+                    models.PositiveIntegerField(
+                        default=10,
+                        help_text="Duración máxima del beneficio en semestres",
+                        verbose_name="duración máxima (semestres)",
+                    ),
+                ),
+                (
+                    "cupo_total",
+                    models.PositiveIntegerField(
+                        default=0,
+                        help_text="Cupo total de beneficiarios para esta convocatoria",
+                        verbose_name="cupo total",
+                    ),
+                ),
+                (
+                    "estado",
+                    models.CharField(
+                        choices=[
+                            ("borrador", "Borrador"),
+                            ("publicada", "Publicada"),
+                            ("en_inscripcion", "En inscripción"),
+                            ("en_verificacion", "En verificación"),
+                            ("en_calificacion", "En calificación"),
+                            ("definitiva", "Definitiva"),
+                            ("cerrada", "Cerrada"),
+                            ("cancelada", "Cancelada"),
+                        ],
+                        default="borrador",
+                        help_text="Estado actual de la convocatoria",
+                        max_length=16,
+                        verbose_name="estado",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de creación"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="fecha de actualización"),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        help_text="Usuario que creó la convocatoria",
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="convocatorias_creadas",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="creado por",
+                    ),
+                ),
+                (
+                    "modalidad_apoyo",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Modalidad de apoyo configurada para esta convocatoria",
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="core.modalidadapoyo",
+                        verbose_name="modalidad de apoyo",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'convocatoria',
-                'verbose_name_plural': 'convocatorias',
-                'ordering': ['-created_at'],
+                "verbose_name": "convocatoria",
+                "verbose_name_plural": "convocatorias",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='ConfiguracionConvocatoria',
+            name="ConfiguracionConvocatoria",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('schema_version', models.CharField(default='1.0.0', help_text='Versión del esquema del payload (para migraciones)', max_length=8, verbose_name='versión del esquema')),
-                ('payload', models.JSONField(default=dict, help_text='Configuración de la receta en formato JSON', verbose_name='payload')),
-                ('descripcion', models.TextField(blank=True, default='', help_text='Descripción de esta configuración', verbose_name='descripción')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='fecha de creación')),
-                ('valida_hasta', models.DateTimeField(blank=True, help_text='Fecha hasta la cual esta configuración es válida (null = vigente)', null=True, verbose_name='válida hasta')),
-                ('created_by', models.ForeignKey(help_text='Usuario que creó esta configuración', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='configuraciones_creadas', to=settings.AUTH_USER_MODEL, verbose_name='creado por')),
-                ('convocatoria', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='config', to='convocatories.convocatory', verbose_name='convocatoria')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "schema_version",
+                    models.CharField(
+                        default="1.0.0",
+                        help_text="Versión del esquema del payload (para migraciones)",
+                        max_length=8,
+                        verbose_name="versión del esquema",
+                    ),
+                ),
+                (
+                    "payload",
+                    models.JSONField(
+                        default=dict,
+                        help_text="Configuración de la receta en formato JSON",
+                        verbose_name="payload",
+                    ),
+                ),
+                (
+                    "descripcion",
+                    models.TextField(
+                        blank=True,
+                        default="",
+                        help_text="Descripción de esta configuración",
+                        verbose_name="descripción",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de creación"),
+                ),
+                (
+                    "valida_hasta",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Fecha hasta la cual esta configuración es válida (null = vigente)",
+                        null=True,
+                        verbose_name="válida hasta",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        help_text="Usuario que creó esta configuración",
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="configuraciones_creadas",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="creado por",
+                    ),
+                ),
+                (
+                    "convocatoria",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="config",
+                        to="convocatories.convocatory",
+                        verbose_name="convocatoria",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'configuración de convocatoria',
-                'verbose_name_plural': 'configuraciones de convocatorias',
-                'ordering': ['-created_at'],
+                "verbose_name": "configuración de convocatoria",
+                "verbose_name_plural": "configuraciones de convocatorias",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='ConvocatoriaVersion',
+            name="ConvocatoriaVersion",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('version', models.PositiveIntegerField(help_text='Número de versión (se incrementa automáticamente)', verbose_name='versión')),
-                ('schema_version', models.CharField(default='1.0.0', help_text='Versión del esquema del snapshot', max_length=8, verbose_name='versión del esquema')),
-                ('snapshot', models.JSONField(help_text='Snapshot completo de la configuración en el momento de la versión', verbose_name='snapshot')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='fecha de creación')),
-                ('valida_hasta', models.DateTimeField(blank=True, help_text='Fecha hasta la cual esta versión es válida', null=True, verbose_name='válida hasta')),
-                ('created_by', models.ForeignKey(help_text='Usuario que creó esta versión', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='versiones_creadas', to=settings.AUTH_USER_MODEL, verbose_name='creado por')),
-                ('convocatoria', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='versiones', to='convocatories.convocatory', verbose_name='convocatoria')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "version",
+                    models.PositiveIntegerField(
+                        help_text="Número de versión (se incrementa automáticamente)",
+                        verbose_name="versión",
+                    ),
+                ),
+                (
+                    "schema_version",
+                    models.CharField(
+                        default="1.0.0",
+                        help_text="Versión del esquema del snapshot",
+                        max_length=8,
+                        verbose_name="versión del esquema",
+                    ),
+                ),
+                (
+                    "snapshot",
+                    models.JSONField(
+                        help_text="Snapshot completo de la configuración en el momento de la versión",
+                        verbose_name="snapshot",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de creación"),
+                ),
+                (
+                    "valida_hasta",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Fecha hasta la cual esta versión es válida",
+                        null=True,
+                        verbose_name="válida hasta",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        help_text="Usuario que creó esta versión",
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="versiones_creadas",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="creado por",
+                    ),
+                ),
+                (
+                    "convocatoria",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="versiones",
+                        to="convocatories.convocatory",
+                        verbose_name="convocatoria",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'versión de convocatoria',
-                'verbose_name_plural': 'versiones de convocatorias',
-                'ordering': ['convocatoria', '-version'],
-                'constraints': [models.UniqueConstraint(fields=('convocatoria', 'version'), name='unique_version_per_convocatoria')],
+                "verbose_name": "versión de convocatoria",
+                "verbose_name_plural": "versiones de convocatorias",
+                "ordering": ["convocatoria", "-version"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("convocatoria", "version"), name="unique_version_per_convocatoria"
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
-            name='Cupo',
+            name="Cupo",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cantidad', models.PositiveIntegerField(default=1, help_text='Cantidad de cupos asignados', verbose_name='cantidad')),
-                ('regla_especial', models.CharField(blank=True, default='', help_text='Regla especial aplicable a este cupo (ej: providencia_segundo_mejor)', max_length=50, verbose_name='regla especial')),
-                ('config', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='cupos', to='convocatories.configuracionconvocatoria', verbose_name='configuración')),
-                ('modalidad', models.ForeignKey(help_text='Modalidad de apoyo', on_delete=django.db.models.deletion.PROTECT, to='core.modalidadapoyo', verbose_name='modalidad de apoyo')),
-                ('municipio', models.ForeignKey(help_text='Municipio o isla del Archipiélago', on_delete=django.db.models.deletion.PROTECT, to='core.municipioisla', verbose_name='municipio/isla')),
-                ('nivel', models.ForeignKey(help_text='Nivel de formación', on_delete=django.db.models.deletion.PROTECT, to='core.nivelformacion', verbose_name='nivel de formación')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "cantidad",
+                    models.PositiveIntegerField(
+                        default=1, help_text="Cantidad de cupos asignados", verbose_name="cantidad"
+                    ),
+                ),
+                (
+                    "regla_especial",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="Regla especial aplicable a este cupo (ej: providencia_segundo_mejor)",
+                        max_length=50,
+                        verbose_name="regla especial",
+                    ),
+                ),
+                (
+                    "config",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="cupos",
+                        to="convocatories.configuracionconvocatoria",
+                        verbose_name="configuración",
+                    ),
+                ),
+                (
+                    "modalidad",
+                    models.ForeignKey(
+                        help_text="Modalidad de apoyo",
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="core.modalidadapoyo",
+                        verbose_name="modalidad de apoyo",
+                    ),
+                ),
+                (
+                    "municipio",
+                    models.ForeignKey(
+                        help_text="Municipio o isla del Archipiélago",
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="core.municipioisla",
+                        verbose_name="municipio/isla",
+                    ),
+                ),
+                (
+                    "nivel",
+                    models.ForeignKey(
+                        help_text="Nivel de formación",
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="core.nivelformacion",
+                        verbose_name="nivel de formación",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'cupo',
-                'verbose_name_plural': 'cupos',
-                'ordering': ['config', 'municipio', 'modalidad', 'nivel'],
-                'constraints': [models.UniqueConstraint(fields=('config', 'municipio', 'modalidad', 'nivel'), name='unique_cupo_per_combination')],
+                "verbose_name": "cupo",
+                "verbose_name_plural": "cupos",
+                "ordering": ["config", "municipio", "modalidad", "nivel"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("config", "municipio", "modalidad", "nivel"),
+                        name="unique_cupo_per_combination",
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
-            name='Hito',
+            name="Hito",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('codigo', models.SlugField(help_text='Código único del hito dentro de la configuración', max_length=32, verbose_name='código')),
-                ('orden', models.PositiveIntegerField(default=1, help_text='Orden de ejecución del hito', verbose_name='orden')),
-                ('fecha_inicio', models.DateTimeField(help_text='Fecha y hora de inicio del hito', verbose_name='fecha de inicio')),
-                ('fecha_fin', models.DateTimeField(help_text='Fecha y hora de fin del hito', verbose_name='fecha de fin')),
-                ('responsable', models.CharField(help_text='Rol o actor responsable de este hito', max_length=50, verbose_name='responsable')),
-                ('config', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='hitos', to='convocatories.configuracionconvocatoria', verbose_name='configuración')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "codigo",
+                    models.SlugField(
+                        help_text="Código único del hito dentro de la configuración",
+                        max_length=32,
+                        verbose_name="código",
+                    ),
+                ),
+                (
+                    "orden",
+                    models.PositiveIntegerField(
+                        default=1, help_text="Orden de ejecución del hito", verbose_name="orden"
+                    ),
+                ),
+                (
+                    "fecha_inicio",
+                    models.DateTimeField(
+                        help_text="Fecha y hora de inicio del hito", verbose_name="fecha de inicio"
+                    ),
+                ),
+                (
+                    "fecha_fin",
+                    models.DateTimeField(
+                        help_text="Fecha y hora de fin del hito", verbose_name="fecha de fin"
+                    ),
+                ),
+                (
+                    "responsable",
+                    models.CharField(
+                        help_text="Rol o actor responsable de este hito",
+                        max_length=50,
+                        verbose_name="responsable",
+                    ),
+                ),
+                (
+                    "config",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="hitos",
+                        to="convocatories.configuracionconvocatoria",
+                        verbose_name="configuración",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'hito',
-                'verbose_name_plural': 'hitos',
-                'ordering': ['config', 'orden'],
-                'constraints': [models.UniqueConstraint(fields=('config', 'codigo'), name='unique_hito_codigo_per_config'), models.UniqueConstraint(fields=('config', 'orden'), name='unique_hito_orden_per_config')],
+                "verbose_name": "hito",
+                "verbose_name_plural": "hitos",
+                "ordering": ["config", "orden"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("config", "codigo"), name="unique_hito_codigo_per_config"
+                    ),
+                    models.UniqueConstraint(
+                        fields=("config", "orden"), name="unique_hito_orden_per_config"
+                    ),
+                ],
             },
         ),
     ]

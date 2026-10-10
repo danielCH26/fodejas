@@ -51,7 +51,7 @@ Se agregó permission class `IsAdminRole` en `apps/accounts/permissions.py`:
 ```python
 class IsAdminRole(permissions.BasePermission):
     """Permission that requires user to have R-ADMIN role."""
-    
+
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False

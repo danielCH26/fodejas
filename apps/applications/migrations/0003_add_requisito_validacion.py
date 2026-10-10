@@ -6,33 +6,95 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('applications', '0002_add_uuid_field'),
+        ("applications", "0002_add_uuid_field"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='RequisitoValidacion',
+            name="RequisitoValidacion",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('requisito_code', models.CharField(max_length=50, verbose_name='código del requisito')),
-                ('requisito_nombre', models.CharField(max_length=200, verbose_name='nombre del requisito')),
-                ('estado', models.CharField(choices=[('pendiente', 'Pendiente'), ('verificado', 'Verificado'), ('rechazado', 'Rechazado'), ('subsanar', 'Subsanar')], default='pendiente', max_length=20, verbose_name='estado')),
-                ('evidencia', models.FileField(blank=True, null=True, upload_to='validaciones/evidencia/%Y/%m/', verbose_name='evidencia')),
-                ('observaciones', models.TextField(blank=True, verbose_name='observaciones')),
-                ('fecha_validacion', models.DateTimeField(blank=True, null=True, verbose_name='fecha de validación')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='fecha de creación')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='fecha de actualización')),
-                ('solicitud', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='validaciones', to='applications.solicitud', verbose_name='solicitud')),
-                ('validado_por', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='validaciones_realizadas', to=settings.AUTH_USER_MODEL, verbose_name='validado por')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "requisito_code",
+                    models.CharField(max_length=50, verbose_name="código del requisito"),
+                ),
+                (
+                    "requisito_nombre",
+                    models.CharField(max_length=200, verbose_name="nombre del requisito"),
+                ),
+                (
+                    "estado",
+                    models.CharField(
+                        choices=[
+                            ("pendiente", "Pendiente"),
+                            ("verificado", "Verificado"),
+                            ("rechazado", "Rechazado"),
+                            ("subsanar", "Subsanar"),
+                        ],
+                        default="pendiente",
+                        max_length=20,
+                        verbose_name="estado",
+                    ),
+                ),
+                (
+                    "evidencia",
+                    models.FileField(
+                        blank=True,
+                        null=True,
+                        upload_to="validaciones/evidencia/%Y/%m/",
+                        verbose_name="evidencia",
+                    ),
+                ),
+                ("observaciones", models.TextField(blank=True, verbose_name="observaciones")),
+                (
+                    "fecha_validacion",
+                    models.DateTimeField(blank=True, null=True, verbose_name="fecha de validación"),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de creación"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="fecha de actualización"),
+                ),
+                (
+                    "solicitud",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="validaciones",
+                        to="applications.solicitud",
+                        verbose_name="solicitud",
+                    ),
+                ),
+                (
+                    "validado_por",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="validaciones_realizadas",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="validado por",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'validación de requisito',
-                'verbose_name_plural': 'validaciones de requisitos',
-                'ordering': ['-created_at'],
-                'constraints': [models.UniqueConstraint(fields=('solicitud', 'requisito_code'), name='unique_validacion_per_requisito')],
+                "verbose_name": "validación de requisito",
+                "verbose_name_plural": "validaciones de requisitos",
+                "ordering": ["-created_at"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("solicitud", "requisito_code"),
+                        name="unique_validacion_per_requisito",
+                    )
+                ],
             },
         ),
     ]

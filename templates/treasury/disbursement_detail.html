@@ -1,0 +1,281 @@
+{% extends "treasury/base.html" %}
+
+{% block treasury_title %}Detalle de autorización{% endblock %}
+
+{% block treasury_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-wallet2 me-2"></i>Autorización de desembolso
+    </h2>
+    <a href="{% url 'treasury:disbursement_list' %}"
+       class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Authorization info -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-info-circle me-2"></i>Datos de la autorización
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <strong>ID:</strong><br>
+                <code>{{ authorization.id }}</code>
+            </div>
+            <div class="col-md-3">
+                <strong>Monto:</strong><br>
+                <span class="text-success fw-bold fs-5">${{ authorization.amount|floatformat:0 }}</span>
+            </div>
+            <div class="col-md-3">
+                <strong>Estado:</strong><br>
+                <span class="badge
+                    {% if authorization.status == 'AUTORIZADO' %}bg-success
+                    {% elif authorization.status == 'PENDIENTE' %}bg-warning text-dark
+                    {% elif authorization.status == 'VENCIDO' %}bg-danger
+                    {% else %}bg-secondary{% endif %}">
+                    {{ authorization.get_status_display }}
+                </span>
+            </div>
+            <div class="col-md-3">
+                <strong>Creada:</strong><br>
+                {{ authorization.created_at|date:"d/m/Y H:i" }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Double signature state -->
+<div class="card mb-4" id="signature-status">
+    <div class="card-header">
+        <i class="bi bi-pen me-2"></i>Estado de doble firma
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <!-- President -->
+            <div class="col-md-6">
+                <div class="border rounded p-3
+                    {% if authorization.authorized_by_president %}border-success bg-light{% endif %}">
+                    <h6>
+                        {% if authorization.authorized_by_president %}
+                            <i class="bi bi-check-circle text-success me-1"></i>
+                        {% else %}
+                            <i class="bi bi-clock text-warning me-1"></i>
+                        {% endif %}
+                        Presidente (R-JUNTA)
+                    </h6>
+                    {% if authorization.authorized_by_president %}
+                        <p class="mb-0 small">
+                            <strong>{{ authorization.authorized_by_president.email }}</strong>
+                            <br>Firmado: {{ authorization.authorized_at|date:"d/m/Y H:i" }}
+                        </p>
+                    {% else %}
+                        <p class="text-muted mb-0 small">Pendiente de firma</p>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Secretary -->
+            <div class="col-md-6">
+                <div class="border rounded p-3
+                    {% if authorization.authorized_by_secretary %}border-success bg-light{% endif %}">
+                    <h6>
+                        {% if authorization.authorized_by_secretary %}
+                            <i class="bi bi-check-circle text-success me-1"></i>
+                        {% else %}
+                            <i class="bi bi-clock text-warning me-1"></i>
+                        {% endif %}
+                        Secretario (R-COORDINADOR)
+                    </h6>
+                    {% if authorization.authorized_by_secretary %}
+                        <p class="mb-0 small">
+                            <strong>{{ authorization.authorized_by_secretary.email }}</strong>
+                            <br>Firmado: {{ authorization.authorized_at|date:"d/m/Y H:i" }}
+                        </p>
+                    {% else %}
+                        <p class="text-muted mb-0 small">Pendiente de firma</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sign button — only when user can sign and auth is PENDIENTE -->
+        {% if can_sign %}
+        <div class="mt-3" id="authorize-errors">
+            <button
+                hx-get="{% url 'treasury:authorize' authorization.pk %}"
+                hx-target="#authorize-panel"
+                hx-swap="innerHTML"
+                class="btn btn-success">
+                <i class="bi bi-pen"></i>
+                Firmar como
+                {% if missing_role == 'president' %}Presidente{% else %}Secretario{% endif %}
+            </button>
+        </div>
+        <div id="authorize-panel" class="mt-3"></div>
+        {% elif authorization.is_fully_authorized %}
+        <div class="mt-3">
+            <span class="badge bg-success fs-6">
+                <i class="bi bi-check-circle me-1"></i>
+                ¡Desembolso autorizado! Ambas firmas completadas.
+            </span>
+        </div>
+        {% elif authorization.status != 'PENDIENTE' %}
+        <div class="mt-3">
+            <span class="badge bg-secondary">No editable — estado: {{ authorization.get_status_display }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Legalization process -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-file-earmark-text me-2"></i>Proceso de legalización
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <strong>Convocatoria:</strong><br>
+                {{ process.convocatoria.nombre }}
+                ({{ process.convocatoria.codigo }})
+            </div>
+            <div class="col-md-4">
+                <strong>Beneficiario:</strong><br>
+                {{ process.beneficiary.email }}
+            </div>
+            <div class="col-md-2">
+                <strong>Estado:</strong><br>
+                <span class="badge
+                    {% if process.status == 'LEGALIZADO' %}bg-success
+                    {% else %}bg-secondary{% endif %}">
+                    {{ process.get_status_display }}
+                </span>
+            </div>
+            <div class="col-md-2">
+                <strong>Creado:</strong><br>
+                {{ process.created_at|date:"d/m/Y" }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Normative attachments -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-paperclip me-2"></i>
+        Adjuntos normativos requeridos (4 documentos)
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Hash post-firma</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in process.documents.all %}
+                    <tr>
+                        <td>
+                            <strong>{{ doc.get_document_type_display }}</strong>
+                            {% if doc.document_type == 'ACTO_ADMINISTRATIVO' %}
+                            <br><small class="text-muted">
+                                {# ACTO_ADMINISTRATIVO linking to governance acto
+                                   requires governance integration (outside CHG-303 scope). #}
+                                Nota: acto admin pendiente de integrar con Gobernanza.
+                            </small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge
+                                {% if doc.status == 'LEGALIZADO' %}bg-success
+                                {% elif doc.status == 'FIRMADO' %}bg-primary
+                                {% elif doc.status == 'CANCELADO' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ doc.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if doc.post_sign_hash %}
+                            <code class="small">{{ doc.post_sign_hash|truncatechars:20 }}</code>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>
+                            {% if doc.pdf %}
+                            <a href="{{ doc.pdf.url }}" class="btn btn-sm btn-outline-secondary"
+                               target="_blank" rel="noopener">
+                                <i class="bi bi-download"></i> Ver PDF
+                            </a>
+                            {% else %}
+                            <span class="text-muted small">Sin PDF</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Treasury order info -->
+{% if authorization.treasury_order_number %}
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-truck me-2"></i>Orden de Tesorería
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Orden No.:</strong><br>{{ authorization.treasury_order_number }}
+            </div>
+            <div class="col-md-3">
+                <strong>Fecha orden:</strong><br>
+                {{ authorization.treasury_order_date|default:"-" }}
+            </div>
+            <div class="col-md-3">
+                <strong>Recibido por Tesorería:</strong><br>
+                {{ authorization.treasury_received_at|default:"-"|date:"d/m/Y H:i" }}
+            </div>
+            <div class="col-md-3">
+                <strong>Comprobante:</strong><br>
+                {% if authorization.payment_proof %}
+                    <a href="{{ authorization.payment_proof.url }}"
+                       target="_blank" rel="noopener">
+                        <i class="bi bi-file-pdf"></i> Ver comprobante
+                    </a>
+                {% else %}
+                    <span class="text-muted">Sin comprobante</span>
+                {% endif %}
+            </div>
+        </div>
+        {% if authorization.treasury_order_attachments %}
+        <div class="mt-3">
+            <strong>Documentos adjuntos a la orden:</strong>
+            <ul class="small mb-0">
+                {% for att in authorization.treasury_order_attachments %}
+                <li>{{ att.document_type }}
+                    — ID: <code>{{ att.document_id|truncatechars:8 }}</code>
+                    {% if att.post_sign_hash %}<br>Hash: <code>{{ att.post_sign_hash|truncatechars:16 }}</code>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

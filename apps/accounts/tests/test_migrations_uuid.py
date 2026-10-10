@@ -6,15 +6,13 @@ These tests verify:
 - Namespace stability: the deterministic UUID is reproducible.
 - No PII in fixtures: only synthetic codes are used.
 """
+
 import uuid
 
 import pytest
 
-
 ACCOUNTS_BACKFILL = "apps.accounts.migrations.0008_backfill_uuids_customuser_role"
-CONVOCATORIES_BACKFILL = (
-    "apps.convocatories.migrations.0003_backfill_uuids_convocatory"
-)
+CONVOCATORIES_BACKFILL = "apps.convocatories.migrations.0003_backfill_uuids_convocatory"
 
 
 @pytest.fixture
@@ -52,9 +50,7 @@ class TestBackfillIdempotency:
         # Calling with schema_editor=None exercises only the guard.
         # If the guard fails, the next line will raise before any save()
         # because save() needs a DB.
-        result = backfill_module.backfill_customuser_uuid(
-            global_apps, schema_editor=None
-        )
+        result = backfill_module.backfill_customuser_uuid(global_apps, schema_editor=None)
         assert result is None
 
     def test_role_backfill_is_noop_when_pk_is_uuid(self, backfill_module):
@@ -76,9 +72,7 @@ class TestBackfillIdempotency:
         result = backfill_module._forward(global_apps, schema_editor=None)
         assert result is None
 
-    def test_convocatory_backfill_is_noop_when_pk_is_uuid(
-        self, convocatory_backfill_module
-    ):
+    def test_convocatory_backfill_is_noop_when_pk_is_uuid(self, convocatory_backfill_module):
         from django.apps import apps as global_apps
 
         Convocatory = global_apps.get_model("convocatories", "Convocatory")
@@ -107,9 +101,7 @@ class TestBackfillNamespaceStability:
         ns = backfill_module.NAMESPACE_URL
         assert uuid.uuid5(ns, "role:1") == uuid.uuid5(ns, "role:1")
 
-    def test_convocatory_namespace_deterministic(
-        self, convocatory_backfill_module
-    ):
+    def test_convocatory_namespace_deterministic(self, convocatory_backfill_module):
         ns = convocatory_backfill_module.NAMESPACE_URL
         assert uuid.uuid5(ns, "convocatory:7") == uuid.uuid5(ns, "convocatory:7")
 
@@ -117,10 +109,7 @@ class TestBackfillNamespaceStability:
         """Both migrations use the same UUID namespace to guarantee
         cross-app determinism when (table, pk) collide in the FQN key.
         """
-        assert (
-            backfill_module.NAMESPACE_URL
-            == convocatory_backfill_module.NAMESPACE_URL
-        )
+        assert backfill_module.NAMESPACE_URL == convocatory_backfill_module.NAMESPACE_URL
 
 
 class TestBackfillReverseIsDocumentedNoop:
@@ -138,7 +127,7 @@ class TestMigrationDependencies:
 
     def test_accounts_0008_depends_on_0007(self, backfill_module):
         Migration = backfill_module.Migration
-        deps = [(a, n) for a, n in Migration.dependencies]
+        deps = list(Migration.dependencies)
         assert ("accounts", "0007_alter_role_id") in deps
 
     def test_accounts_0008_has_only_runpython_operation(self, backfill_module):
@@ -151,12 +140,10 @@ class TestMigrationDependencies:
 
     def test_convocatories_0003_depends_on_0002(self, convocatory_backfill_module):
         Migration = convocatory_backfill_module.Migration
-        deps = [(a, n) for a, n in Migration.dependencies]
+        deps = list(Migration.dependencies)
         assert ("convocatories", "0002_alter_convocatory_id") in deps
 
-    def test_convocatories_0003_has_only_runpython_operation(
-        self, convocatory_backfill_module
-    ):
+    def test_convocatories_0003_has_only_runpython_operation(self, convocatory_backfill_module):
         Migration = convocatory_backfill_module.Migration
         assert len(Migration.operations) == 1
         from django.db.migrations.operations.special import RunPython

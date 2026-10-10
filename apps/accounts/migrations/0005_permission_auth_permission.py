@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("accounts", "0004_role_group"),
         ("auth", "0012_alter_user_first_name_max_length"),

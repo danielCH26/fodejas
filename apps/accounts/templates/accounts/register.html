@@ -19,7 +19,7 @@
                     Podrá postular a las convocatorias disponibles una vez registrado.
                 </p>
 
-                <form method="post" action="{% url 'register' %}">
+                <form method="post" action="{% url 'accounts:register' %}">
                     {% csrf_token %}
 
                     {{ form|crispy }}
@@ -36,7 +36,7 @@
 
                 <div class="text-center">
                     <p class="mb-0">¿Ya tiene cuenta?</p>
-                    <a href="{% url 'login' %}">Iniciar sesión</a>
+                    <a href="{% url 'accounts:login' %}">Iniciar sesión</a>
                 </div>
             </div>
         </div>

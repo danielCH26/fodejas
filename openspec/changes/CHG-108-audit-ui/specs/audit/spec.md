@@ -43,20 +43,20 @@ El sistema SHALL restringir el acceso a las vistas de auditoría.
 ### Scenarios
 
 #### Scenario: Administrador visualiza eventos de auditoría
-**Given** el usuario tiene rol `R-ADMIN`  
-**And** está autenticado  
-**When** navega a `/accounts/audit/`  
-**Then** ve el listado de eventos paginado  
+**Given** el usuario tiene rol `R-ADMIN`
+**And** está autenticado
+**When** navega a `/accounts/audit/`
+**Then** ve el listado de eventos paginado
 **And** puede aplicar filtros por acción, entidad, actor y fecha
 
 #### Scenario: Usuario no autorizado intenta acceder
-**Given** el usuario tiene rol `R-ASPIRANTE`  
-**And** está autenticado  
-**When** navega a `/accounts/audit/`  
+**Given** el usuario tiene rol `R-ASPIRANTE`
+**And** está autenticado
+**When** navega a `/accounts/audit/`
 **Then** recibe HTTP 403 Forbidden
 
 #### Scenario: Verificación de cadena exitosa
-**Given** el usuario tiene rol `R-ADMIN`  
-**When** navega a `/accounts/audit/verify/`  
-**And** la cadena no ha sido alterada  
+**Given** el usuario tiene rol `R-ADMIN`
+**When** navega a `/accounts/audit/verify/`
+**And** la cadena no ha sido alterada
 **Then** ve indicador verde "Cadena de auditoría válida"

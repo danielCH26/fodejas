@@ -10,26 +10,23 @@ anonymized CSVs are produced externally (see
 ``docs/migrations/migration-runbook.md``) and mounted read-only
 into the container at run time.
 """
+
 from __future__ import annotations
 
 import csv
-import sys
 from pathlib import Path
 
-from django.apps import apps
 from django.core.management.base import BaseCommand, CommandError
 
 from apps.core.migration_utils.anonymize import (
     anonymize_hash,
     anonymize_json,
-    anonymize_optional,
 )
 from apps.core.migration_utils.validators import (
     validate_fk_resolution,
     validate_no_pii,
     validate_schema,
 )
-
 
 CONVOCATORIA_HEADERS = [
     "codigo",
@@ -159,8 +156,7 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.NOTICE(
-                f"Iniciando migración (dry_run={dry_run}, "
-                f"skip_validation={skip_validation})"
+                f"Iniciando migración (dry_run={dry_run}, " f"skip_validation={skip_validation})"
             )
         )
 
@@ -174,8 +170,9 @@ class Command(BaseCommand):
         # 2. Validate (unless skipped).
         errors: list[str] = []
         if not skip_validation:
-            errors.extend(self._validate_all(source, convocatorias, usuarios,
-                                            solicitudes, actos, listados))
+            errors.extend(
+                self._validate_all(source, convocatorias, usuarios, solicitudes, actos, listados)
+            )
             errors.extend(self._validate_pii(source))
 
         if errors:
@@ -197,19 +194,16 @@ class Command(BaseCommand):
         self.stdout.write(self.style.NOTICE(f"Conteos: {counts}"))
 
         if dry_run:
-            self.stdout.write(self.style.SUCCESS(
-                "Dry-run OK: no se escribió ningún registro."
-            ))
+            self.stdout.write(self.style.SUCCESS("Dry-run OK: no se escribió ningún registro."))
             return
 
         # 4. Persist (idempotent). Imported lazily to keep --dry-run fast.
+
         from apps.accounts.models import CustomUser, Role, UserRole
         from apps.applications.models import Solicitud
         from apps.convocatories.models import Convocatory
         from apps.core.models import ModalidadApoyo
         from apps.governance.models import ActoAdministrativo, ListadoDefinitivo
-        from django.utils import timezone as djtz
-        from datetime import datetime
 
         with self._atomic():
             for row in convocatorias:
@@ -217,18 +211,13 @@ class Command(BaseCommand):
             for row in usuarios:
                 self._upsert_usuario(row, CustomUser, Role, UserRole)
             for row in solicitudes:
-                self._upsert_solicitud(row, Solicitud, Convocatory, CustomUser,
-                                       anonymize_json)
+                self._upsert_solicitud(row, Solicitud, Convocatory, CustomUser, anonymize_json)
             for row in actos:
-                self._upsert_acto(row, ActoAdministrativo, Convocatory,
-                                   salt)
+                self._upsert_acto(row, ActoAdministrativo, Convocatory, salt)
             for row in listados:
-                self._upsert_listado(row, ListadoDefinitivo, Convocatory,
-                                     ActoAdministrativo)
+                self._upsert_listado(row, ListadoDefinitivo, Convocatory, ActoAdministrativo)
 
-        self.stdout.write(self.style.SUCCESS(
-            f"Migración completada. Conteos: {counts}"
-        ))
+        self.stdout.write(self.style.SUCCESS(f"Migración completada. Conteos: {counts}"))
 
     # --------------------------------------------------------------
     # IO helpers
@@ -244,46 +233,36 @@ class Command(BaseCommand):
     # Validation
     # --------------------------------------------------------------
 
-    def _validate_all(self, source, convocatorias, usuarios, solicitudes,
-                      actos, listados) -> list[str]:
+    def _validate_all(
+        self, source, convocatorias, usuarios, solicitudes, actos, listados
+    ) -> list[str]:
         errors: list[str] = []
-        errors.extend(validate_schema(source / "convocatorias.csv",
-                                       CONVOCATORIA_HEADERS))
-        errors.extend(validate_schema(source / "usuarios_legacy.csv",
-                                       USUARIO_HEADERS))
-        errors.extend(validate_schema(source / "solicitudes.csv",
-                                       SOLICITUD_HEADERS))
-        errors.extend(validate_schema(source / "actos_legacy.csv",
-                                       ACTO_HEADERS))
-        errors.extend(validate_schema(source / "listados_legacy.csv",
-                                       LISTADO_HEADERS))
+        errors.extend(validate_schema(source / "convocatorias.csv", CONVOCATORIA_HEADERS))
+        errors.extend(validate_schema(source / "usuarios_legacy.csv", USUARIO_HEADERS))
+        errors.extend(validate_schema(source / "solicitudes.csv", SOLICITUD_HEADERS))
+        errors.extend(validate_schema(source / "actos_legacy.csv", ACTO_HEADERS))
+        errors.extend(validate_schema(source / "listados_legacy.csv", LISTADO_HEADERS))
 
         # FK resolution.
         convocatoria_codes = {r["codigo"].strip() for r in convocatorias}
-        usuario_doc_hashes = {r["documento_hash"].strip() for r in usuarios}
+        {r["documento_hash"].strip() for r in usuarios}
         acto_numeros = {r["numero"].strip() for r in actos}
 
-        errors.extend(validate_fk_resolution(solicitudes, "convocatoria_codigo",
-                                            convocatoria_codes))
-        errors.extend(validate_fk_resolution(actos, "convocatoria_codigo",
-                                            convocatoria_codes))
-        errors.extend(validate_fk_resolution(listados, "convocatoria_codigo",
-                                            convocatoria_codes))
-        errors.extend(validate_fk_resolution(listados, "acto_numero",
-                                            acto_numeros))
+        errors.extend(
+            validate_fk_resolution(solicitudes, "convocatoria_codigo", convocatoria_codes)
+        )
+        errors.extend(validate_fk_resolution(actos, "convocatoria_codigo", convocatoria_codes))
+        errors.extend(validate_fk_resolution(listados, "convocatoria_codigo", convocatoria_codes))
+        errors.extend(validate_fk_resolution(listados, "acto_numero", acto_numeros))
 
         return errors
 
     def _validate_pii(self, source) -> list[str]:
         errors: list[str] = []
-        errors.extend(validate_no_pii(source / "solicitudes.csv",
-                                       SOLICITUD_PII_COLUMNS))
-        errors.extend(validate_no_pii(source / "usuarios_legacy.csv",
-                                       USUARIO_PII_COLUMNS))
-        errors.extend(validate_no_pii(source / "actos_legacy.csv",
-                                       ACTO_PII_COLUMNS))
-        errors.extend(validate_no_pii(source / "listados_legacy.csv",
-                                       LISTADO_PII_COLUMNS))
+        errors.extend(validate_no_pii(source / "solicitudes.csv", SOLICITUD_PII_COLUMNS))
+        errors.extend(validate_no_pii(source / "usuarios_legacy.csv", USUARIO_PII_COLUMNS))
+        errors.extend(validate_no_pii(source / "actos_legacy.csv", ACTO_PII_COLUMNS))
+        errors.extend(validate_no_pii(source / "listados_legacy.csv", LISTADO_PII_COLUMNS))
         return errors
 
     # --------------------------------------------------------------
@@ -301,9 +280,7 @@ class Command(BaseCommand):
             modalidad, _ = ModalidadApoyo.objects.get_or_create(
                 codigo=row["modalidad_codigo"].strip(),
                 defaults={
-                    "nombre": anonymize_hash(
-                        row["modalidad_codigo"].strip(), salt
-                    ),
+                    "nombre": anonymize_hash(row["modalidad_codigo"].strip(), salt),
                 },
             )
         defaults = {
@@ -312,9 +289,7 @@ class Command(BaseCommand):
             "periodo": row["periodo"].strip(),
             "estado": row["estado"].strip(),
             "monto_semestre_smlmv": row["monto_semestre_smlmv"].strip(),
-            "duracion_maxima_semestres": int(
-                row["duracion_maxima_semestres"].strip()
-            ),
+            "duracion_maxima_semestres": int(row["duracion_maxima_semestres"].strip()),
             "cupo_total": int(row["cupo_total"].strip()),
             "modalidad_apoyo": modalidad,
         }
@@ -324,8 +299,7 @@ class Command(BaseCommand):
                 from datetime import date
 
                 defaults[date_field] = date.fromisoformat(value)
-        for dt_field in ("fecha_publicacion_preliminar",
-                         "fecha_publicacion_definitiva"):
+        for dt_field in ("fecha_publicacion_preliminar", "fecha_publicacion_definitiva"):
             value = row.get(dt_field, "").strip()
             if value:
                 from datetime import datetime
@@ -351,9 +325,7 @@ class Command(BaseCommand):
             },
         )
         # Role assignments via UserRole.
-        role_codes = [
-            code.strip() for code in row["role_codes"].split("|") if code.strip()
-        ]
+        role_codes = [code.strip() for code in row["role_codes"].split("|") if code.strip()]
         for code in role_codes:
             role, _ = Role.objects.get_or_create(
                 code=code,
@@ -363,15 +335,10 @@ class Command(BaseCommand):
                     "description": code,
                 },
             )
-            UserRole.objects.get_or_create(
-                user=user, role=role, convocation_scope_id=None
-            )
+            UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
 
-    def _upsert_solicitud(self, row, Solicitud, Convocatory, CustomUser,
-                            anonymize_json_fn):
-        convocatoria = Convocatory.objects.get(
-            codigo=row["convocatoria_codigo"].strip()
-        )
+    def _upsert_solicitud(self, row, Solicitud, Convocatory, CustomUser, anonymize_json_fn):
+        convocatoria = Convocatory.objects.get(codigo=row["convocatoria_codigo"].strip())
         try:
             CustomUser.objects.get(documento=row["aspirante_documento_hash"].strip())
             # The CustomUser may exist already (FK lookup will work).
@@ -380,20 +347,14 @@ class Command(BaseCommand):
             raise CommandError(
                 f"aspirante_documento_hash {row['aspirante_documento_hash']!r} "
                 f"no encontrado en usuarios_legacy.csv (radicado={row['radicado']})"
-            )
-        aspirante = CustomUser.objects.get(
-            documento=row["aspirante_documento_hash"].strip()
-        )
+            ) from None
+        aspirante = CustomUser.objects.get(documento=row["aspirante_documento_hash"].strip())
         defaults = {
             "convocatoria": convocatoria,
             "aspirante": aspirante,
             "estado": row["estado"].strip(),
-            "datos_personales": _parse_json_or_empty(
-                row.get("datos_personales_json", "")
-            ),
-            "datos_academicos": _parse_json_or_empty(
-                row.get("datos_academicos_json", "")
-            ),
+            "datos_personales": _parse_json_or_empty(row.get("datos_personales_json", "")),
+            "datos_academicos": _parse_json_or_empty(row.get("datos_academicos_json", "")),
             "datos_socioeconomicos": _parse_json_or_empty(
                 row.get("datos_socioeconomicos_json", "")
             ),
@@ -415,9 +376,7 @@ class Command(BaseCommand):
         firmantes = json.loads(row["firmantes_json"])
         defaults = {
             "tipo": row["tipo"].strip(),
-            "fecha_expedicion": date.fromisoformat(
-                row["fecha_expedicion"].strip()
-            ),
+            "fecha_expedicion": date.fromisoformat(row["fecha_expedicion"].strip()),
             "asunto": anonymize_hash(row["asunto"].strip(), salt),
             "considerandos": considerandos,
             "resolutivo": anonymize_hash(row["resolutivo"].strip(), salt),
@@ -433,25 +392,18 @@ class Command(BaseCommand):
             defaults=defaults,
         )
 
-    def _upsert_listado(self, row, ListadoDefinitivo, Convocatory,
-                         ActoAdministrativo):
+    def _upsert_listado(self, row, ListadoDefinitivo, Convocatory, ActoAdministrativo):
         import json
         from datetime import datetime
 
-        convocatoria = Convocatory.objects.get(
-            codigo=row["convocatoria_codigo"].strip()
-        )
-        acto = ActoAdministrativo.objects.get(
-            numero=row["acto_numero"].strip()
-        )
+        convocatoria = Convocatory.objects.get(codigo=row["convocatoria_codigo"].strip())
+        acto = ActoAdministrativo.objects.get(numero=row["acto_numero"].strip())
         ranking = json.loads(row["ranking_json"])
         ListadoDefinitivo.objects.update_or_create(
             convocatoria=convocatoria,
             defaults={
                 "ranking": ranking,
-                "fecha_publicacion": datetime.fromisoformat(
-                    row["fecha_publicacion"].strip()
-                ),
+                "fecha_publicacion": datetime.fromisoformat(row["fecha_publicacion"].strip()),
                 "acto": acto,
             },
         )

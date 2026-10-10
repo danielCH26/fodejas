@@ -43,7 +43,7 @@
                     <p><strong>Código:</strong> <code>{{ convocatory.codigo }}</code></p>
                     <p><strong>Tipo:</strong> {{ convocatory.get_tipo_display }}</p>
                     <p><strong>Período:</strong> {{ convocatory.periodo }}</p>
-                    <p><strong>Estado:</strong> 
+                    <p><strong>Estado:</strong>
                         <span class="badge bg-{% if convocatory.estado == 'borrador' %}secondary{% elif convocatory.estado == 'publicada' or convocatory.estado == 'definitiva' %}success{% elif convocatory.estado == 'en_inscripcion' %}primary{% elif convocatory.estado == 'cerrada' %}dark{% else %}warning{% endif %}">
                             {{ convocatory.get_estado_display }}
                         </span>

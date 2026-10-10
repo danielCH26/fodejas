@@ -1,6 +1,7 @@
 """
 Command to seed roles into the database.
 """
+
 from django.core.management.base import BaseCommand
 
 from apps.accounts.models import Role
@@ -99,16 +100,16 @@ class Command(BaseCommand):
                     "name": role_data["name"],
                     "type": role_data["type"],
                     "description": role_data["description"],
-                }
+                },
             )
             if created:
                 created_count += 1
-                self.stdout.write(
-                    self.style.SUCCESS(f"  Created role: {role.code} - {role.name}")
-                )
+                self.stdout.write(self.style.SUCCESS(f"  Created role: {role.code} - {role.name}"))
             else:
                 self.stdout.write(f"  Role exists: {role.code}")
 
         self.stdout.write(
-            self.style.SUCCESS(f"\n✓ Created {created_count} new roles. Total roles: {Role.objects.count()}")
+            self.style.SUCCESS(
+                f"\n✓ Created {created_count} new roles. Total roles: {Role.objects.count()}"
+            )
         )
