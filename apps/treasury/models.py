@@ -57,6 +57,18 @@ class DisbursementAuthorization(models.Model):
     # CHG-802: dedupe marker so re-running the alert task does not
     # double-notify on the same calendar day.
     last_alerted_at = models.DateTimeField(null=True, blank=True)
+    # CHG-303: normative attachments sent to Tesorería. Each entry:
+    # {document_type, document_id, post_sign_hash}. All 4 required
+    # (PAGARE, CARTA_INSTRUCCIONES, CONTRATO, ACTO_ADMINISTRATIVO)
+    # before status can transition to ORDENADO.
+    # DB-level: nullable (null=True) because SQLite does not apply
+    # callable defaults at INSERT time; the model-level default=list
+    # provides an empty list when accessed in Python.
+    treasury_order_attachments = models.JSONField(
+        null=True,
+        blank=True,
+        default=list,
+    )
     # Payment confirmation
     paid_at = models.DateTimeField(null=True, blank=True)
     payment_proof = models.FileField(
