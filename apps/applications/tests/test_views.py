@@ -90,10 +90,19 @@ class RequirementReviewViewTest(TestCase):
             last_name="Test",
             password="testpass123"
         )
-        # Add R-REVISOR group
-        from django.contrib.auth.models import Group
-        self.group = Group.objects.create(name="R-REVISOR")
-        self.user.groups.add(self.group)
+        # Assign R-REVISOR through the CHG-112 role system
+        # (permission mixin checks user.user_roles, not auth.Group).
+        from apps.accounts.models import Role
+        from apps.accounts.services.assignment import assign_role_to_user
+        from apps.accounts.services.sync import sync_role_to_group
+        self.role = Role.objects.create(
+            code="R-REVISOR",
+            name="Revisor",
+            type="interno",
+            description="Revisor de requisitos (synthetic test role).",
+        )
+        sync_role_to_group(self.role)
+        assign_role_to_user(self.user, self.role)
         
         self.convocatoria = Convocatory.objects.create(
             nombre="Test Convocatoria",
