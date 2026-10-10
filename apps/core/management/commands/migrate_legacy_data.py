@@ -376,7 +376,7 @@ class Command(BaseCommand):
             raise CommandError(
                 f"aspirante_documento_hash {row['aspirante_documento_hash']!r} "
                 f"no encontrado en usuarios_legacy.csv (radicado={row['radicado']})"
-            )
+            ) from None
         aspirante = CustomUser.objects.get(
             documento=row["aspirante_documento_hash"].strip()
         )

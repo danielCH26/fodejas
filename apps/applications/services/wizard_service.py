@@ -2,6 +2,8 @@
 from django.db import transaction
 from django.utils import timezone
 
+from apps.applications.models import Solicitud
+
 
 class WizardError(Exception):
     """Error during wizard operations."""

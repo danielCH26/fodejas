@@ -1,6 +1,7 @@
 """Services for claims (CHG-205) and appeals (CHG-206)."""
 from django.utils import timezone
 
+from apps.claims.models import Reclamacion
 from apps.claims.domain.transitions import (
     is_valid_apelacion_transition as validar_transicion_apelacion,
 )

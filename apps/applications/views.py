@@ -91,7 +91,7 @@ class ApplicationDetailView(LoginRequiredMixin, PermissionMixin, DetailView):
         try:
             if hasattr(solicitud, 'puntaje_total'):
                 context["puntaje_total"] = solicitud.puntaje_total
-        except:
+        except Exception:
             pass
 
         # Check if user can present a claim (results published)

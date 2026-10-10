@@ -19,8 +19,10 @@ def generar_pdf_acto(acto) -> bytes:
     """
     try:
         from weasyprint import HTML
-    except ImportError:
-        raise ImportError("WeasyPrint no está instalado. Instala con: pip install weasyprint")
+    except ImportError as exc:
+        raise ImportError(
+            "WeasyPrint no está instalado. Instala con: pip install weasyprint"
+        ) from exc
 
     # Cargar template
     try:
