@@ -1,13 +1,26 @@
-"""Marcador (placeholder) para CAP-017 — Sesiones de Junta y CT.
+"""Sessions of the Junta and Comité Técnico (CHG-501 / CAP-017).
 
-Este paquete se crea en CHG-806 para evitar `ModuleNotFoundError`
-inesperado cuando un dev futuro intente importar algo de aquí. La
-implementación real (modelos Sesion/OrdenDelDia/Voto/Quorum/ActaSesion,
-servicios de quórum y votación, vistas de sesiones) queda **diferida
-a Fase 5** y se implementará en `CHG-501-sessions` según
-`roadmap.md §9.1`.
+This package implements session lifecycle management:
+  - Convocation with working-day notice validation (ORDINARIA ≥5 WD,
+    EXTRAORDINARIA ≥2 WD — project.md §6.1.1).
+  - Attendance registration and quorum guard (mitad + 1 of voting
+    members; cargo-exempt members never count).
+  - Agenda (Orden del Día) and one-person-one-vote voting.
+  - Minutes (ActaSesion) with PDF + SHA-256 + electronic signature
+    (CAP-029).
 
-Cualquier archivo adicional dentro de este paquete debe justificarse
-en una propuesta OpenSpec aprobada. No agregar modelos, signals ni
-servicios hasta entonces.
+Refer to ``openspec/changes/CHG-501-sessions/proposal.md`` for the
+full specification.
 """
+
+from apps.governance.sessions import (
+    models,  # noqa: F401
+    services,  # noqa: F401
+)
+from apps.governance.sessions.models import (  # noqa: F401
+    ActaSesion,
+    MiembroSesion,
+    OrdenDelDiaPunto,
+    Sesion,
+    Voto,
+)

@@ -32,13 +32,12 @@ class TestStubsRemoved:
         assert os.path.isfile(os.path.join(path, "README.md"))
 
     def test_governance_sessions_has_only_placeholder_files(self):
-        """El placeholder no debe contener archivos ejecutables hasta
-        que CHG-501 lo implemente."""
+        """CHG-501 implemented: sessions/ contains models.py, services.py (no stubs)."""
         path = os.path.join(APPS_DIR, "governance", "sessions")
-        files = sorted(os.listdir(path))
-        assert files == ["README.md", "__init__.py"], (
-            f"sessions/ debe contener solo __init__.py y README.md; "
-            f"encontré {files}. Si estás agregando más, abrí CHG-501."
+        files = sorted(f for f in os.listdir(path) if not f.startswith("__pycache__"))
+        assert set(files).issuperset({"models.py", "services.py", "README.md", "__init__.py"}), (
+            f"sessions/ should contain models.py, services.py, README.md, __init__.py; "
+            f"found {files}. CHG-501 (CAP-017) implements the sessions capability."
         )
 
 
