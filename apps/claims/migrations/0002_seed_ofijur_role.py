@@ -39,7 +39,7 @@ def reverse_create_ofijur_role(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('claims', '0001_initial'),
+        ("claims", "0001_initial"),
     ]
 
     operations = [

@@ -5,32 +5,43 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('academic_tracking', '0001_initial'),
-        ('legalization', '0001_initial'),
+        ("academic_tracking", "0001_initial"),
+        ("legalization", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='academicrecord',
-            name='legalization_process',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='academic_record', to='legalization.legalizationprocess'),
+            model_name="academicrecord",
+            name="legalization_process",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="academic_record",
+                to="legalization.legalizationprocess",
+            ),
         ),
         migrations.AddField(
-            model_name='academicalert',
-            name='academic_record',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='alerts', to='academic_tracking.academicrecord'),
+            model_name="academicalert",
+            name="academic_record",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="alerts",
+                to="academic_tracking.academicrecord",
+            ),
         ),
         migrations.AddField(
-            model_name='gradeentry',
-            name='academic_record',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='grades', to='academic_tracking.academicrecord'),
+            model_name="gradeentry",
+            name="academic_record",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="grades",
+                to="academic_tracking.academicrecord",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='gradeentry',
-            unique_together={('academic_record', 'semester', 'course_name')},
+            name="gradeentry",
+            unique_together={("academic_record", "semester", "course_name")},
         ),
     ]
