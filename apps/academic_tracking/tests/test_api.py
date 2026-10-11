@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 
 from apps.academic_tracking.models import AcademicAlert
 from apps.academic_tracking.services import AcademicTrackingService
+from apps.accounts.models import Role, UserRole
 from apps.convocatories.models import Convocatory
 from apps.legalization.models import LegalizationProcess
 
@@ -110,3 +111,22 @@ class TestAcademicAlertAPI:
         response = staff_client.post(f"/api/academic-tracking/alerts/{alert.id}/resolve/")
         assert response.status_code == 200
         assert response.data["status"] == "RESUELTA"
+
+    def test_coord_allowed_on_records_list(self, db, record):
+        """R-COORD gets 200 on the academic records list (role matrix CAP-011)."""
+        coord = _make_user(10)
+        Role.objects.get_or_create(
+            code="R-COORD", defaults={"name": "Coordinador", "type": "interno"}
+        )
+        role = Role.objects.get(code="R-COORD")
+        UserRole.objects.get_or_create(user=coord, role=role)
+        client = APIClient()
+        client.force_authenticate(user=coord)
+        assert client.get("/api/academic-tracking/records/").status_code == 200
+
+    def test_aspirante_forbidden_on_records(self, db, record):
+        """R-ASPIRANTE gets 403 on the academic records list (role matrix CAP-011)."""
+        aspirant = _make_user(11)
+        client = APIClient()
+        client.force_authenticate(user=aspirant)
+        assert client.get("/api/academic-tracking/records/").status_code == 403
