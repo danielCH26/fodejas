@@ -123,7 +123,7 @@ class TestPortalPublico:
         # The portal returns dicts keyed by the LISTADO uuid (no PII:
         # rank/radicado only). Gating: only listados whose acto is
         # PUBLICADO appear.
-        shown_uuids = {str(l["uuid"]) for l in listados}
+        shown_uuids = {str(item["uuid"]) for item in listados}
         listado_publicado = ListadoDefinitivo.objects.get(acto=publicado)
         listado_firmado = ListadoDefinitivo.objects.get(acto=firmado)
         assert str(listado_publicado.uuid) in shown_uuids
