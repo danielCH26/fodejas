@@ -41,10 +41,10 @@ from apps.governance.sessions.services import (
     _working_days_between,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def user_factory(db):
@@ -67,9 +67,7 @@ def user_factory(db):
                 code=code,
                 defaults={"name": code, "type": "interno", "description": code},
             )
-            UserRole.objects.get_or_create(
-                user=user, role=role, convocation_scope_id=None
-            )
+            UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
         return user
 
     return _make
@@ -90,6 +88,7 @@ def cargo_member(user_factory):
 @pytest.fixture
 def sesion_factory(db, user_factory):
     """Factory for Sesion instances in CONVOCADA state."""
+
     def _make(tipo=Sesion.Tipo.ORDINARIA, **extra):
         today = timezone.now().date()
         # Default to 10 working days in the future to satisfy ORDINARIA notice
@@ -102,12 +101,14 @@ def sesion_factory(db, user_factory):
             actor=None,
         )
         return sesion
+
     return _make
 
 
 # ---------------------------------------------------------------------------
 # Working-day helpers
 # ---------------------------------------------------------------------------
+
 
 class TestWorkingDays:
     def test_add_working_days_forward(self):
@@ -128,14 +129,15 @@ class TestWorkingDays:
 
     def test_working_days_between_across_weekend(self):
         # Mon Jan 5 → Mon Jan 12 = 5 working days (skips weekend)
-        start = timezone.datetime(2026, 1, 5).date()   # Mon
-        end = timezone.datetime(2026, 1, 12).date()    # Mon
+        start = timezone.datetime(2026, 1, 5).date()  # Mon
+        end = timezone.datetime(2026, 1, 12).date()  # Mon
         assert _working_days_between(start, end) == 5
 
 
 # ---------------------------------------------------------------------------
 # Convocation notice
 # ---------------------------------------------------------------------------
+
 
 class TestConvocacionNotice:
     def test_ordinaria_ok_5_working_days(self, user_factory):
@@ -198,6 +200,7 @@ class TestConvocacionNotice:
 # ---------------------------------------------------------------------------
 # Quórum
 # ---------------------------------------------------------------------------
+
 
 class TestQuorum:
     def test_quorum_mitad_mas_1(self, user_factory):
@@ -359,9 +362,9 @@ class TestQuorum:
 
         # Only 2 voting members count; quórum for 2 voting = 2 → barely met.
         # But the cargo-exempts are not counted → voting_present = 2, quorum = 2.
-        assert sesion.voting_members_present() == 2, (
-            f"Expected 2 voting members, got {sesion.voting_members_present()}"
-        )
+        assert (
+            sesion.voting_members_present() == 2
+        ), f"Expected 2 voting members, got {sesion.voting_members_present()}"
         assert sesion.quorum_met() is True  # 2 present, need 2 (mitad+1 of 2)
 
         # The cargo-exempt member cannot vote
@@ -371,7 +374,9 @@ class TestQuorum:
         # Remove the voting_user2 so only cargo-exempt remains → quórum NOT met
         cargo_miembro.asistencia = MiembroSesion.Asistencia.AUSENTE
         cargo_miembro.save()
-        voting_user2_miembro = MiembroSesion.objects.get(sesion_id=sesion.id, user_id=voting_user2.id)
+        voting_user2_miembro = MiembroSesion.objects.get(
+            sesion_id=sesion.id, user_id=voting_user2.id
+        )
         voting_user2_miembro.asistencia = MiembroSesion.Asistencia.AUSENTE
         voting_user2_miembro.save()
         # Re-fetch from DB to clear related-manager cache
@@ -385,6 +390,7 @@ class TestQuorum:
 # ---------------------------------------------------------------------------
 # Voting
 # ---------------------------------------------------------------------------
+
 
 class TestVoto:
     @pytest.fixture
@@ -569,13 +575,15 @@ class TestVoto:
         third_user = user_factory(role_codes=["R-JUNTA"])
         SessionService.registrar_asistencia(
             sesion_id=sesion.id,
-            member_records=[{
-                "user_id": third_user.id,
-                "rol": "Miembro",
-                "asistencia": MiembroSesion.Asistencia.PRESENTE,
-                "es_miembro_cargo": False,
-                "conflicto_declarado": False,
-            }],
+            member_records=[
+                {
+                    "user_id": third_user.id,
+                    "rol": "Miembro",
+                    "asistencia": MiembroSesion.Asistencia.PRESENTE,
+                    "es_miembro_cargo": False,
+                    "conflicto_declarado": False,
+                }
+            ],
             actor=None,
         )
         punto = SessionService.agregar_punto(sesion.id, numero=1, texto="Solo A_FAVOR")
@@ -610,6 +618,7 @@ class TestVoto:
 # Session finalize
 # ---------------------------------------------------------------------------
 
+
 class TestFinalizarSesion:
     def test_finalizar_requires_all_puntos_closed(self, user_factory):
         """finalizar_sesion raises if any punto is still PENDIENTE."""
@@ -640,7 +649,7 @@ class TestFinalizarSesion:
 
         # Add 2 puntos while session is CONVOCADA
         p1 = SessionService.agregar_punto(sesion.id, numero=1, texto="P1")
-        p2 = SessionService.agregar_punto(sesion.id, numero=2, texto="P2")
+        SessionService.agregar_punto(sesion.id, numero=2, texto="P2")
 
         sesion.refresh_from_db()
         SessionService.abrir_sesion(sesion.id, actor=None)
@@ -668,6 +677,7 @@ class TestFinalizarSesion:
 # ---------------------------------------------------------------------------
 # Acta generation + SHA-256
 # ---------------------------------------------------------------------------
+
 
 class TestActaSesion:
     def test_generar_acta_pdf_sha256(self, user_factory, mocker):
@@ -806,6 +816,7 @@ class TestActaSesion:
 # Audit events
 # ---------------------------------------------------------------------------
 
+
 class TestAuditEvents:
     def test_convocar_emits_audit(self, user_factory):
         """convocar_sesion emits a SESSION_CONVOCAR audit event."""
@@ -823,12 +834,15 @@ class TestAuditEvents:
             actor=None,
         )
 
-        assert AuditEvent.objects.filter(
-            action="SESSION_CONVOCAR",
-            entity="Sesion",
-            entity_id=sesion.id,
-            module="governance",
-        ).count() == initial_count + 1
+        assert (
+            AuditEvent.objects.filter(
+                action="SESSION_CONVOCAR",
+                entity="Sesion",
+                entity_id=sesion.id,
+                module="governance",
+            ).count()
+            == initial_count + 1
+        )
 
     def test_asistencia_emits_audit(self, user_factory):
         """registrar_asistencia emits SESSION_ASISTENCIA."""
@@ -860,12 +874,15 @@ class TestAuditEvents:
             actor=None,
         )
 
-        assert AuditEvent.objects.filter(
-            action="SESSION_ASISTENCIA",
-            entity="Sesion",
-            entity_id=sesion.id,
-            module="governance",
-        ).count() == initial + 1
+        assert (
+            AuditEvent.objects.filter(
+                action="SESSION_ASISTENCIA",
+                entity="Sesion",
+                entity_id=sesion.id,
+                module="governance",
+            ).count()
+            == initial + 1
+        )
 
     def test_abrir_emits_audit(self, user_factory):
         """abrir_sesion emits SESSION_ABRIR."""
@@ -893,19 +910,20 @@ class TestAuditEvents:
             ],
             actor=None,
         )
-        initial = AuditEvent.objects.filter(
-            action="SESSION_ABRIR", module="governance"
-        ).count()
+        initial = AuditEvent.objects.filter(action="SESSION_ABRIR", module="governance").count()
 
         sesion.refresh_from_db()
         SessionService.abrir_sesion(sesion.id, actor=None)
 
-        assert AuditEvent.objects.filter(
-            action="SESSION_ABRIR",
-            entity="Sesion",
-            entity_id=sesion.id,
-            module="governance",
-        ).count() == initial + 1
+        assert (
+            AuditEvent.objects.filter(
+                action="SESSION_ABRIR",
+                entity="Sesion",
+                entity_id=sesion.id,
+                module="governance",
+            ).count()
+            == initial + 1
+        )
 
     def test_voto_emits_audit(self, user_factory):
         """registrar_voto emits SESSION_VOTO."""
@@ -936,9 +954,7 @@ class TestAuditEvents:
         sesion.refresh_from_db()
         SessionService.abrir_sesion(sesion.id, actor=None)
         miembro = MiembroSesion.objects.get(sesion_id=sesion.id, user_id=user.id)
-        initial = AuditEvent.objects.filter(
-            action="SESSION_VOTO", module="governance"
-        ).count()
+        initial = AuditEvent.objects.filter(action="SESSION_VOTO", module="governance").count()
 
         SessionService.registrar_voto(
             sesion_id=sesion.id,
@@ -948,11 +964,14 @@ class TestAuditEvents:
             actor=None,
         )
 
-        assert AuditEvent.objects.filter(
-            action="SESSION_VOTO",
-            entity="Voto",
-            module="governance",
-        ).count() == initial + 1
+        assert (
+            AuditEvent.objects.filter(
+                action="SESSION_VOTO",
+                entity="Voto",
+                module="governance",
+            ).count()
+            == initial + 1
+        )
 
     def test_cerrar_punto_emits_audit(self, user_factory):
         """cerrar_punto emits SESSION_PUNTO_CERRAR."""
@@ -996,12 +1015,15 @@ class TestAuditEvents:
 
         SessionService.cerrar_punto(punto.id, actor=None)
 
-        assert AuditEvent.objects.filter(
-            action="SESSION_PUNTO_CERRAR",
-            entity="OrdenDelDiaPunto",
-            entity_id=coerce_entity_id(punto.id),
-            module="governance",
-        ).count() == initial + 1
+        assert (
+            AuditEvent.objects.filter(
+                action="SESSION_PUNTO_CERRAR",
+                entity="OrdenDelDiaPunto",
+                entity_id=coerce_entity_id(punto.id),
+                module="governance",
+            ).count()
+            == initial + 1
+        )
 
     def test_finalizar_emits_audit(self, user_factory):
         """finalizar_sesion emits SESSION_FINALIZAR."""
@@ -1041,14 +1063,15 @@ class TestAuditEvents:
             actor=None,
         )
         SessionService.cerrar_punto(punto.id, actor=None)
-        initial = AuditEvent.objects.filter(
-            action="SESSION_FINALIZAR", module="governance"
-        ).count()
+        initial = AuditEvent.objects.filter(action="SESSION_FINALIZAR", module="governance").count()
 
         SessionService.finalizar_sesion(sesion.id, actor=None)
-        assert AuditEvent.objects.filter(
-            action="SESSION_FINALIZAR",
-            entity="Sesion",
-            entity_id=sesion.id,
-            module="governance",
-        ).count() == initial + 1
+        assert (
+            AuditEvent.objects.filter(
+                action="SESSION_FINALIZAR",
+                entity="Sesion",
+                entity_id=sesion.id,
+                module="governance",
+            ).count()
+            == initial + 1
+        )

@@ -12,13 +12,12 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _validate_no_pii(value: str) -> None:
     """Refuse PII in CharField values (AGENTS.md §6 rule 1)."""
@@ -35,6 +34,7 @@ def _validate_no_pii(value: str) -> None:
 # ---------------------------------------------------------------------------
 # Sesion
 # ---------------------------------------------------------------------------
+
 
 class Sesion(models.Model):
     """A session of the Junta or Comité Técnico (CAP-017)."""
@@ -117,13 +117,17 @@ class Sesion(models.Model):
 
     def voting_members_present(self) -> int:
         """Count present/voting (non-cargo) members."""
-        return self.miembros.exclude(
-            # Exclude absent
-            asistencia=MiembroSesion.Asistencia.AUSENTE,
-        ).exclude(
-            # Exclude cargo-exempt (Gobernador / Alcalde / Secretario)
-            es_miembro_cargo=True,
-        ).count()
+        return (
+            self.miembros.exclude(
+                # Exclude absent
+                asistencia=MiembroSesion.Asistencia.AUSENTE,
+            )
+            .exclude(
+                # Exclude cargo-exempt (Gobernador / Alcalde / Secretario)
+                es_miembro_cargo=True,
+            )
+            .count()
+        )
 
     def quorum_met(self) -> bool:
         """True when majority (mayoría absoluta = mitad + 1) of voting members are present.
@@ -155,6 +159,7 @@ class Sesion(models.Model):
 # ---------------------------------------------------------------------------
 # MiembroSesion
 # ---------------------------------------------------------------------------
+
 
 class MiembroSesion(models.Model):
     """A member's attendance record for a session (CAP-017)."""
@@ -217,6 +222,7 @@ class MiembroSesion(models.Model):
 # OrdenDelDiaPunto
 # ---------------------------------------------------------------------------
 
+
 class OrdenDelDiaPunto(models.Model):
     """An agenda item (punto) within a session (CAP-017)."""
 
@@ -257,6 +263,7 @@ class OrdenDelDiaPunto(models.Model):
 # ---------------------------------------------------------------------------
 # Voto
 # ---------------------------------------------------------------------------
+
 
 class Voto(models.Model):
     """A member's vote on a specific agenda punto (CAP-017)."""
@@ -300,6 +307,7 @@ class Voto(models.Model):
 # ---------------------------------------------------------------------------
 # ActaSesion
 # ---------------------------------------------------------------------------
+
 
 class ActaSesion(models.Model):
     """Minutes (acta) for a finalized session (CAP-017 / CAP-029)."""

@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import hashlib
 from datetime import date, timedelta
-from decimal import Decimal
 
 from django.core.files.base import ContentFile
 from django.db import transaction
@@ -38,10 +37,10 @@ from apps.governance.sessions.models import (
     Voto,
 )
 
-
 # ---------------------------------------------------------------------------
 # Working-day helpers (copied from treasury/tasks.py — no cross-import)
 # ---------------------------------------------------------------------------
+
 
 def _add_working_days(start: date, days: int) -> date:
     """Return ``start`` advanced by ``days`` working days (Mon–Fri).
@@ -77,6 +76,7 @@ def _working_days_between(start: date, end: date) -> int:
 # ---------------------------------------------------------------------------
 # SessionService
 # ---------------------------------------------------------------------------
+
 
 class SessionService:
     """Service for managing governance session lifecycle (CAP-017)."""
@@ -128,6 +128,12 @@ class SessionService:
             raise ValueError(f"Tipo de sesión inválido: {tipo}")
 
         # Validate working-day notice
+        if isinstance(fecha_hora, str):
+            # Accept ISO datetime/date strings (API payloads arrive as
+            # JSON strings).
+            from datetime import datetime as _dt
+
+            fecha_hora = _dt.fromisoformat(fecha_hora)
         today = timezone.now().date()
         session_date = fecha_hora.date() if hasattr(fecha_hora, "date") else fecha_hora
 
@@ -139,9 +145,7 @@ class SessionService:
 
         notice_days = _working_days_between(today, session_date)
         if notice_days < min_notice:
-            tipo_label = (
-                "ordinaria" if tipo == Sesion.Tipo.ORDINARIA else "extraordinaria"
-            )
+            tipo_label = "ordinaria" if tipo == Sesion.Tipo.ORDINARIA else "extraordinaria"
             raise ValueError(
                 f"Convocatoria {tipo_label} requiere al menos "
                 f"{min_notice} días hábiles de anticipación; "
@@ -228,9 +232,7 @@ class SessionService:
                 user=user,
                 defaults={
                     "rol": record.get("rol", ""),
-                    "asistencia": record.get(
-                        "asistencia", MiembroSesion.Asistencia.AUSENTE
-                    ),
+                    "asistencia": record.get("asistencia", MiembroSesion.Asistencia.AUSENTE),
                     "es_miembro_cargo": record.get("es_miembro_cargo", False),
                     "conflicto_declarado": record.get("conflicto_declarado", False),
                 },
@@ -245,8 +247,7 @@ class SessionService:
             changes={
                 "member_count": len(results),
                 "members": [
-                    {"user_id": str(r.user_id), "asistencia": r.asistencia}
-                    for r in results
+                    {"user_id": str(r.user_id), "asistencia": r.asistencia} for r in results
                 ],
             },
             module="governance",
@@ -279,17 +280,10 @@ class SessionService:
         sesion = Sesion.objects.select_for_update().get(id=sesion_id)
 
         if sesion.estado != Sesion.Estado.CONVOCADA:
-            raise ValueError(
-                f"La sesión no está en estado CONVOCADA ({sesion.estado})."
-            )
+            raise ValueError(f"La sesión no está en estado CONVOCADA ({sesion.estado}).")
 
         if not sesion.quorum_met():
             voting_present = sesion.voting_members_present()
-            total_voting = (
-                sesion.miembros.exclude(es_miembro_cargo=True)
-                .exclude(asistencia=MiembroSesion.Asistencia.AUSENTE)
-                .count()
-            )
             raise ValueError(
                 f"No hay quórum. Se requieren mayoría simple (mitad+1) de "
                 f"miembros con derecho a voto. Miembros con voto presentes: "
@@ -350,9 +344,7 @@ class SessionService:
             )
 
         if sesion.puntos.filter(numero=numero).exists():
-            raise ValueError(
-                f"Ya existe un punto con número {numero} en esta sesión."
-            )
+            raise ValueError(f"Ya existe un punto con número {numero} en esta sesión.")
 
         punto = OrdenDelDiaPunto.objects.create(
             sesion=sesion,
@@ -415,30 +407,24 @@ class SessionService:
         sesion = Sesion.objects.select_for_update().get(id=sesion_id)
 
         if sesion.estado != Sesion.Estado.EN_SESION:
-            raise ValueError(
-                f"La sesión no está en estado EN_SESION ({sesion.estado})."
-            )
+            raise ValueError(f"La sesión no está en estado EN_SESION ({sesion.estado}).")
 
         try:
-            punto = OrdenDelDiaPunto.objects.select_for_update().get(
-                id=punto_id, sesion=sesion
-            )
+            punto = OrdenDelDiaPunto.objects.select_for_update().get(id=punto_id, sesion=sesion)
         except OrdenDelDiaPunto.DoesNotExist:
             raise ValueError(
                 f"Punto {punto_id} no encontrado o no pertenece a la sesión."
-            )
+            ) from None
 
         if punto.estado != OrdenDelDiaPunto.Estado.PENDIENTE:
-            raise ValueError(
-                f"El punto {punto.numero} ya está cerrado (estado: {punto.estado})."
-            )
+            raise ValueError(f"El punto {punto.numero} ya está cerrado (estado: {punto.estado}).")
 
         try:
             miembro = MiembroSesion.objects.get(id=miembro_sesion_id, sesion=sesion)
         except MiembroSesion.DoesNotExist:
             raise ValueError(
                 f"MiembroSesion {miembro_sesion_id} no encontrado en la sesión."
-            )
+            ) from None
 
         if not miembro.can_vote():
             reasons = []
@@ -448,9 +434,7 @@ class SessionService:
                 reasons.append("miembro por cargo (no vota)")
             if miembro.conflicto_declarado:
                 reasons.append("conflicto de interés declarado")
-            raise ValueError(
-                f"El miembro {miembro.user} no puede votar: {', '.join(reasons)}."
-            )
+            raise ValueError(f"El miembro {miembro.user} no puede votar: {', '.join(reasons)}.")
 
         if valor not in (Voto.Valor.A_FAVOR, Voto.Valor.EN_CONTRA, Voto.Valor.ABSTENCION):
             raise ValueError(f"Valor de voto inválido: {valor}")
@@ -498,9 +482,7 @@ class SessionService:
         punto = OrdenDelDiaPunto.objects.select_for_update().get(id=punto_id)
 
         if punto.estado != OrdenDelDiaPunto.Estado.PENDIENTE:
-            raise ValueError(
-                f"El punto {punto.numero} ya está cerrado (estado: {punto.estado})."
-            )
+            raise ValueError(f"El punto {punto.numero} ya está cerrado (estado: {punto.estado}).")
 
         sesion = punto.sesion
 
@@ -558,17 +540,14 @@ class SessionService:
         sesion = Sesion.objects.select_for_update().get(id=sesion_id)
 
         if sesion.estado != Sesion.Estado.EN_SESION:
-            raise ValueError(
-                f"La sesión no está en estado EN_SESION ({sesion.estado})."
-            )
+            raise ValueError(f"La sesión no está en estado EN_SESION ({sesion.estado}).")
 
         if not sesion.all_puntos_closed():
             open_puntos = sesion.puntos.filter(
                 estado=OrdenDelDiaPunto.Estado.PENDIENTE
             ).values_list("numero", flat=True)
             raise ValueError(
-                f"No se puede finalizar: hay puntos pendientes: "
-                f"{list(open_puntos)}."
+                f"No se puede finalizar: hay puntos pendientes: " f"{list(open_puntos)}."
             )
 
         previous_estado = sesion.estado
@@ -622,9 +601,7 @@ class SessionService:
         try:
             pdf_bytes = SessionService._generar_pdf_bytes(sesion)
         except Exception as exc:
-            raise RuntimeError(
-                f"Error generando PDF del acta: {exc}"
-            ) from exc
+            raise RuntimeError(f"Error generando PDF del acta: {exc}") from exc
 
         sha256_hash = hashlib.sha256(pdf_bytes).hexdigest()
 
@@ -690,16 +667,12 @@ class SessionService:
         # Build puntos HTML
         puntos_html = ""
         for punto in sesion.puntos.all():
-            votos = punto.votos.select_related("miembro_sesion__user").all()
-            votos_html = "".join(
-                f"<li>{v.miembro_sesion.user.get_full_name() or v.miembro_sesion.user.email}: {v.get_valor_display()}</li>"
-                for v in votos
-            )
+            estado_punto = punto.get_estado_display()
             puntos_html += f"""
             <tr>
                 <td>{punto.numero}</td>
                 <td>{punto.texto}</td>
-                <td>{punto.get_estado_display()}</td>
+                <td>{estado_punto}</td>
             </tr>
             """
 
@@ -774,7 +747,7 @@ th {{ background: #f0f0f0; }}
             raise ValueError(
                 f"No existe acta para la sesión {sesion_id}. "
                 "Genere el acta primero con generar_acta()."
-            )
+            ) from None
 
         if not acta.pdf:
             raise ValueError("El acta no tiene archivo PDF adjunto.")
