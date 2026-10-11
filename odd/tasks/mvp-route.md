@@ -179,6 +179,14 @@ Pendiente:
       compuesto con row lock. **Bug real — auditoría de treasury
       perdida**: actions > 20 chars + try/except silencioso; widened y
       fail-closed (criterio unificado).
+- [x] CHG-501 sesiones de Junta y CT (CAP-017) — PR #22 mergeado
+      (`fbc1e66`): propuesta aprobada (issue #21), modelos
+      Sesion/MiembroSesion/Punto/Voto/ActaSesion, servicios (convocatoria
+      5/2 días hábiles, quórum mitad+1, votación con exenciones y
+      exclusiones, acta PDF+SHA-256+firmas ElectronicSigner), API
+      `/api/sessions/` con matriz de roles y ownership de voto,
+      36 tests. Auditoría CAP-022 fail-closed.
+- [ ] Restante post-MVP: Fases 4-5 (reporting/transparencia —
 - [ ] Restante post-MVP: Fases 4-5 (gobernanza/sesiones, reporting/
       transparencia — apps removidas por CHG-806), runbooks/DRP
       (INF-011/012/015), unificar criterio de auditoría try/except vs
