@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>{{ acto.numero }}</title>
+    <style>
+        @page {
+            size: letter;
+            margin: 2.5cm 2cm;
+            @bottom-center {
+                content: "Página " counter(page) " de " counter(pages);
+                font-size: 9pt;
+                color: #555;
+            }
+        }
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 11pt;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #1a3c6e;
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            font-size: 14pt;
+            margin: 0;
+            color: #1a3c6e;
+            text-transform: uppercase;
+        }
+        .header h2 {
+            font-size: 11pt;
+            margin: 4px 0 0 0;
+            font-weight: normal;
+            color: #333;
+        }
+        .acto-number {
+            text-align: right;
+            font-size: 11pt;
+            margin-bottom: 18px;
+        }
+        .acto-title {
+            text-align: center;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 24px 0;
+            text-transform: uppercase;
+        }
+        .content p {
+            text-align: justify;
+            margin: 10px 0;
+        }
+        .firmantes {
+            margin-top: 60px;
+            width: 100%;
+        }
+        .firmantes td {
+            width: 50%;
+            text-align: center;
+            padding-top: 48px;
+            font-size: 10pt;
+        }
+        .firmante-line {
+            border-top: 1px solid #1a1a1a;
+            padding-top: 4px;
+        }
+        .footer-hash {
+            margin-top: 48px;
+            font-size: 8pt;
+            color: #555;
+            border-top: 1px solid #ccc;
+            padding-top: 6px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Secretaría de Educación Departamental</h1>
+        <h2>San Andrés, Providencia y Santa Catalina — FODEJAS</h2>
+    </div>
+
+    <p class="acto-number"><strong>{{ acto.numero }}</strong></p>
+
+    <p class="acto-title">
+        Acto Administrativo
+        {% if acto.tipo %}— {{ acto.get_tipo_display }}{% endif %}
+    </p>
+
+    <div class="content">
+        <p>La Secretaría de Educación Departamental de San Andrés, Providencia
+        y Santa Catalina, en ejercicio de sus facultades legales y en marco del
+        Fondo para el Desarrollo Educativo de los Jóvenes del Archipiélago
+        (FODEJAS), hace constar lo siguiente:</p>
+
+        {% if acto.contenido %}
+            {{ acto.contenido|linebreaks }}
+        {% endif %}
+
+        {% if acto.convocatoria %}
+            <p><strong>Convocatoria:</strong> {{ acto.convocatoria }}</p>
+        {% endif %}
+    </div>
+
+    {% if acto.firmantes %}
+    <table class="firmantes">
+        <tr>
+            {% for firmante in acto.firmantes %}
+            <td>
+                <div class="firmante-line">{{ firmante }}</div>
+                Firma
+            </td>
+            {% endfor %}
+        </tr>
+    </table>
+    {% endif %}
+
+    <div class="footer-hash">
+        Documento generado electrónicamente. Verificación: hash SHA-256 del PDF
+        registrado en la bitácora de auditoría (CAP-022).
+        {% if acto.fecha_expedicion %}
+            Expedido el {{ fecha_formato }}.
+        {% endif %}
+    </div>
+</body>
+</html>
