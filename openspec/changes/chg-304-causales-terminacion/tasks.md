@@ -57,6 +57,10 @@
   CAP-022; ahora cada cambio de estado escribe en la cadena
   (`module="condonation"`, sin try/except — la falla de auditoría revierte
   la operación).
-- Pendiente post-batch: matriz de roles fina (hoy `IsAdminUser` para gestión)
-  y confirmar con Negociación jurídica el cálculo definitivo del IPC
+- **Matriz de roles fina (CAP-015/016) completada**: ViewSets de
+  termination y sanction ahora usan `_RolePermission` con roles
+  `['R-JUNTA', 'R-ADMIN', 'R-COORD']`. La acción `submit_justification`
+  tiene verificación de ownership (beneficiary del proceso o staff-de-flujo).
+  Ghost codes `R-COORDINADOR`/`R-TESORERO` reemplazados por `R-COORD`/`R-TESOR`.
+- Pendiente: confirmar con Negociación jurídica el cálculo definitivo del IPC
   (Art. 17) — hoy es tasa anual simple configurable.

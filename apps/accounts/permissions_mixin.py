@@ -23,7 +23,7 @@ class PermissionMixin:
         context["can_admin_roles"] = self._has_role(user, "R-ADMIN")
         context["can_junta"] = self._has_role(user, "R-JUNTA")
         context["can_ofijur"] = self._has_role(user, "R-OFIJUR")
-        context["can_coordinator"] = self._has_role(user, "R-COORDINADOR")
+        context["can_coordinator"] = self._has_role(user, "R-COORD")
         context["can_treasurer"] = self._has_role(user, "R-TESOR")
 
         # For convenience
