@@ -73,9 +73,7 @@ class SesionViewSet(viewsets.ModelViewSet):
             )
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(
-            SesionSerializer(sesion).data, status=status.HTTP_201_CREATED
-        )
+        return Response(SesionSerializer(sesion).data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=["post"])
     def asistencia(self, request, pk=None):
@@ -87,13 +85,9 @@ class SesionViewSet(viewsets.ModelViewSet):
         """
         members = request.data.get("members")
         if not members:
-            return Response(
-                {"error": "members is required"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "members is required"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            registros = SessionService.registrar_asistencia(
-                pk, members, actor=request.user
-            )
+            registros = SessionService.registrar_asistencia(pk, members, actor=request.user)
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"registered": len(registros)})
@@ -146,9 +140,7 @@ class SesionViewSet(viewsets.ModelViewSet):
     def cerrar_punto(self, request, pk=None):
         punto_id = request.data.get("punto_id")
         if not punto_id:
-            return Response(
-                {"error": "punto_id is required"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "punto_id is required"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             punto = SessionService.cerrar_punto(punto_id, actor=request.user)
         except ValueError as e:
@@ -177,9 +169,7 @@ class SesionViewSet(viewsets.ModelViewSet):
     def firmar_acta(self, request, pk=None):
         firmantes = request.data.get("firmantes")
         if not firmantes:
-            return Response(
-                {"error": "firmantes is required"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "firmantes is required"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             acta = SessionService.firmar_acta(pk, firmantes, actor=request.user)
         except ValueError as e:

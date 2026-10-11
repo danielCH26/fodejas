@@ -1,6 +1,5 @@
 """API tests for governance sessions (CHG-501, CAP-017)."""
 
-
 import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -112,7 +111,10 @@ class TestSesionAPI:
             format="json",
         )
         assert response.status_code == 400
-        assert "working days" in response.data["error"].lower() or "días" in response.data["error"].lower()
+        assert (
+            "working days" in response.data["error"].lower()
+            or "días" in response.data["error"].lower()
+        )
 
 
 @pytest.mark.django_db
