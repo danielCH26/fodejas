@@ -39,9 +39,6 @@ def reverse_create_ofijur_role(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        # Depend on the latest accounts migration
-        ("accounts", "0005_permission_auth_permission"),
-        # Depend on the latest claims migration
         ("claims", "0001_initial"),
     ]
 

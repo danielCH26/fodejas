@@ -30,7 +30,7 @@ class AuditEvent(models.Model):
         blank=True,
         related_name="audit_events",
     )
-    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    action = models.CharField(max_length=50, choices=ACTION_CHOICES)
     entity = models.CharField(max_length=100, db_index=True)
     entity_id = models.UUIDField(db_index=True)
     changes = models.JSONField(null=True, blank=True)

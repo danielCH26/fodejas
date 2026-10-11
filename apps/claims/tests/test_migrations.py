@@ -11,12 +11,12 @@ class TestRolOfijurMigration(TestCase):
     """Test that R-OFIJUR role migration is idempotent."""
 
     def test_rol_ofijur_migration_on_disk(self):
-        """Test that 0012_create_ofijur_role migration is registered on disk."""
+        """Test that 0002_seed_ofijur_role migration is registered on disk."""
         # disk_migrations is keyed by (app_label, migration_name) tuples
         self.assertIn(
-            ("claims", "0012_create_ofijur_role"),
+            ("claims", "0002_seed_ofijur_role"),
             MigrationLoader(connection).disk_migrations,
-            "Migration 0012_create_ofijur_role must be registered",
+            "Migration 0002_seed_ofijur_role must be registered",
         )
 
     def test_rol_ofijur_exists_after_migration(self):
