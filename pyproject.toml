@@ -11,6 +11,7 @@ requires-python = ">=3.11"
 dependencies = [
     "Django>=5.2",
     "djangorestframework>=3.14",
+    "django-filter>=24.0",
     "djangorestframework-simplejwt[crypto]>=5.3",
     "psycopg2-binary>=2.9",
     "redis>=5.0",
