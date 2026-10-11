@@ -152,9 +152,31 @@ Pendiente:
       (`b5f0384`).
 - [x] Higiene de media definitiva: 0 PDFs trackeados (comprobante.pdf
       sin sufijo + test_doc.pdf removidos en `391bb5c`).
-- [ ] Restante post-MVP: CHG-207 pendings (generar_pdf_acto, portal
-      público, e2e), CHG-401, Fases 4-5 (gobernanza/transparencia),
-      apps reporting, runbooks/DRP (INF-011/012/015).
+- [x] CHG-207 pendings cerrados (PR #14, `fdf3976`): template
+      acto_pdf.html creado (el PDF crasheaba: template + fallback
+      inexistentes), bug ContentFile en guardar_pdf_acto, gating del
+      portal público verificado con tests (solo PUBLICADO, sin PII),
+      e2e del flujo de actos.
+- [x] Matriz de roles fina + unificación de códigos fantasma (PR #16,
+      `713319b`): seed R-COORD/R-TESOR vs código con R-COORDINADOR
+      (13×) / R-TESORERO — nunca matcheaban; unificados a
+      R-COORD/R-TESOR/R-SECEDU; R-REVISOR y R-COMITE sembrados;
+      matriz fina en condonation y academic + ownership en
+      submit_justification; 8 tests.
+- [x] Infraestructura de despliegue (PR #18, `4ef4672`): Dockerfile
+      producción con GTK libs (WeasyPrint no podía renderizar nada en
+      la imagen), conftest multi-DB (respeta DATABASE_URL).
+- [ ] **BLOQUEO DE DESPLIEGUE — requiere decisión del usuario**:
+      migraciones de PK bigint→uuid no portables a PostgreSQL
+      ('cannot cast type bigint to uuid'; era AUD-019/CHG-804). Job
+      Test de ci.yml sin trigger hasta resolver. Issue #17 con opciones:
+      (A) regenerar migraciones desde cero con UUID (rompe DBs dev),
+      (B) corrección in-place (columna nueva + conversión + drop),
+      (C) posponer.
+- [ ] Restante post-MVP: Fases 4-5 (gobernanza/sesiones, reporting/
+      transparencia — apps removidas por CHG-806), runbooks/DRP
+      (INF-011/012/015), unificar criterio de auditoría try/except vs
+      fail-closed.
 
 ## Riesgos
 
