@@ -144,9 +144,14 @@ Pendiente:
       mergeado (`9f0b2de`).
 - [x] Higiene de media: 10 `comprobante_*.pdf` de tests trackeados en
       el repo → removidos; `MEDIA_ROOT` de tests a tmp (`2c9a0db`).
-- [ ] CHG-401 seguimiento académico (CAP-011): modelos `AcademicRecord`/
-      `GradeEntry` pre-existentes (era CHG-802); gap esperado =
-      serializers/router/tests/admin, mismo patrón que CHG-304.
+- [x] CHG-401 seguimiento académico (CAP-011): serializers + router
+      cableado (`/api/academic-tracking/`), **bug real corregido**:
+      `CONSECUTIVE_LOW_SEMESTRES_TRIGGER` sin definir (NameError latente
+      bajo `# noqa: F821` — la suspensión automática del Art. 16 nunca
+      pudo ejecutarse), auditoría CAP-022, 20 tests. PR #12 mergeado
+      (`b5f0384`).
+- [x] Higiene de media definitiva: 0 PDFs trackeados (comprobante.pdf
+      sin sufijo + test_doc.pdf removidos en `391bb5c`).
 - [ ] Restante post-MVP: CHG-207 pendings (generar_pdf_acto, portal
       público, e2e), CHG-401, Fases 4-5 (gobernanza/transparencia),
       apps reporting, runbooks/DRP (INF-011/012/015).
