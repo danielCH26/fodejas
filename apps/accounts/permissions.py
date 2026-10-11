@@ -73,7 +73,7 @@ class HasAllRoles(permissions.BasePermission):
     Permission class that checks if user has all of the specified roles.
 
     Usage:
-        permission_classes = [HasAllRoles(['R-COMITE', 'R-TESORERO'])]
+        permission_classes = [HasAllRoles(['R-COMITE', 'R-TESOR'])]
     """
 
     def __init__(self, role_codes):

@@ -145,8 +145,8 @@ class TestDisbursementListView:
         assert resp.status_code == 200
 
     def test_coordinador_sees_list(self, four_doc_process):
-        """R-COORDINADOR (secretary) gets 200 on the authorization list."""
-        coord = _make_user(role_codes=["R-COORDINADOR"])
+        """R-SECEDU (secretary) gets 200 on the authorization list."""
+        coord = _make_user(role_codes=["R-SECEDU"])
         DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
             amount="500000.00",
@@ -157,7 +157,7 @@ class TestDisbursementListView:
         assert resp.status_code == 200
 
     def test_non_authorized_role_forbidden(self, four_doc_process):
-        """User without R-JUNTA/R-COORDINADOR gets 403."""
+        """User without R-JUNTA/R-SECEDU gets 403."""
         outsider = _make_user(role_codes=["R-ASPIRANTE"])
         DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
@@ -169,7 +169,7 @@ class TestDisbursementListView:
         assert resp.status_code == 403
 
     def test_staff_sees_list(self, four_doc_process):
-        """Staff user sees the list even without R-JUNTA/R-COORDINADOR."""
+        """Staff user sees the list even without R-JUNTA/R-SECEDU."""
         staff = _make_user(role_codes=["R-ASPIRANTE"])
         staff.is_staff = True
         staff.save(update_fields=["is_staff"])
@@ -244,7 +244,7 @@ class TestDisbursementDetailView:
     def test_detail_context_shows_partial_signature_state(self, four_doc_process):
         """When only president has signed, context shows missing secretary."""
         president = _make_user(role_codes=["R-JUNTA"])
-        secretary = _make_user(email="sec@example.test", role_codes=["R-COORDINADOR"])
+        secretary = _make_user(email="sec@example.test", role_codes=["R-SECEDU"])
         auth = DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
             amount="500000.00",
@@ -262,7 +262,7 @@ class TestDisbursementDetailView:
     def test_detail_context_shows_fully_authorized(self, four_doc_process):
         """When both signed, can_sign=False (already complete)."""
         president = _make_user(role_codes=["R-JUNTA"])
-        secretary = _make_user(email="sec2@example.test", role_codes=["R-COORDINADOR"])
+        secretary = _make_user(email="sec2@example.test", role_codes=["R-SECEDU"])
         auth = DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
             amount="500000.00",
@@ -301,7 +301,7 @@ class TestAuthorizeView:
     def test_president_signs_successfully(self, four_doc_process):
         """First signature (president) transitions auth to PENDIENTE with 1 sig."""
         president = _make_user(role_codes=["R-JUNTA"])
-        _make_user(email="sec3@example.test", role_codes=["R-COORDINADOR"])
+        _make_user(email="sec3@example.test", role_codes=["R-SECEDU"])
         auth = DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
             amount="500000.00",
@@ -322,7 +322,7 @@ class TestAuthorizeView:
     def test_second_signature_completes_authorization(self, four_doc_process):
         """Second signature (secretary) transitions auth to AUTORIZADO."""
         president = _make_user(role_codes=["R-JUNTA"])
-        secretary = _make_user(email="sec4@example.test", role_codes=["R-COORDINADOR"])
+        secretary = _make_user(email="sec4@example.test", role_codes=["R-SECEDU"])
         auth = DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
             amount="500000.00",
@@ -344,7 +344,7 @@ class TestAuthorizeView:
 
     def test_self_sign_rejected(self, four_doc_process):
         """Same user cannot be both president and secretary."""
-        junta = _make_user(role_codes=["R-JUNTA", "R-COORDINADOR"])
+        junta = _make_user(role_codes=["R-JUNTA", "R-SECEDU"])
         auth = DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,
             amount="500000.00",
@@ -384,7 +384,7 @@ class TestAuthorizeView:
         assert "already" in resp.content.decode().lower() or "ya" in resp.content.decode().lower()
 
     def test_non_authorized_role_forbidden(self, four_doc_process):
-        """User without R-JUNTA/R-COORDINADOR cannot access authorize view."""
+        """User without R-JUNTA/R-SECEDU cannot access authorize view."""
         outsider = _make_user(role_codes=["R-ASPIRANTE"])
         auth = DisbursementAuthorization.objects.create(
             legalization_process=four_doc_process,

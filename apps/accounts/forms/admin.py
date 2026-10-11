@@ -109,7 +109,14 @@ class RoleAdminForm(forms.ModelForm):
 
         if code and role_type:
             known_external_roles = ["R-ASPIRANTE", "R-BENEFICIARIO"]
-            known_internal_roles = ["R-ADMIN", "R-COORD", "R-CT", "R-REVISOR", "R-TESORERO"]
+            known_internal_roles = [
+                "R-ADMIN",
+                "R-COORD",
+                "R-CT",
+                "R-REVISOR",
+                "R-COMITE",
+                "R-TESOR",
+            ]
 
             if role_type == "interno" and code in known_external_roles:
                 self.add_error(

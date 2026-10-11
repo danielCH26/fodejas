@@ -257,7 +257,7 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
                         {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
                     ]
                 )
-            elif role["code"] == "R-TESORERO":
+            elif role["code"] == "R-TESOR":
                 nav_items.extend(
                     [
                         {
@@ -272,7 +272,7 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
                         },
                     ]
                 )
-            elif role["code"] == "R-COORDINADOR":
+            elif role["code"] == "R-COORD":
                 nav_items.extend(
                     [
                         {

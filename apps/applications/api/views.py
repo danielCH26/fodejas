@@ -50,7 +50,7 @@ class SolicitudViewSet(viewsets.ModelViewSet):
 
         # Check for internal roles
         if user.user_roles.filter(
-            role__code__in=["R-ADMIN", "R-REVISOR", "R-COMITE", "R-COORDINADOR"]
+            role__code__in=["R-ADMIN", "R-REVISOR", "R-COMITE", "R-COORD"]
         ).exists():
             return Solicitud.objects.all()
 

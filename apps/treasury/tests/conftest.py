@@ -79,11 +79,11 @@ def tesorero_role(db):
     from apps.accounts.models import Role
 
     role, _ = Role.objects.get_or_create(
-        code="R-TESORERO",
+        code="R-TESOR",
         defaults={
             "name": "Tesorero",
             "type": "interno",
-            "description": "Rol interno de Tesorería (sintético).",
+            "description": "Rol interno de Tesorería (sintético, seeded as R-TESOR).",
         },
     )
     return role

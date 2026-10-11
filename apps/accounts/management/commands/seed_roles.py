@@ -89,6 +89,20 @@ class Command(BaseCommand):
             "type": "externo",
             "description": "Acceso a datos abiertos y portal de transparencia (sin autenticación profunda).",
         },
+        {
+            "code": "R-REVISOR",
+            "name": "Revisor de Requisitos",
+            "type": "interno",
+            "description": "Verifica requisitos documentales y socioeconómicos de los aspirantes.\n"
+            "Responsable de la validación de requisitos documentales (Art. 7 Decreto 0372/2025).",
+        },
+        {
+            "code": "R-COMITE",
+            "name": "Miembro del Comité de Scoring",
+            "type": "interno",
+            "description": "Evalúa y puntúa las solicitudes verificadas.\n"
+            "Responsable del scoring técnico según criterios ponderados (Art. 8 Decreto 0372/2025).",
+        },
     ]
 
     def handle(self, *args, **options):

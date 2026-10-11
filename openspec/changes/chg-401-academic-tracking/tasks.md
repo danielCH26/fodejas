@@ -58,5 +58,9 @@
   expediente, transiciones de estado (solo si cambia) y graduación
   (`module="academic_tracking"`, sin try/except).
 - Reemplazado `tests.py` legacy (un test con `pass`) por paquete `tests/`.
+- **Matriz de roles fina (CAP-011) completada**: ViewSets de
+  academic_record y academic_alert ahora usan `_AcademicRolePermission`
+  con roles `['R-COORD', 'R-ADMIN']`. Ghost code `R-COORDINADOR`
+  reemplazado por `R-COORD`.
 - Pendiente: umbrales configurables por convocatoria (design lo sugiere,
   hoy constantes de módulo).

@@ -2,7 +2,6 @@
 
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
 from apps.academic_tracking.models import AcademicAlert, AcademicRecord
@@ -11,6 +10,27 @@ from apps.academic_tracking.serializers import (
     AcademicRecordSerializer,
 )
 from apps.academic_tracking.services import AcademicTrackingService
+from apps.accounts.permissions import HasAnyRole
+
+# CAP-011 fine-grained role matrix:
+# R-COORD: Coordinador Técnico FODEJAS — día a día del seguimiento
+# R-ADMIN: Administrador — acceso completo
+# Superusers bypass.
+
+
+class _AcademicManagementPermission(HasAnyRole):
+    """Permission for academic tracking management (R-COORD, R-ADMIN)."""
+
+    def __init__(self):
+        # DRF calls permission classes as constructors, so __init__ takes no args
+        super().__init__(role_codes=["R-COORD", "R-ADMIN"])
+
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+        if request.user.is_superuser:
+            return True
+        return request.user.user_roles.filter(role__code__in=self.role_codes).exists()
 
 
 class AcademicRecordViewSet(viewsets.ModelViewSet):
@@ -18,7 +38,7 @@ class AcademicRecordViewSet(viewsets.ModelViewSet):
 
     queryset = AcademicRecord.objects.all()
     serializer_class = AcademicRecordSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [_AcademicManagementPermission]
 
     @action(detail=True, methods=["post"])
     def add_grade(self, request, pk=None):
@@ -80,7 +100,7 @@ class AcademicAlertViewSet(viewsets.ModelViewSet):
 
     queryset = AcademicAlert.objects.all()
     serializer_class = AcademicAlertSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [_AcademicManagementPermission]
 
     @action(detail=True, methods=["post"])
     def resolve(self, request, pk=None):

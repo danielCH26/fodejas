@@ -34,15 +34,15 @@ class ConvocatoryViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         elif self.action in ["create"]:
             # Only admins and coordinators can create
-            return [IsAdminOrHasRole("R-ADMIN"), IsAdminOrHasRole("R-COORDINADOR")]
+            return [IsAdminOrHasRole("R-ADMIN"), IsAdminOrHasRole("R-COORD")]
         elif self.action in ["update", "partial_update", "destroy"]:
             # Only admins and coordinators can modify
-            return [IsAdminOrHasRole("R-ADMIN"), IsAdminOrHasRole("R-COORDINADOR")]
+            return [IsAdminOrHasRole("R-ADMIN"), IsAdminOrHasRole("R-COORD")]
         elif self.action in ["transicionar"]:
             # Only admins, coordinators and committee can transition
             return [
                 IsAdminOrHasRole("R-ADMIN"),
-                IsAdminOrHasRole("R-COORDINADOR"),
+                IsAdminOrHasRole("R-COORD"),
                 IsAdminOrHasRole("R-COMITE"),
             ]
         return [IsAuthenticated()]

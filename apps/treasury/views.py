@@ -7,7 +7,7 @@ the payment. No bank integration.
 
 CHG-303 Batch B: disbursement authorization list, detail, and
 HTMX authorize-action views for the doble-firma workflow
-(president R-JUNTA + secretary R-COORDINADOR).
+(president R-JUNTA + secretary R-SECEDU per CHG-303 design).
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ class TreasuryReconciliationView(LoginRequiredMixin, View):
     ``payment_proof``, transitions to ``PAGADO`` via
     ``TreasuryService.confirm_payment``).
 
-    Access is restricted to users with the ``R-TESORERO`` role.
+    Access is restricted to users with the ``R-TESOR`` role.
     Superusers / staff bypass.
     """
 
@@ -47,7 +47,7 @@ class TreasuryReconciliationView(LoginRequiredMixin, View):
             return False
         if request.user.is_superuser or request.user.is_staff:
             return True
-        return request.user.user_roles.filter(role__code="R-TESORERO").exists()
+        return request.user.user_roles.filter(role__code="R-TESOR").exists()
 
     def dispatch(self, request, *args, **kwargs):
         if not self._user_can_reconcile(request):
@@ -112,14 +112,15 @@ class TreasuryReconciliationView(LoginRequiredMixin, View):
 # ---------------------------------------------------------------------------
 
 # Roles that can view and sign disbursement authorizations.
-AUTHORIZATION_ROLES = ("R-JUNTA", "R-COORDINADOR")
-SIGNABLE_ROLES = ("R-JUNTA", "R-COORDINADOR")
+# CHG-303 design: doble-firma = Presidente JA (R-JUNTA) + Secretario de Educación (R-SECEDU).
+AUTHORIZATION_ROLES = ("R-JUNTA", "R-SECEDU")
+SIGNABLE_ROLES = ("R-JUNTA", "R-SECEDU")
 
 
 class DisbursementAuthorizationListView(LoginRequiredMixin, View):
     """Lista de autorizaciones de desembolso pendientes/autorizadas.
 
-    Visible para R-JUNTA y R-COORDINADOR (doble firma).
+    Visible para R-JUNTA y R-SECEDU (doble firma: Presidente JA + Secretario Educación).
     Muestra solo PENDIENTE y AUTORIZADO — las demás etapas
     (ORDENADO, RECIBIDO, PAGADO) se gestionan en conciliación.
     """
@@ -203,7 +204,7 @@ class DisbursementAuthorizationDetailView(LoginRequiredMixin, View):
             if "R-JUNTA" in signing_roles and not auth.authorized_by_president:
                 can_sign = True
                 missing_role = "president"
-            elif "R-COORDINADOR" in signing_roles and not auth.authorized_by_secretary:
+            elif "R-SECEDU" in signing_roles and not auth.authorized_by_secretary:
                 can_sign = True
                 missing_role = "secretary"
 
@@ -233,7 +234,7 @@ class AuthorizeDisbursementHTMXView(LoginRequiredMixin, View):
            surfaces validation errors inline (self-signing,
            duplicate-role, wrong status).
 
-    Only R-JUNTA (president) and R-COORDINADOR (secretary) can sign.
+    Only R-JUNTA (president) and R-SECEDU (secretary) can sign.
     The two distinct signatures complete the authorization.
     """
 
@@ -262,7 +263,7 @@ class AuthorizeDisbursementHTMXView(LoginRequiredMixin, View):
         can_sign_as = []
         if "R-JUNTA" in user_role_codes and not auth.authorized_by_president:
             can_sign_as.append("president")
-        if "R-COORDINADOR" in user_role_codes and not auth.authorized_by_secretary:
+        if "R-SECEDU" in user_role_codes and not auth.authorized_by_secretary:
             can_sign_as.append("secretary")
 
         return render(

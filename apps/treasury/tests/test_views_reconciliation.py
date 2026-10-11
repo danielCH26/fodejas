@@ -29,7 +29,7 @@ def authorized_user(user_factory):
 
 @pytest.mark.django_db(transaction=True)
 class TestTreasuryReconciliationView:
-    """CAP-010: R-TESORERO can list and confirm ordered payments."""
+    """CAP-010: R-TESOR can list and confirm ordered payments."""
 
     def test_get_lists_ordenado_rows(self, auth_factory, tesorero_user_with_role):
         auth = auth_factory(
