@@ -187,6 +187,13 @@ Pendiente:
       `/api/sessions/` con matriz de roles y ownership de voto,
       36 tests. Auditoría CAP-022 fail-closed.
 - [ ] Restante post-MVP: Fases 4-5 (reporting/transparencia —
+- [x] CHG-502 conflictos de interés (CAP-018) — PR #24 mergeado
+      (`51de9b3`): declaración formal por punto (Ley 1952/2019),
+      impedimento resuelto por mayoría mitad+1 de presentes habilitados,
+      voto excluido cuando se aprueba, API self-service, auditoría,
+      15 tests. Bug de integración corregido: el chequeo COI estaba
+      anidado bajo can_vote() y no disparaba para miembros elegibles.
+- [ ] Restante post-MVP: Fases 4-5 (reporting/
 - [ ] Restante post-MVP: Fases 4-5 (gobernanza/sesiones, reporting/
       transparencia — apps removidas por CHG-806), runbooks/DRP
       (INF-011/012/015), unificar criterio de auditoría try/except vs
