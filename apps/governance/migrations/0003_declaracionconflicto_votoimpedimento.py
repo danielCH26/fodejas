@@ -8,46 +8,112 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('governance', '0002_add_sessions'),
+        ("governance", "0002_add_sessions"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DeclaracionConflicto',
+            name="DeclaracionConflicto",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('texto', models.TextField(verbose_name='declaración')),
-                ('estado', models.CharField(choices=[('PENDIENTE', 'Impedimento pendiente de resolución'), ('APROBADA', 'Impedimento aprobado (voto excluido)'), ('RECHAZADA', 'Impedimento rechazado (puede votar)')], default='PENDIENTE', max_length=12, verbose_name='estado del impedimento')),
-                ('revisado_at', models.DateTimeField(blank=True, null=True, verbose_name='fecha de resolución')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('miembro_sesion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='declaraciones_conflicto', to='governance.miembrosesion', verbose_name='miembro declarante')),
-                ('punto', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='declaraciones_conflicto', to='governance.ordendeldiapunto', verbose_name='punto del orden del día')),
-                ('revisado_por', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='impedimentos_resueltos', to=settings.AUTH_USER_MODEL, verbose_name='resuelto por')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+                    ),
+                ),
+                ("texto", models.TextField(verbose_name="declaración")),
+                (
+                    "estado",
+                    models.CharField(
+                        choices=[
+                            ("PENDIENTE", "Impedimento pendiente de resolución"),
+                            ("APROBADA", "Impedimento aprobado (voto excluido)"),
+                            ("RECHAZADA", "Impedimento rechazado (puede votar)"),
+                        ],
+                        default="PENDIENTE",
+                        max_length=12,
+                        verbose_name="estado del impedimento",
+                    ),
+                ),
+                (
+                    "revisado_at",
+                    models.DateTimeField(blank=True, null=True, verbose_name="fecha de resolución"),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "miembro_sesion",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="declaraciones_conflicto",
+                        to="governance.miembrosesion",
+                        verbose_name="miembro declarante",
+                    ),
+                ),
+                (
+                    "punto",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="declaraciones_conflicto",
+                        to="governance.ordendeldiapunto",
+                        verbose_name="punto del orden del día",
+                    ),
+                ),
+                (
+                    "revisado_por",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="impedimentos_resueltos",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="resuelto por",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'declaración de conflicto de interés',
-                'verbose_name_plural': 'declaraciones de conflicto de interés',
-                'ordering': ['-created_at'],
-                'unique_together': {('miembro_sesion', 'punto')},
+                "verbose_name": "declaración de conflicto de interés",
+                "verbose_name_plural": "declaraciones de conflicto de interés",
+                "ordering": ["-created_at"],
+                "unique_together": {("miembro_sesion", "punto")},
             },
         ),
         migrations.CreateModel(
-            name='VotoImpedimento',
+            name="VotoImpedimento",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('a_favor', models.BooleanField(verbose_name='a favor del impedimento')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('declaracion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='votos_impedimento', to='governance.declaracionconflicto', verbose_name='declaración de conflicto')),
-                ('miembro_sesion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='votos_impedimento', to='governance.miembrosesion', verbose_name='miembro votante')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("a_favor", models.BooleanField(verbose_name="a favor del impedimento")),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "declaracion",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="votos_impedimento",
+                        to="governance.declaracionconflicto",
+                        verbose_name="declaración de conflicto",
+                    ),
+                ),
+                (
+                    "miembro_sesion",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="votos_impedimento",
+                        to="governance.miembrosesion",
+                        verbose_name="miembro votante",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'voto de impedimento',
-                'verbose_name_plural': 'votos de impedimento',
-                'ordering': ['created_at'],
-                'unique_together': {('declaracion', 'miembro_sesion')},
+                "verbose_name": "voto de impedimento",
+                "verbose_name_plural": "votos de impedimento",
+                "ordering": ["created_at"],
+                "unique_together": {("declaracion", "miembro_sesion")},
             },
         ),
     ]

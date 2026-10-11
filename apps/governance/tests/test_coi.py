@@ -51,10 +51,7 @@ def _setup(n=1):
     exento = _make_user(10 * n + 4)
     SessionService.registrar_asistencia(
         sesion.id,
-        [
-            {"user_id": u.id, "rol": "Miembro", "asistencia": "PRESENTE"}
-            for u in users
-        ]
+        [{"user_id": u.id, "rol": "Miembro", "asistencia": "PRESENTE"} for u in users]
         + [
             {
                 "user_id": exento.id,
@@ -65,9 +62,7 @@ def _setup(n=1):
         ],
         actor=None,
     )
-    punto = SessionService.agregar_punto(
-        sesion.id, 1, "Punto con conflicto sintético", actor=None
-    )
+    punto = SessionService.agregar_punto(sesion.id, 1, "Punto con conflicto sintético", actor=None)
     SessionService.abrir_sesion(sesion.id, actor=None)
     miembros = [MiembroSesion.objects.get(sesion=sesion, user=u) for u in users]
     miembro_exento = MiembroSesion.objects.get(sesion=sesion, user=exento)
@@ -99,18 +94,14 @@ class TestDeclararConflicto:
     def test_requiere_texto(self, db):
         sesion, punto, miembros, _ = _setup()
         with pytest.raises(ValueError, match="texto"):
-            SessionService.declarar_conflicto(
-                sesion.id, punto.id, miembros[0].id, "  "
-            )
+            SessionService.declarar_conflicto(sesion.id, punto.id, miembros[0].id, "  ")
 
     def test_punto_cerrado_no_admite_declaraciones(self, db):
         sesion, punto, miembros, _ = _setup()
         punto.estado = OrdenDelDiaPunto.Estado.APROBADO
         punto.save()
         with pytest.raises(ValueError, match="cerrado"):
-            SessionService.declarar_conflicto(
-                sesion.id, punto.id, miembros[0].id, "Tarde"
-            )
+            SessionService.declarar_conflicto(sesion.id, punto.id, miembros[0].id, "Tarde")
 
 
 @pytest.mark.django_db
@@ -121,9 +112,7 @@ class TestVotarImpedimento:
             sesion.id, punto.id, miembros[0].id, "Declaración sintética"
         )
         with pytest.raises(ValueError, match="propio impedimento"):
-            SessionService.votar_impedimento(
-                declaracion.id, miembros[0].id, True
-            )
+            SessionService.votar_impedimento(declaracion.id, miembros[0].id, True)
 
     def test_impedimento_aprobado_por_mayoria(self, db):
         """3 habilitados (excl. declarante): mitad+1 = 2 votos a favor."""
@@ -185,9 +174,7 @@ class TestVotarImpedimento:
             sesion.id, punto.id, miembros[0].id, "Declaración sintética"
         )
         with pytest.raises(ValueError, match="cargo"):
-            SessionService.votar_impedimento(
-                declaracion.id, miembro_exento.id, True
-            )
+            SessionService.votar_impedimento(declaracion.id, miembro_exento.id, True)
 
     def test_auditoria_de_impedimento(self, db):
         sesion, punto, miembros, _ = _setup()
