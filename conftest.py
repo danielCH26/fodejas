@@ -43,6 +43,7 @@ def django_db_modify_db_settings(
     # Keep FileField uploads out of the repository: route media to a
     # session temp dir (upload-path tests would otherwise litter the
     # working tree, e.g. condonation/payments/comprobante_*.pdf).
+    import os
     import tempfile
 
     from django.conf import settings
@@ -52,6 +53,17 @@ def django_db_modify_db_settings(
     # Speed: tests create many users via fixtures; default PBKDF2
     # (720k iterations) dominated runtime. MD5 is test-only.
     settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
+    if os.environ.get("DATABASE_URL"):
+        # CI (or any explicit environment) provides a real database —
+        # honor it so the suite exercises PostgreSQL exactly like
+        # production (and the Postgres-only concurrency tests run).
+        import environ
+
+        db_config = environ.Env.db_url_config(os.environ["DATABASE_URL"])
+        db_config["CONN_MAX_AGE"] = 0
+        settings.DATABASES["default"] = db_config
+        return
 
     # Use SQLite URI with shared cache so multiple connections
     # (setup connection, test connection) share the same DB.
