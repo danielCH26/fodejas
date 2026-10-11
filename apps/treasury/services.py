@@ -72,21 +72,18 @@ class TreasuryService:
             status=DisbursementAuthorization.Status.PENDIENTE,
         )
 
-        try:
-            log_audit_event(
-                actor=None,
-                action="AUDIT_DISBURSEMENT_CREATE",
-                entity="DisbursementAuthorization",
-                entity_id=authorization.id,
-                changes={
-                    "amount": str(amount),
-                    "legalization_process_id": str(legalization_process.id),
-                    "status": authorization.status,
-                },
-                module="treasury",
-            )
-        except Exception:  # noqa: BLE001
-            pass  # Do not fail the transaction on audit failure.
+        log_audit_event(
+            actor=None,
+            action="AUDIT_DISBURSEMENT_CREATE",
+            entity="DisbursementAuthorization",
+            entity_id=authorization.id,
+            changes={
+                "amount": str(amount),
+                "legalization_process_id": str(legalization_process.id),
+                "status": authorization.status,
+            },
+            module="treasury",
+        )
 
         return authorization
 
@@ -158,21 +155,18 @@ class TreasuryService:
         auth.save()
 
         # Audit per signature (CHG-303 / design.md §Audit 5.2).
-        try:
-            log_audit_event(
-                actor=user,
-                action="AUDIT_DISBURSEMENT_AUTHORIZE",
-                entity="DisbursementAuthorization",
-                entity_id=auth.id,
-                changes={
-                    "role": role,
-                    "status_after": auth.status,
-                    "is_fully_authorized": auth.is_fully_authorized,
-                },
-                module="treasury",
-            )
-        except Exception:  # noqa: BLE001
-            pass  # Do not fail the transaction on audit failure.
+        log_audit_event(
+            actor=user,
+            action="AUDIT_DISBURSEMENT_AUTHORIZE",
+            entity="DisbursementAuthorization",
+            entity_id=auth.id,
+            changes={
+                "role": role,
+                "status_after": auth.status,
+                "is_fully_authorized": auth.is_fully_authorized,
+            },
+            module="treasury",
+        )
 
         return auth
 
@@ -245,21 +239,18 @@ class TreasuryService:
         auth.status = DisbursementAuthorization.Status.ORDENADO
         auth.save()
 
-        try:
-            log_audit_event(
-                actor=actor,
-                action="AUDIT_DISBURSEMENT_SENT_TO_TREASURY",
-                entity="DisbursementAuthorization",
-                entity_id=auth.id,
-                changes={
-                    "order_number": order_number,
-                    "attachments": [a["document_type"] for a in attachments],
-                    "attachment_count": len(attachments),
-                },
-                module="treasury",
-            )
-        except Exception:  # noqa: BLE001
-            pass
+        log_audit_event(
+            actor=actor,
+            action="AUDIT_DISBURSEMENT_SENT_TO_TREASURY",
+            entity="DisbursementAuthorization",
+            entity_id=auth.id,
+            changes={
+                "order_number": order_number,
+                "attachments": [a["document_type"] for a in attachments],
+                "attachment_count": len(attachments),
+            },
+            module="treasury",
+        )
 
         return auth
 
@@ -291,20 +282,17 @@ class TreasuryService:
         auth.status = DisbursementAuthorization.Status.RECIBIDO
         auth.save()
 
-        try:
-            log_audit_event(
-                actor=None,
-                action="AUDIT_DISBURSEMENT_RECEIVED",
-                entity="DisbursementAuthorization",
-                entity_id=auth.id,
-                changes={
-                    "previous_status": DisbursementAuthorization.Status.ORDENADO,
-                    "treasury_order_number": auth.treasury_order_number,
-                },
-                module="treasury",
-            )
-        except Exception:  # noqa: BLE001
-            pass
+        log_audit_event(
+            actor=None,
+            action="AUDIT_DISBURSEMENT_RECEIVED",
+            entity="DisbursementAuthorization",
+            entity_id=auth.id,
+            changes={
+                "previous_status": DisbursementAuthorization.Status.ORDENADO,
+                "treasury_order_number": auth.treasury_order_number,
+            },
+            module="treasury",
+        )
 
         return auth
 
@@ -349,21 +337,18 @@ class TreasuryService:
             auth.payment_proof = payment_proof
         auth.save()
 
-        try:
-            log_audit_event(
-                actor=actor,
-                action="AUDIT_DISBURSEMENT_PAID",
-                entity="DisbursementAuthorization",
-                entity_id=auth.id,
-                changes={
-                    "amount": str(auth.amount),
-                    "has_payment_proof": auth.payment_proof is not None,
-                    "treasury_order_number": auth.treasury_order_number,
-                },
-                module="treasury",
-            )
-        except Exception:  # noqa: BLE001:
-            pass
+        log_audit_event(
+            actor=actor,
+            action="AUDIT_DISBURSEMENT_PAID",
+            entity="DisbursementAuthorization",
+            entity_id=auth.id,
+            changes={
+                "amount": str(auth.amount),
+                "has_payment_proof": auth.payment_proof is not None,
+                "treasury_order_number": auth.treasury_order_number,
+            },
+            module="treasury",
+        )
 
         return auth
 
@@ -399,20 +384,17 @@ class TreasuryService:
         auth.notes = f"Rechazado: {reason}"
         auth.save()
 
-        try:
-            log_audit_event(
-                actor=actor,
-                action="AUDIT_DISBURSEMENT_REJECT",
-                entity="DisbursementAuthorization",
-                entity_id=auth.id,
-                changes={
-                    "reason": reason,
-                    "previous_status": previous_status,
-                    "amount": str(auth.amount),
-                },
-                module="treasury",
-            )
-        except Exception:  # noqa: BLE001:
-            pass
+        log_audit_event(
+            actor=actor,
+            action="AUDIT_DISBURSEMENT_REJECT",
+            entity="DisbursementAuthorization",
+            entity_id=auth.id,
+            changes={
+                "reason": reason,
+                "previous_status": previous_status,
+                "amount": str(auth.amount),
+            },
+            module="treasury",
+        )
 
         return auth

@@ -5,7 +5,7 @@ import json
 import logging
 import uuid
 
-from django.db import transaction
+from django.db import connection, transaction
 
 from .models import AuditEvent
 
@@ -63,17 +63,35 @@ def calculate_hash(timestamp, actor_id, action, entity, entity_id, changes, prev
 
 
 def _lock_chain_head():
-    """Acquire SELECT ... FOR UPDATE on the latest audit event.
+    """Acquire the chain write lock and read the latest audit event.
 
-    Returns the current_hash of the chain head, or the initial
-    ``"0" * 64`` if the chain is empty. Must be called inside an
-    active transaction. Without the lock, two concurrent writers
-    can both read the same ``previous_hash`` and produce a fork in
-    the chain (AUD-003).
+    Two mechanisms compose here:
+
+    1. PostgreSQL advisory transaction lock (``pg_advisory_xact_lock``):
+       serializes ALL chain writers at the database level for the
+       remainder of the transaction. This closes the fork window that
+       ``SELECT FOR UPDATE`` alone cannot — a plain row lock on the
+       current head does not stop another transaction from inserting
+       a NEW head row concurrently (PostgreSQL has no next-key
+       locking), so two writers could both read the same
+       ``previous_hash`` and fork the chain (AUD-003, found live by
+       ``test_concurrency`` against real PostgreSQL).
+
+    2. ``SELECT FOR UPDATE`` on the latest event: belt-and-braces for
+       engines without advisory locks (SQLite serializes writers
+       globally, so the test suite behaves identically).
+
+    Must be called inside an active transaction. The advisory lock
+    is released automatically at commit/rollback.
 
     Returns:
         str: hex SHA-256 of the previous record (or zeros for empty).
     """
+    if connection.vendor == "postgresql":
+        with connection.cursor() as cursor:
+            # Arbitrary constant lock namespace for the audit chain
+            # (253977205 = mnemonic for FODEJAS).
+            cursor.execute("SELECT pg_advisory_xact_lock(%s)", [253977205])
     head = AuditEvent.objects.select_for_update().order_by("-timestamp").first()
     if head is None:
         return "0" * 64

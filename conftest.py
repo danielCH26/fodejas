@@ -62,7 +62,11 @@ def django_db_modify_db_settings(
 
         db_config = environ.Env.db_url_config(os.environ["DATABASE_URL"])
         db_config["CONN_MAX_AGE"] = 0
-        settings.DATABASES["default"] = db_config
+        db_config["ATOMIC_REQUESTS"] = False
+        # Preserve Django-managed keys (TIME_ZONE etc.) from the original
+        # settings dict — a full replacement breaks thread connections
+        # (KeyError: TIME_ZONE in make_view_atomic / new-connection setup).
+        settings.DATABASES["default"].update(db_config)
         return
 
     # Use SQLite URI with shared cache so multiple connections
