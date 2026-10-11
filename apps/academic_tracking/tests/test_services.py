@@ -87,13 +87,8 @@ class TestAverages:
 
     def test_status_thresholds_per_design(self, db):
         assert get_status_from_average(Decimal("3.5")) == AcademicRecord.Status.ACTIVO
-        assert (
-            get_status_from_average(Decimal("3.2"))
-            == AcademicRecord.Status.ACADEMICO_BAJO
-        )
-        assert (
-            get_status_from_average(Decimal("2.9")) == AcademicRecord.Status.SUSPENDIDO
-        )
+        assert get_status_from_average(Decimal("3.2")) == AcademicRecord.Status.ACADEMICO_BAJO
+        assert get_status_from_average(Decimal("2.9")) == AcademicRecord.Status.SUSPENDIDO
 
 
 @pytest.mark.django_db
@@ -160,9 +155,7 @@ class TestAcademicTrackingService:
         import uuid
 
         with pytest.raises(ValueError, match="not found"):
-            AcademicTrackingService.add_grade(
-                uuid.uuid4(), 1, "X", 3, Decimal("4.0")
-            )
+            AcademicTrackingService.add_grade(uuid.uuid4(), 1, "X", 3, Decimal("4.0"))
 
 
 @pytest.mark.django_db

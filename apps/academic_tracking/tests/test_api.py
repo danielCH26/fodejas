@@ -67,9 +67,7 @@ class TestAcademicRecordAPI:
         assert APIClient().get("/api/academic-tracking/records/").status_code == 401
 
     def test_retrieve_includes_nested_grades_and_alerts(self, staff_client, record):
-        AcademicTrackingService.add_grade(
-            record.id, 1, "Materia A", 3, 4.5
-        )
+        AcademicTrackingService.add_grade(record.id, 1, "Materia A", 3, 4.5)
         response = staff_client.get(f"/api/academic-tracking/records/{record.id}/")
         assert response.status_code == 200
         assert response.data["cumulative_average"] == "4.50"
@@ -109,8 +107,6 @@ class TestAcademicAlertAPI:
             plain_client.post(f"/api/academic-tracking/alerts/{alert.id}/resolve/").status_code
             == 403
         )
-        response = staff_client.post(
-            f"/api/academic-tracking/alerts/{alert.id}/resolve/"
-        )
+        response = staff_client.post(f"/api/academic-tracking/alerts/{alert.id}/resolve/")
         assert response.status_code == 200
         assert response.data["status"] == "RESUELTA"
