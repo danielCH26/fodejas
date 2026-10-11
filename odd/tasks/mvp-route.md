@@ -131,6 +131,26 @@ Pendiente:
       revisión nativa por slice (RDD ON — global). Detalles de
       corte en este archivo, Etapas 1-3.
 
+## Post-MVP (aprobado por el usuario: "mergea y continua")
+
+- **MVP ENTREGADO**: PR #8 mergeado (`bc86058`), master sincronizado,
+  CI verde (pre-commit pineado: el CI destapó un bug real — el HTML
+  `AuditEventDetailView` pisaba al DRF y la ruta API `events/<id>`
+  servía sin `IsAuditViewer`; renombrado).
+- [x] CHG-304 terminación/sanciones (CAP-015/016): serializers +
+      router cableado (`/api/condonation/` — estaba inalcanzable),
+      auditoría CAP-022 en todos los servicios (sin try/except), 32
+      tests (IPC verificado a mano, ventana 30 días Art. 17). PR #10
+      mergeado (`9f0b2de`).
+- [x] Higiene de media: 10 `comprobante_*.pdf` de tests trackeados en
+      el repo → removidos; `MEDIA_ROOT` de tests a tmp (`2c9a0db`).
+- [ ] CHG-401 seguimiento académico (CAP-011): modelos `AcademicRecord`/
+      `GradeEntry` pre-existentes (era CHG-802); gap esperado =
+      serializers/router/tests/admin, mismo patrón que CHG-304.
+- [ ] Restante post-MVP: CHG-207 pendings (generar_pdf_acto, portal
+      público, e2e), CHG-401, Fases 4-5 (gobernanza/transparencia),
+      apps reporting, runbooks/DRP (INF-011/012/015).
+
 ## Riesgos
 
 - Suite con módulo roto desde siempre: los tests de migraciones de
