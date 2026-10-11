@@ -31,10 +31,12 @@ from django.utils import timezone
 from apps.audit.services import log_audit_event
 from apps.governance.sessions.models import (
     ActaSesion,
+    DeclaracionConflicto,
     MiembroSesion,
     OrdenDelDiaPunto,
     Sesion,
     Voto,
+    VotoImpedimento,
 )
 
 # ---------------------------------------------------------------------------
@@ -373,6 +375,32 @@ class SessionService:
     # -------------------------------------------------------------------------
 
     @staticmethod
+    def _voting_blockers(miembro, punto) -> list[str]:
+        """Reasons why ``miembro`` cannot vote on ``punto`` (CHG-501/502)."""
+        reasons = []
+        if not miembro.can_vote():
+            reasons.append("el miembro no puede votar")
+        if miembro.asistencia == MiembroSesion.Asistencia.AUSENTE:
+            reasons.append("ausente")
+        if miembro.es_miembro_cargo:
+            reasons.append("miembro por cargo (no vota)")
+        if miembro.conflicto_declarado:
+            reasons.append("conflicto de interés declarado")
+        # CHG-502: formal COI declarations on THIS punto also block.
+        if DeclaracionConflicto.objects.filter(
+            miembro_sesion=miembro,
+            punto=punto,
+            estado__in=[
+                DeclaracionConflicto.Estado.PENDIENTE,
+                DeclaracionConflicto.Estado.APROBADA,
+            ],
+        ).exists():
+            reasons.append(
+                "impedimento de conflicto de interés en trámite o aprobado para este punto"
+            )
+        return reasons
+
+    @staticmethod
     @transaction.atomic
     def registrar_voto(
         sesion_id,
@@ -426,15 +454,9 @@ class SessionService:
                 f"MiembroSesion {miembro_sesion_id} no encontrado en la sesión."
             ) from None
 
-        if not miembro.can_vote():
-            reasons = []
-            if miembro.asistencia == MiembroSesion.Asistencia.AUSENTE:
-                reasons.append("ausente")
-            if miembro.es_miembro_cargo:
-                reasons.append("miembro por cargo (no vota)")
-            if miembro.conflicto_declarado:
-                reasons.append("conflicto de interés declarado")
-            raise ValueError(f"El miembro {miembro.user} no puede votar: {', '.join(reasons)}.")
+        blockers = SessionService._voting_blockers(miembro, punto)
+        if blockers:
+            raise ValueError(f"El miembro {miembro.user} no puede votar: {', '.join(blockers)}.")
 
         if valor not in (Voto.Valor.A_FAVOR, Voto.Valor.EN_CONTRA, Voto.Valor.ABSTENCION):
             raise ValueError(f"Valor de voto inválido: {valor}")
@@ -794,3 +816,132 @@ th {{ background: #f0f0f0; }}
         )
 
         return acta
+
+    # ------------------------------------------------------------------
+    # CHG-502 — Conflictos de interés (CAP-018, Ley 1952/2019)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def declarar_conflicto(
+        sesion_id, punto_id, miembro_sesion_id: int, texto: str, actor=None
+    ) -> DeclaracionConflicto:
+        """Declare a conflict of interest on a punto (self-declaration).
+
+        Rules:
+          - Only the member themselves declares (ownership enforced by
+            the caller passing their own miembro_sesion_id; the API
+            resolves it from request.user).
+          - The punto must be open (PENDIENTE) and the session in
+            EN_SESION.
+          - The declaration starts PENDIENTE, which blocks the
+            member's vote on that punto until the impediment resolves.
+        """
+        punto = OrdenDelDiaPunto.objects.select_for_update().get(id=punto_id)
+        if str(punto.sesion_id) != str(sesion_id):
+            raise ValueError("El punto no pertenece a esta sesión.")
+        if punto.estado != OrdenDelDiaPunto.Estado.PENDIENTE:
+            raise ValueError("El punto ya está cerrado; no se pueden declarar conflictos.")
+        miembro = MiembroSesion.objects.get(id=miembro_sesion_id, sesion_id=sesion_id)
+        if not texto or not texto.strip():
+            raise ValueError("La declaración requiere texto.")
+
+        declaracion = DeclaracionConflicto.objects.create(
+            miembro_sesion=miembro,
+            punto=punto,
+            texto=texto,
+            estado=DeclaracionConflicto.Estado.PENDIENTE,
+        )
+        log_audit_event(
+            actor=actor,
+            action="SESSION_CONFLICTO_DECLARAR",
+            entity="DeclaracionConflicto",
+            entity_id=str(declaracion.id),
+            changes={
+                "punto_id": str(punto.id),
+                "miembro": str(miembro.user),
+                "estado": declaracion.estado,
+            },
+            module="governance",
+        )
+        return declaracion
+
+    @staticmethod
+    def votar_impedimento(
+        declaracion_id, miembro_sesion_id: int, a_favor: bool, actor=None
+    ) -> DeclaracionConflicto:
+        """Cast an impediment vote and resolve by simple majority.
+
+        Voters: the OTHER present voting members (the declarant cannot
+        vote their own impediment). Resolution threshold: mitad + 1 of
+        the present voting members excluding the declarant.
+        """
+        declaracion = DeclaracionConflicto.objects.select_for_update().get(id=declaracion_id)
+        if declaracion.estado != DeclaracionConflicto.Estado.PENDIENTE:
+            raise ValueError(f"El impedimento ya fue resuelto ({declaracion.estado}).")
+
+        punto = declaracion.punto
+        sesion = punto.sesion
+        votante = MiembroSesion.objects.get(id=miembro_sesion_id, sesion=sesion)
+
+        if votante.id == declaracion.miembro_sesion_id:
+            raise ValueError("El declarante no puede votar su propio impedimento.")
+        if votante.es_miembro_cargo:
+            raise ValueError("Los miembros por cargo no votan impedimentos.")
+        if votante.asistencia == MiembroSesion.Asistencia.AUSENTE:
+            raise ValueError("Solo los miembros presentes votan impedimentos.")
+        if votante.conflicto_declarado:
+            raise ValueError("El votante tiene conflicto de interés declarado.")
+
+        VotoImpedimento.objects.update_or_create(
+            declaracion=declaracion,
+            miembro_sesion=votante,
+            defaults={"a_favor": a_favor},
+        )
+
+        # Present voting members excluding the declarant
+        habilitados = (
+            sesion.miembros.filter(
+                es_miembro_cargo=False,
+                conflicto_declarado=False,
+            )
+            .exclude(asistencia=MiembroSesion.Asistencia.AUSENTE)
+            .exclude(id=declaracion.miembro_sesion_id)
+            .count()
+        )
+        mayoria = habilitados // 2 + 1
+
+        a_favor_count = declaracion.votos_impedimento.filter(a_favor=True).count()
+        en_contra_count = declaracion.votos_impedimento.filter(a_favor=False).count()
+
+        if a_favor_count >= mayoria:
+            declaracion.estado = DeclaracionConflicto.Estado.APROBADA
+        elif en_contra_count >= mayoria:
+            declaracion.estado = DeclaracionConflicto.Estado.RECHAZADA
+        else:
+            declaracion.save(update_fields=[])
+            log_audit_event(
+                actor=actor,
+                action="SESSION_IMPEDIMENTO_VOTO",
+                entity="DeclaracionConflicto",
+                entity_id=str(declaracion.id),
+                changes={"a_favor": a_favor, "resuelto": False},
+                module="governance",
+            )
+            return declaracion
+
+        declaracion.revisado_at = timezone.now()
+        declaracion.save(update_fields=["estado", "revisado_at"])
+        log_audit_event(
+            actor=actor,
+            action="SESSION_IMPEDIMENTO_RESUELTO",
+            entity="DeclaracionConflicto",
+            entity_id=str(declaracion.id),
+            changes={
+                "estado": declaracion.estado,
+                "a_favor": a_favor_count,
+                "en_contra": en_contra_count,
+                "habilitados": habilitados,
+            },
+            module="governance",
+        )
+        return declaracion

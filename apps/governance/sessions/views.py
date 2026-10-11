@@ -47,7 +47,7 @@ class SesionViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:
             return [IsAuthenticated(), _acta_read_perm()]
-        if self.action in ["votar"]:
+        if self.action in ["votar", "declarar_conflicto", "votar_impedimento"]:
             return [IsAuthenticated()]
         return [IsAuthenticated(), _management_perm()]
 
@@ -154,6 +154,62 @@ class SesionViewSet(viewsets.ModelViewSet):
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"status": sesion.estado})
+
+    @action(detail=True, methods=["post"])
+    def declarar_conflicto(self, request, pk=None):
+        """Declare a conflict of interest on a punto (self-service)."""
+        punto_id = request.data.get("punto_id")
+        texto = request.data.get("texto", "")
+        if not punto_id or not texto.strip():
+            return Response(
+                {"error": "punto_id and texto are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            miembro = MiembroSesion.objects.get(sesion_id=pk, user=request.user)
+        except MiembroSesion.DoesNotExist:
+            return Response(
+                {"error": "You are not a member of this session"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            declaracion = SessionService.declarar_conflicto(
+                pk, punto_id, miembro.id, texto, actor=request.user
+            )
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "id": str(declaracion.id),
+                "estado": declaracion.estado,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    @action(detail=True, methods=["post"])
+    def votar_impedimento(self, request, pk=None):
+        """Vote on another member's conflict impediment (majority resolves)."""
+        declaracion_id = request.data.get("declaracion_id")
+        a_favor = request.data.get("a_favor")
+        if not declaracion_id or a_favor is None:
+            return Response(
+                {"error": "declaracion_id and a_favor are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            miembro = MiembroSesion.objects.get(sesion_id=pk, user=request.user)
+        except MiembroSesion.DoesNotExist:
+            return Response(
+                {"error": "You are not a member of this session"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            declaracion = SessionService.votar_impedimento(
+                declaracion_id, miembro.id, bool(a_favor), actor=request.user
+            )
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"estado": declaracion.estado})
 
     @action(detail=True, methods=["post"])
     def generar_acta(self, request, pk=None):

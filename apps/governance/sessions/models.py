@@ -370,3 +370,101 @@ class ActaSesion(models.Model):
 
     def __str__(self):
         return f"Acta — {self.sesion}"
+
+
+class DeclaracionConflicto(models.Model):
+    """Formal conflict-of-interest declaration per punto (CHG-502, CAP-018).
+
+    Ley 1952/2019 (project.md §6.1.1): the member declares the conflict,
+    the simple majority of the other present voting members approves the
+    impediment, and the member's vote is not counted for that punto.
+    """
+
+    class Estado(models.TextChoices):
+        PENDIENTE = "PENDIENTE", "Impedimento pendiente de resolución"
+        APROBADA = "APROBADA", "Impedimento aprobado (voto excluido)"
+        RECHAZADA = "RECHAZADA", "Impedimento rechazado (puede votar)"
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    miembro_sesion = models.ForeignKey(
+        MiembroSesion,
+        on_delete=models.CASCADE,
+        related_name="declaraciones_conflicto",
+        verbose_name=_("miembro declarante"),
+    )
+    punto = models.ForeignKey(
+        OrdenDelDiaPunto,
+        on_delete=models.CASCADE,
+        related_name="declaraciones_conflicto",
+        verbose_name=_("punto del orden del día"),
+    )
+    texto = models.TextField(
+        verbose_name=_("declaración"),
+    )
+    estado = models.CharField(
+        max_length=12,
+        choices=Estado.choices,
+        default=Estado.PENDIENTE,
+        verbose_name=_("estado del impedimento"),
+    )
+    revisado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="impedimentos_resueltos",
+        verbose_name=_("resuelto por"),
+    )
+    revisado_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("fecha de resolución"),
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("declaración de conflicto de interés")
+        verbose_name_plural = _("declaraciones de conflicto de interés")
+        unique_together = ["miembro_sesion", "punto"]
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Conflicto {self.get_estado_display()} — " f"{self.miembro_sesion} en {self.punto}"
+
+
+class VotoImpedimento(models.Model):
+    """Vote of the OTHER present members on a conflict impediment.
+
+    The declaring member cannot vote on their own impediment
+    (project.md §6.1.1 / Ley 1952/2019).
+    """
+
+    declaracion = models.ForeignKey(
+        DeclaracionConflicto,
+        on_delete=models.CASCADE,
+        related_name="votos_impedimento",
+        verbose_name=_("declaración de conflicto"),
+    )
+    miembro_sesion = models.ForeignKey(
+        MiembroSesion,
+        on_delete=models.CASCADE,
+        related_name="votos_impedimento",
+        verbose_name=_("miembro votante"),
+    )
+    a_favor = models.BooleanField(
+        verbose_name=_("a favor del impedimento"),
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("voto de impedimento")
+        verbose_name_plural = _("votos de impedimento")
+        unique_together = ["declaracion", "miembro_sesion"]
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"Impedimento {'a favor' if self.a_favor else 'en contra'} — {self.miembro_sesion}"
