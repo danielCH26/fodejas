@@ -40,12 +40,12 @@ def django_db_modify_db_settings(
     The ``parallel_suffix`` parameter is a required dependency from
     pytest-django; we pass it through unchanged.
     """
-    from django.conf import settings
-
     # Keep FileField uploads out of the repository: route media to a
     # session temp dir (upload-path tests would otherwise litter the
     # working tree, e.g. condonation/payments/comprobante_*.pdf).
     import tempfile
+
+    from django.conf import settings
 
     settings.MEDIA_ROOT = tempfile.mkdtemp(prefix="fodejas-test-media-")
 

@@ -6,11 +6,31 @@ from decimal import Decimal
 from django.db import transaction
 
 from apps.academic_tracking.models import AcademicAlert, AcademicRecord, GradeEntry
+from apps.audit.services import log_audit_event
+
+
+def _log_audit(actor, action, entity, entity_id, changes):
+    """Emit a CAP-022 audit event for an academic state change.
+
+    No try/except: an audit failure rolls back the business
+    operation — the trail is part of the transaction (AGENTS.md §7,
+    CAP-022).
+    """
+    log_audit_event(
+        actor=actor,
+        action=action,
+        entity=entity,
+        entity_id=str(entity_id),
+        changes=changes,
+        module="academic_tracking",
+    )
+
 
 # Threshold constants per Art. 16 Decreto 0372/2025
 MIN_AVERAGE = Decimal("3.5")
 WARNING_THRESHOLD = Decimal("3.0")
 CRITICAL_THRESHOLD = Decimal("3.0")
+CONSECUTIVE_LOW_SEMESTRES_TRIGGER = 2
 CONSECUTIVE_LOW_SEMESTERS_TRIGGER = 2
 
 
@@ -84,6 +104,13 @@ class AcademicTrackingService:
             legalization_process=legalization_process,
             status=AcademicRecord.Status.ACTIVO,
         )
+        _log_audit(
+            None,
+            "CREATE",
+            "academic_record",
+            record.id,
+            {"status": record.status},
+        )
         return record
 
     @staticmethod
@@ -153,10 +180,11 @@ class AcademicTrackingService:
         record.consecutive_low_semesters = consecutive_low
 
         # Update status based on average and consecutive lows
+        old_status = record.status
         new_status = get_status_from_average(cumulative_avg)
 
         # Check for automatic suspension trigger
-        if consecutive_low >= CONSECUTIVE_LOW_SEMESTRES_TRIGGER:  # noqa: F821
+        if consecutive_low >= CONSECUTIVE_LOW_SEMESTRES_TRIGGER:
             new_status = AcademicRecord.Status.SUSPENDIDO
             AcademicTrackingService.create_alert(
                 record,
@@ -167,6 +195,16 @@ class AcademicTrackingService:
         record.status = new_status
         record.last_reviewed_at = datetime.now(UTC)
         record.save()
+
+        # Audit only real state transitions, not every recalculation.
+        if old_status != new_status:
+            _log_audit(
+                None,
+                "UPDATE",
+                "academic_record",
+                record.id,
+                {"status_from": old_status, "status_to": new_status},
+            )
 
         # Create alert if status changed to academic bajo
         if new_status == AcademicRecord.Status.ACADEMICO_BAJO:
@@ -232,6 +270,13 @@ class AcademicTrackingService:
 
         record.status = AcademicRecord.Status.GRADUADO
         record.save()
+        _log_audit(
+            None,
+            "UPDATE",
+            "academic_record",
+            record.id,
+            {"status_to": record.status},
+        )
 
         AcademicTrackingService.create_alert(
             record,

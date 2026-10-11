@@ -36,6 +36,9 @@ urlpatterns = [
     path(
         "api/condonation/", include("apps.condonation.urls")
     ),  # Termination & sanctions API (CHG-304)
+    path(
+        "api/academic-tracking/", include("apps.academic_tracking.urls")
+    ),  # Academic tracking API (CHG-401)
     # HTML views
     path("convocatorias/", include("apps.convocatories.urls")),  # Convocatory HTML views
     path("applications/", include("apps.applications.urls")),  # Applications HTML views
