@@ -24,7 +24,7 @@ class PermissionMixin:
         context["can_junta"] = self._has_role(user, "R-JUNTA")
         context["can_ofijur"] = self._has_role(user, "R-OFIJUR")
         context["can_coordinator"] = self._has_role(user, "R-COORDINADOR")
-        context["can_treasurer"] = self._has_role(user, "R-TESORERO")
+        context["can_treasurer"] = self._has_role(user, "R-TESOR")
 
         # For convenience
         context["is_admin"] = context["can_manage"]
@@ -43,7 +43,7 @@ class PermissionMixin:
         has_admin = user.user_roles.filter(role__code="R-ADMIN").exists()
 
         # Check for coordinator role
-        has_coord = user.user_roles.filter(role__code="R-COORDINADOR").exists()
+        has_coord = user.user_roles.filter(role__code="R-COORD").exists()
 
         # Check for superuser/staff
         is_superuser = user.is_superuser or user.is_staff
@@ -68,7 +68,7 @@ class PermissionMixin:
 class AdminPermissionMixin(PermissionMixin):
     """Mixin for admin-only views."""
 
-    admin_roles = ["R-ADMIN", "R-COORDINADOR"]
+    admin_roles = ["R-ADMIN", "R-COORD"]
 
     def dispatch(self, request, *args, **kwargs):
         """Check if user has admin permissions."""

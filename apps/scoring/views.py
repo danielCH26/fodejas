@@ -156,13 +156,13 @@ class RankingView(LoginRequiredMixin, TemplateView):
     template_name = "scoring/ranking.html"
 
     def dispatch(self, request, *args, **kwargs):
-        """Check if user has R-COMITE or R-COORDINADOR role."""
-        # CHG-805 AUD-008: route the ``R-COORDINADOR`` check through the
+        """Check if user has R-COMITE or R-COORD role."""
+        # CHG-805 AUD-008: route the ``R-COORD`` check through the
         # ``Role`` table via the module-level helper instead of
         # ``request.user.groups.filter(name=...)``.
         has_access = (
             has_comite_role(request.user)
-            or _has_role(request.user, "R-COORDINADOR")
+            or _has_role(request.user, "R-COORD")
             or request.user.is_superuser
         )
         if not has_access:
