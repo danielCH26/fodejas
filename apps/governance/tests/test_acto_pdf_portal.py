@@ -5,11 +5,8 @@ WeasyPrint cannot render on this host (GTK libs absent) — PDF bytes
 are provided via a renderer seam, mirroring apps/legalization tests.
 """
 
-from decimal import Decimal
-
 import pytest
 from django.contrib.auth import get_user_model
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client
 from django.urls import reverse
 
@@ -47,6 +44,7 @@ def _make_acto(estado=ActoAdministrativo.Estado.FIRMADO, n=1):
 
 def _seam_pdf(monkeypatch, content=b"%PDF-1.4 synthetic acto"):
     """Patch WeasyPrint import inside governance pdf service."""
+
     class _FakeHTML:
         def __init__(self, string=None):
             self.string = string
@@ -92,8 +90,6 @@ class TestActoPdf:
 
         import sys
 
-        import apps.governance.services.pdf as pdf_module
-
         class _FakeModule:
             HTML = _FakeHTML
 
@@ -120,9 +116,7 @@ class TestPortalPublico:
                 nombre=f"Conv Portal {n}",
                 estado=Convocatory.Estado.EN_INSCRIPCION,
             )
-            ListadoDefinitivo.objects.create(
-                convocatoria=conv, acto=acto_, ranking=[]
-            )
+            ListadoDefinitivo.objects.create(convocatoria=conv, acto=acto_, ranking=[])
         client = Client()
         response = client.get(reverse("governance:resultados_publicos"))
         listados = list(response.context["listados"])
@@ -139,7 +133,7 @@ class TestPortalPublico:
 @pytest.mark.django_db
 class TestActoEndToEnd:
     def test_full_acto_flow_pdf_and_hash(self, db, monkeypatch):
-        """ crear (ORM) → firmar (view) → PDF+hash → publicar (view) → portal. """
+        """crear (ORM) → firmar (view) → PDF+hash → publicar (view) → portal."""
         from datetime import date
 
         user = _junta_user()
@@ -172,9 +166,7 @@ class TestActoEndToEnd:
         assert acto.pdf_sha256 == sha
 
         # 4. Publish through the real view
-        client.post(
-            reverse("governance:acto_publish", kwargs={"pk": acto.uuid}), follow=True
-        )
+        client.post(reverse("governance:acto_publish", kwargs={"pk": acto.uuid}), follow=True)
         acto.refresh_from_db()
         assert acto.estado == ActoAdministrativo.Estado.PUBLICADO
 
