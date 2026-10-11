@@ -157,8 +157,8 @@ class DashboardViewTests(TestCase):
         )
         # Use get_or_create because roles are seeded
         self.role, _ = Role.objects.get_or_create(
-            code="R-COORDINADOR",
-            defaults={"name": "Coordinador", "type": "interno"},
+            code="R-COORD",
+            defaults={"name": "Coordinador", "type": "interno", "description": ""},
         )
         UserRole.objects.get_or_create(
             user=self.user,

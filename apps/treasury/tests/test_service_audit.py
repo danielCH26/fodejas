@@ -74,8 +74,8 @@ def secretary_user(db):
         last_name="Secretario",
     )
     role, _ = Role.objects.get_or_create(
-        code="R-COORDINADOR",
-        defaults={"name": "Coordinador", "type": "interno", "description": ""},
+        code="R-SECEDU",
+        defaults={"name": "Secretario Educación", "type": "interno", "description": ""},
     )
     UserRole.objects.get_or_create(user=user, role=role, convocation_scope_id=None)
     return user
@@ -520,8 +520,8 @@ class TestReconciliationPermission:
         UserRole.objects.create(user=user, role=tesorero_role)
         # Permission is checked by the view, not the service.
         # This test documents the expected permission pattern.
-        assert user.user_roles.filter(role__code="R-TESORERO").exists()
+        assert user.user_roles.filter(role__code="R-TESOR").exists()
 
     def test_non_tesorero_cannot_reconcile(self, user_factory):
         outsider = user_factory()
-        assert not outsider.user_roles.filter(role__code="R-TESORERO").exists()
+        assert not outsider.user_roles.filter(role__code="R-TESOR").exists()
