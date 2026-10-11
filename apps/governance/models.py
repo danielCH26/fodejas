@@ -11,10 +11,12 @@ from django.utils.translation import gettext_lazy as _
 # noqa: F401 — these are intentional public re-exports.
 from apps.governance.sessions.models import (  # noqa: F401
     ActaSesion,  # noqa: F401
+    DeclaracionConflicto,  # noqa: F401
     MiembroSesion,  # noqa: F401
     OrdenDelDiaPunto,  # noqa: F401
     Sesion,  # noqa: F401
     Voto,  # noqa: F401
+    VotoImpedimento,  # noqa: F401
 )
 
 

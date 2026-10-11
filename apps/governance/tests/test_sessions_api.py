@@ -217,3 +217,102 @@ class TestSesionWorkflowAPI:
         )
         assert response.status_code == 200
         assert response.data["estado"] == OrdenDelDiaPunto.Estado.RECHAZADO
+
+
+@pytest.mark.django_db
+class TestConflictoInteresAPI:
+    """CHG-502: formal conflict declarations via API."""
+
+    @pytest.fixture
+    def sesion_abierta(self, db):
+        sesion = _convocar(3)
+        users = [_make_user(30 + i) for i in range(3)]
+        SessionService.registrar_asistencia(
+            sesion.id,
+            [{"user_id": u.id, "rol": "Miembro", "asistencia": "PRESENTE"} for u in users],
+            actor=None,
+        )
+        punto = SessionService.agregar_punto(sesion.id, 1, "Punto con conflicto", actor=None)
+        SessionService.abrir_sesion(sesion.id, actor=None)
+        miembro = MiembroSesion.objects.get(sesion=sesion, user=users[0])
+        return sesion, punto, users, miembro
+
+    def test_miembro_declara_su_propio_conflicto(self, sesion_abierta):
+        sesion, punto, users, miembro = sesion_abierta
+        client = APIClient()
+        client.force_authenticate(user=users[0])
+        response = client.post(
+            f"/api/sessions/sessions/{sesion.id}/declarar_conflicto/",
+            {
+                "punto_id": str(punto.id),
+                "texto": "Soy accionista de la IES evaluada",
+            },
+            format="json",
+        )
+        assert response.status_code == 201
+        assert response.data["estado"] == "PENDIENTE"
+
+    def test_cada_miembro_declara_el_suyo(self, sesion_abierta):
+        """The action is always self-service: each member declares their
+        own conflict on the punto (no declaring on behalf of others)."""
+        sesion, punto, users, miembro = sesion_abierta
+        client = APIClient()
+        client.force_authenticate(user=users[1])
+        response = client.post(
+            f"/api/sessions/sessions/{sesion.id}/declarar_conflicto/",
+            {"punto_id": str(punto.id), "texto": "Mi propia declaración"},
+            format="json",
+        )
+        assert response.status_code == 201
+
+    def test_non_member_cannot_declare(self, db, sesion_abierta):
+        sesion, punto, users, miembro = sesion_abierta
+        outsider = _make_user(99)
+        client = APIClient()
+        client.force_authenticate(user=outsider)
+        response = client.post(
+            f"/api/sessions/sessions/{sesion.id}/declarar_conflicto/",
+            {"punto_id": str(punto.id), "texto": "No soy miembro"},
+            format="json",
+        )
+        assert response.status_code == 403
+
+    def test_impedimento_se_resuelve_por_api(self, sesion_abierta):
+        sesion, punto, users, miembro = sesion_abierta
+        declarante = APIClient()
+        declarante.force_authenticate(user=users[0])
+        response = declarante.post(
+            f"/api/sessions/sessions/{sesion.id}/declarar_conflicto/",
+            {"punto_id": str(punto.id), "texto": "Declaración sintética"},
+            format="json",
+        )
+        declaracion_id = response.data["id"]
+
+        votante1 = APIClient()
+        votante1.force_authenticate(user=users[1])
+        votante2 = APIClient()
+        votante2.force_authenticate(user=users[2])
+
+        r1 = votante1.post(
+            f"/api/sessions/sessions/{sesion.id}/votar_impedimento/",
+            {"declaracion_id": declaracion_id, "a_favor": True},
+            format="json",
+        )
+        assert r1.status_code == 200
+        assert r1.data["estado"] == "PENDIENTE"
+
+        r2 = votante2.post(
+            f"/api/sessions/sessions/{sesion.id}/votar_impedimento/",
+            {"declaracion_id": declaracion_id, "a_favor": True},
+            format="json",
+        )
+        assert r2.status_code == 200
+        assert r2.data["estado"] == "APROBADA"
+
+        # The declarant's vote on that punto is now excluded.
+        response = declarante.post(
+            f"/api/sessions/sessions/{sesion.id}/votar/",
+            {"punto_id": str(punto.id), "valor": "A_FAVOR"},
+            format="json",
+        )
+        assert response.status_code == 400
