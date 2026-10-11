@@ -1,9 +1,21 @@
-"""Models for governance app (CHG-207)."""
+"""Models for governance app (CHG-207 / CHG-501)."""
 
 import uuid
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+# Re-export session models so Django's app-level model discovery routes
+# migrations to the ``governance`` app and so other apps can import from
+# the top-level package (e.g.  ``from apps.governance.models import Sesion``).
+# noqa: F401 — these are intentional public re-exports.
+from apps.governance.sessions.models import (  # noqa: F401
+    ActaSesion,  # noqa: F401
+    MiembroSesion,  # noqa: F401
+    OrdenDelDiaPunto,  # noqa: F401
+    Sesion,  # noqa: F401
+    Voto,  # noqa: F401
+)
 
 
 class SecuencialActo(models.Model):
