@@ -166,13 +166,19 @@ Pendiente:
 - [x] Infraestructura de despliegue (PR #18, `4ef4672`): Dockerfile
       producción con GTK libs (WeasyPrint no podía renderizar nada en
       la imagen), conftest multi-DB (respeta DATABASE_URL).
-- [ ] **BLOQUEO DE DESPLIEGUE — requiere decisión del usuario**:
-      migraciones de PK bigint→uuid no portables a PostgreSQL
-      ('cannot cast type bigint to uuid'; era AUD-019/CHG-804). Job
-      Test de ci.yml sin trigger hasta resolver. Issue #17 con opciones:
-      (A) regenerar migraciones desde cero con UUID (rompe DBs dev),
-      (B) corrección in-place (columna nueva + conversión + drop),
-      (C) posponer.
+- [x] **Opción A ejecutada — bloqueo de despliegue RESUELTO** (PR #20,
+      `47bef60`): migraciones regeneradas UUID-nativas (12 apps, 1
+      0001_initial por app + seed OFIJUR), dev DB recreada, backfills y
+      sus 34 tests muertos eliminados. La suite corre contra PostgreSQL:
+      **454✓/4⏭ en PG / 450✓/8⏭ en sqlite**.
+- [x] **ci.yml activo para master**: el job Test (Postgres 16 + Redis +
+      GTK) corrió por primera vez — PR #20 Test pass 1m28s. Dependency
+      phantoms declarados (crispy-forms, django-filter, Django<6 pin).
+- [x] **Bug real — cadena de auditoría se forkea bajo concurrencia**
+      (atrappado por test_concurrency en PG real): pg_advisory_xact_lock
+      compuesto con row lock. **Bug real — auditoría de treasury
+      perdida**: actions > 20 chars + try/except silencioso; widened y
+      fail-closed (criterio unificado).
 - [ ] Restante post-MVP: Fases 4-5 (gobernanza/sesiones, reporting/
       transparencia — apps removidas por CHG-806), runbooks/DRP
       (INF-011/012/015), unificar criterio de auditoría try/except vs
