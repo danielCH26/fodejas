@@ -36,6 +36,18 @@
      5.6 PostgreSQL vía CI al push
 3. **CHG-505 — Export auditoría externa** (CAP-028) — paquete verificable
    de la bitácora hash-chain.
+   - [x] OpenSpec: proposal + tasks + delta → `70a5461`
+   - [x] Implementación completa → `5a62569` (IsAuditExporter +
+     apps/audit/export.py + GET /api/audit/export/ CSV/JSONL + 24 tests)
+   - Rama `feat/CHG-505-external-audit`; suite 540✓/8 skip (516 master +
+     24 export); check ✓; migraciones ✓; seguridad PASS (actor_email
+     excluido; changes verbatim para verificabilidad del hash)
+   - Decisión clave: Verbatim Export Principle (changes viaja sin
+     alteración porque current_hash lo cubre); sello lite (snapshot +
+     SHA-256 + verify_chain en headers); firma real deferida a CAP-029
+   - Fix de carrera aplicado inline: snapshot clamp garantiza
+     sha256(body)==header bajo tráfico concurrente (test nuevo)
+   - Pendiente: PostgreSQL vía CI al push
 4. **CHG-506 — Estudio de impacto** (CAP-027) — reportes de impacto.
 5. **CHG-507 — Multilenguaje** (CAP-030) — al final: es transversal y cada
    feature nueva agrega templates a traducir.
