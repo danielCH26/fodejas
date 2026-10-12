@@ -1,14 +1,27 @@
-"""API for management reports (CHG-503, CAP-020).
+"""API for management reports (CHG-503) and Portal de Transparencia (CHG-504).
 
-Read-only. Internal roles only (project.md §14.1): R-COORD, R-JUNTA,
-R-SECEDU, R-ADMIN. Responses contain aggregates only — no PII.
+Management reports: internal roles only (project.md §14.1): R-COORD,
+R-JUNTA, R-SECEDU, R-ADMIN. Responses contain aggregates only — no PII.
+
+Transparencia endpoints: AllowAny, read-only, no PII (project.md §14.2,
+AGENTS.md §1, Ley 1581/2012).
 """
 
+from dataclasses import dataclass
+from datetime import datetime
+
+from django.views.generic import ListView, TemplateView
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from apps.accounts.permissions import HasAnyRole
+from apps.reporting.selectors.transparencia import TransparenciaSelectors
+from apps.reporting.serializers import (
+    TransparenciaActoSerializer,
+    TransparenciaConvocatoriaSerializer,
+    TransparenciaEstadisticaSerializer,
+)
 from apps.reporting.services import ReportingService
 
 REPORT_ROLES = ["R-COORD", "R-JUNTA", "R-SECEDU", "R-ADMIN"]
@@ -44,3 +57,186 @@ def informe_gestion(request):
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
     return Response(informe)
+
+
+# ---------------------------------------------------------------------------
+# Portal de Transparencia — public endpoints (CHG-504, CAP-021)
+# ---------------------------------------------------------------------------
+
+
+class _AllowAnyPermission:
+    """AllowAny with DRF re-instantiation contract — same pattern as
+    _ReportingRolePermission in this module."""
+
+    def __init__(self):
+        pass
+
+    def has_permission(self, request, view):
+        return True
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def transparencia_actos(request):
+    """List published administrative acts (PUBLICADO only).
+
+    GET /api/transparencia/actos/
+    """
+    datos = TransparenciaSelectors.actos_publicados()
+    serializer = TransparenciaActoSerializer(datos, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def transparencia_convocatorias(request):
+    """List open and closed convocatorias.
+
+    GET /api/transparencia/convocatorias/
+    """
+    datos = TransparenciaSelectors.convocatorias_abiertas_cerradas()
+    serializer = TransparenciaConvocatoriaSerializer(datos, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def transparencia_estadisticas(request):
+    """Return aggregate statistics by year and status.
+
+    GET /api/transparencia/estadisticas/
+    GET /api/transparencia/estadisticas/?anio=2026
+
+    Returns 400 if anio is not a valid integer.
+    """
+    anio_raw = request.query_params.get("anio")
+    if anio_raw is not None:
+        try:
+            anio = int(anio_raw)
+        except ValueError:
+            return Response(
+                {"error": "anio debe ser numérico"},
+                status=400,
+            )
+        if not (1000 <= anio <= 9999):
+            return Response(
+                {"error": "anio debe ser un año de 4 dígitos (1000-9999)"},
+                status=400,
+            )
+    else:
+        anio = None
+
+    datos = TransparenciaSelectors.estadisticas_agregadas(anio=anio)
+    serializer = TransparenciaEstadisticaSerializer(datos)
+    return Response(serializer.data)
+
+
+# ---------------------------------------------------------------------------
+# Portal de Transparencia — public HTML pages (CHG-504, CAP-021)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class _ActoItem:
+    """Plain wrapper so ListView pagination works with dict data."""
+    numero: str
+    fecha_publicacion: str | None
+    pdf_url: str | None
+    convocatoria_nombre: str | None
+
+
+@dataclass
+class _ConvocatoriaItem:
+    """Plain wrapper so ListView pagination works with dict data."""
+    codigo: str
+    nombre: str
+    estado: str
+    fecha_apertura: str | None
+    fecha_cierre: str | None
+
+
+class TransparenciaIndexView(TemplateView):
+    """Landing page for the public transparency portal.
+
+    Displays KPI cards from estadisticas_portal() and shortcut cards
+    to actos, convocatorias, and estadisticas pages.
+    """
+    template_name = "transparencia/index.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["kpis"] = TransparenciaSelectors.estadisticas_portal()
+        return ctx
+
+
+class TransparenciaActosView(ListView):
+    """Paginated list of published administrative acts (PUBLICADO only).
+
+    Lists numero, fecha_publicacion, convocatoria_nombre, and PDF link.
+    """
+    template_name = "transparencia/actos.html"
+    context_object_name = "actos"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return [
+            _ActoItem(
+                numero=d["numero"],
+                fecha_publicacion=d["fecha_publicacion"],
+                pdf_url=d["pdf_url"],
+                convocatoria_nombre=d["convocatoria_nombre"],
+            )
+            for d in TransparenciaSelectors.actos_publicados()
+        ]
+
+
+class TransparenciaConvocatoriasView(ListView):
+    """Paginated list of open and closed convocatorias.
+
+    Lists codigo, nombre, estado badge, and dates.
+    """
+    template_name = "transparencia/convocatorias.html"
+    context_object_name = "convocatorias"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return [
+            _ConvocatoriaItem(
+                codigo=d["codigo"],
+                nombre=d["nombre"],
+                estado=d["estado"],
+                fecha_apertura=d["fecha_apertura"],
+                fecha_cierre=d["fecha_cierre"],
+            )
+            for d in TransparenciaSelectors.convocatorias_abiertas_cerradas()
+        ]
+
+
+class TransparenciaEstadisticasView(TemplateView):
+    """Aggregate statistics page with optional year filter.
+
+    GET ?anio=YYYY — validated as 4-digit int (1000-9999).
+    Invalid anio → graceful fallback to None (no 500).
+    """
+    template_name = "transparencia/estadisticas.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        # Parse and validate year — graceful fallback to None on bad input
+        anio_raw = self.request.GET.get("anio")
+        if anio_raw is not None:
+            try:
+                anio_int = int(anio_raw)
+                if 1000 <= anio_int <= 9999:
+                    anio = anio_int
+                else:
+                    anio = None
+            except (ValueError, TypeError):
+                anio = None
+        else:
+            anio = None
+
+        ctx["anio"] = anio
+        ctx["estadisticas"] = TransparenciaSelectors.estadisticas_agregadas(anio=anio)
+        return ctx

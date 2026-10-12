@@ -1,0 +1,133 @@
+{% extends "transparencia/base.html" %}
+
+{% block title %}Inicio - Portal de Transparencia - FODEJAS{% endblock %}
+
+{% block transparencia_content %}
+<div class="text-center mb-5">
+    <h1 class="display-6">
+        <i class="bi bi-shield-check text-fodejas me-2"></i>
+        Portal de Transparencia
+    </h1>
+    <p class="lead text-muted">
+        Fondo para el Desarrollo Educativo de los Jóvenes del Archipiélago — FODEJAS
+    </p>
+    <p class="small text-muted">
+        Acceso público a información sobre convocatorias, beneficiarios y ejecución presupuestal
+    </p>
+</div>
+
+{# KPI Cards #}
+<div class="row g-4 mb-5">
+    <div class="col-md-3 col-6">
+        <div class="card text-center h-100 border-primary">
+            <div class="card-body">
+                <h2 class="display-5 text-primary">{{ kpis.total_convocatorias|default:0 }}</h2>
+                <p class="card-text text-muted mb-0">
+                    <i class="bi bi-calendar-event me-1"></i>Convocatorias
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card text-center h-100 border-success">
+            <div class="card-body">
+                <h2 class="display-5 text-success">{{ kpis.total_postulaciones|default:0 }}</h2>
+                <p class="card-text text-muted mb-0">
+                    <i class="bi bi-pencil-square me-1"></i>Postulaciones
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card text-center h-100 border-info">
+            <div class="card-body">
+                <h2 class="display-5 text-info">{{ kpis.total_beneficiarios|default:0 }}</h2>
+                <p class="card-text text-muted mb-0">
+                    <i class="bi bi-people me-1"></i>Beneficiarios
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card text-center h-100 border-warning">
+            <div class="card-body">
+                <h2 class="display-6 text-warning">${{ kpis.monto_pagado|default:"0"|stringformat:".0f" }}</h2>
+                <p class="card-text text-muted mb-0">
+                    <i class="bi bi-cash-stack me-1"></i>Pagado (COP)
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Montos adicionales #}
+<div class="row mb-5">
+    <div class="col-md-6 mx-auto">
+        <div class="card border-secondary">
+            <div class="card-body text-center">
+                <p class="mb-1 text-muted small">Monto ordenado (por ejecutar)</p>
+                <h4 class="text-secondary">${{ kpis.monto_ordenado|default:"0"|stringformat:".0f" }} COP</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Shortcut cards #}
+<div class="row g-4">
+    <div class="col-md-4">
+        <a href="{% url 'transparencia:actos' %}" class="text-decoration-none">
+            <div class="card h-100 border-primary hover-shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-text text-primary fs-1 mb-3 d-block"></i>
+                    <h5 class="card-title text-primary">Actos Administrativos</h5>
+                    <p class="card-text text-muted small">
+                        Resoluciones y actas publicadas con soporte PDF oficial
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'transparencia:convocatorias' %}" class="text-decoration-none">
+            <div class="card h-100 border-success hover-shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-event text-success fs-1 mb-3 d-block"></i>
+                    <h5 class="card-title text-success">Convocatorias</h5>
+                    <p class="card-text text-muted small">
+                        Convocatorias abiertas y cerradas con estados y fechas
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'transparencia:estadisticas' %}" class="text-decoration-none">
+            <div class="card h-100 border-info hover-shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-bar-chart text-info fs-1 mb-3 d-block"></i>
+                    <h5 class="card-title text-info">Estadísticas</h5>
+                    <p class="card-text text-muted small">
+                        Agregados de beneficiarios, ejecución presupuestal y seguimiento académico
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+{# Additional info #}
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="alert alert-light border text-center">
+            <p class="mb-1 small text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                Este portal expone información agregada y pública de conformidad con
+                la Ley 1581 de 2012 (protección de datos) y los principios de datos abiertos.
+            </p>
+            <p class="mb-0 small text-muted">
+                Para información detallada contacte a la Secretaría de Educación Departamental.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

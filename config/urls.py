@@ -43,6 +43,12 @@ urlpatterns = [
         "api/sessions/", include("apps.governance.sessions.urls")
     ),  # Governance sessions API (CHG-501)
     path("api/reporting/", include("apps.reporting.urls")),  # Management reports API (CHG-503)
+    path(
+        "api/transparencia/",
+        include("apps.reporting.urls_transparencia"),  # Public transparency API (CHG-504)
+    ),
+    # Public transparency portal HTML pages (CHG-504)
+    path("transparencia/", include("apps.reporting.urls_portal")),
     # HTML views
     path("convocatorias/", include("apps.convocatories.urls")),  # Convocatory HTML views
     path("applications/", include("apps.applications.urls")),  # Applications HTML views
