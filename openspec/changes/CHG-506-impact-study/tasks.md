@@ -2,18 +2,18 @@
 
 ## 1. Modelo y migraciones
 
-- [ ] 1.1 Añadir `ies_nombre` (CharField 255, blank/null) y
+- [x] 1.1 Añadir `ies_nombre` (CharField 255, blank/null) y
   `municipio_origen` (FK core.MunicipioIsla, on_delete=SET_NULL,
   null/blank) a `Solicitud` en `apps/applications/models.py`;
   normalizar en `save()` con `strip()` + colapso de espacios.
   Generar migración con `makemigrations apps/applications`.
 
-- [ ] 1.2 Añadir `retorno_archipelago` (BooleanField null=True,
+- [x] 1.2 Añadir `retorno_archipelago` (BooleanField null=True,
   blank=True) a `AcademicRecord` en
   `apps/academic_tracking/models.py`.
   Generar migración con `makemigrations apps/academic_tracking`.
 
-- [ ] 1.3 Crear comando
+- [x] 1.3 Crear comando
   `apps/core/management/commands/seed_municipio_isla.py` que haga
   `get_or_create` de los tres municipios del Archipiélago
   (códigos de `wizard_step_1.html:86-88`;
@@ -23,7 +23,7 @@
 
 ## 2. Backfill
 
-- [ ] 2.1 Crear comando
+- [x] 2.1 Crear comando
   `apps/applications/management/commands/backfill_impact_fields.py`:
 
   - Iterar `Solicitud.objects.iterator(batch_size=500)`.
@@ -38,7 +38,7 @@
   - Reportar al final: total procesado, actualizados, sin-match
     municipio, sin institucion.
 
-- [ ] 2.2 Tests del backfill en
+- [x] 2.2 Tests del backfill en
   `apps/applications/tests/test_backfill_impact_fields.py`:
 
   - `test_match_institucion_normaliza_espacios`.
@@ -49,7 +49,7 @@
 
 ## 3. Servicio estudio
 
-- [ ] 3.1 Añadir método `ReportingService.estudio_impacto(anio_inicio,
+- [x] 3.1 Añadir método `ReportingService.estudio_impacto(anio_inicio,
   anio_fin)` en `apps/reporting/services.py`:
 
   - Validar `1 <= anio_fin - anio_inicio <= 4`; blando para
@@ -69,7 +69,7 @@
     `DisbursementAuthorization` join a `LegalizationProcess` → `Solicitud`.
   - Sin PII: ningún nombre, documento, email, teléfono.
 
-- [ ] 3.2 Tests del servicio en
+- [x] 3.2 Tests del servicio en
   `apps/reporting/tests/test_estudio_impacto.py`:
 
   - `test_montos_suman_contra_fixture` (regla monetaria,
@@ -82,7 +82,7 @@
 
 ## 4. Endpoints
 
-- [ ] 4.1 Endpoint GET `/api/reporting/estudio-impacto/` en
+- [x] 4.1 Endpoint GET `/api/reporting/estudio-impacto/` en
   `apps/reporting/views.py` con
   `HasAnyRole(REPORT_ROLES + ["R-CT"])`;
   `REPORT_ROLES = ["R-COORD", "R-JUNTA", "R-SECEDU", "R-ADMIN"]`
@@ -91,7 +91,7 @@
   Validar `anio_inicio`, `anio_fin`; `400` en params inválidos.
   Registrar URL en `apps/reporting/urls.py`.
 
-- [ ] 4.2 Action `anotar_retorno` en
+- [x] 4.2 Action `anotar_retorno` en
   `apps/academic_tracking/views.py`:
   `PATCH /api/academic-tracking/records/{id}/anotar_retorno/`
   con body `{"retorno_archipelago": true|false}`.
@@ -99,7 +99,7 @@
   Usar `transaction.atomic`; rollback si `log_audit_event` falla
   (fail-closed). Audit action `academic_retorno_annotate`.
 
-- [ ] 4.3 Tests de endpoints:
+- [x] 4.3 Tests de endpoints:
 
   `apps/reporting/tests/test_estudio_impacto.py`:
   - `test_r_ct_200`, `test_anonimo_401`, `test_sin_rol_403`.
@@ -117,7 +117,7 @@
 - [ ] 5.1 Suite completa verde en SQLite (`pytest --ds=config.settings_sqlite`);
   CI ejecuta en PostgreSQL (`pytest --ds=config.settings`).
 
-- [ ] 5.2 `manage.py check` sin errores;
+- [x] 5.2 `manage.py check` sin errores;
   `makemigrations --check` confirma que no hay migraciones
   pendientes tras aplicar las del change.
 
