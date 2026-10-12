@@ -288,6 +288,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -349,6 +350,65 @@ AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default="us-east-1")
 AWS_S3_SIGNATURE_VERSION = env("AWS_S3_SIGNATURE_VERSION", default="s3v4")
 AWS_DEFAULT_ACL = env("AWS_DEFAULT_ACL", default=None)
 AWS_S3_FILE_OVERWRITE = env.bool("AWS_S3_FILE_OVERWRITE", default=False)
+
+# ── Decisión de producto (Gap #1 / roadmap.md §INF-008) ───────────────────
+#
+# Storage: bucket PRIVADO con URLs firmadas (AWS_QUERYSTRING_AUTH=True).
+#
+# Fundamento: los anexos de postulación contienen datos personales de
+# aspirantes (números de documento, certificados SISBEN, historial académico).
+# Un bucket público violaría Ley 1581/2012 (protección de datos personales).
+# Solo quienes reciben una URL firmada por boto3 pueden acceder al objeto;
+# la URL expira tras AWS_QUERYSTRING_EXPIRE (boto3 default: 3600 s).
+#
+# Infraestructura: S3-compatible (MinIO en dev/staging; S3 en prod).
+# No se usa FileSystemStorage en prod: el plan .kilo de volúmenes NO fue
+# adoptado en roadmap.md §INF-008, que especifica almacenamiento S3.
+#
+# MinIO path-style: AWS_S3_ADDRESSING_STYLE="path" es OBLIGATORIO.
+# Sin este ajuste boto3 genera dominios virtual-hosted como
+#   fodejas-media.localhost:9000
+# que MinIO no resuelve. Con path-style la URL es
+#   http://localhost:9000/fodejas-media/media/...
+#
+# Ruta de objetos: prefijo "media/" (AWS_LOCATION) para aislar de otros
+# namespaces S3 (static, backups, etc.).
+# ────────────────────────────────────────────────────────────────────────────
+AWS_QUERYSTRING_AUTH = True  # URLs firmadas — bucket privado
+AWS_LOCATION = "media"  # prefijo en todas las claves S3
+AWS_S3_ADDRESSING_STYLE = "path"  # requerido para endpoints MinIO
+
+# ── Selección de backend por entorno ─────────────────────────────────
+#
+# - development/test: FileSystemStorage (MEDIA_ROOT local; runserver
+#   sirve MEDIA_URL cuando DEBUG=True). Los tests nunca tocan la red.
+# - staging/production: S3Boto3Storage contra MinIO/S3 con URLs firmadas.
+#
+# Esto mantiene la suite de tests libre de dependencias de red (CI no
+# levanta MinIO) y cierra el Gap #1 en todos los entornos.
+
+_DJANGO_ENV = env("DJANGO_ENV", default="development")
+
+if _DJANGO_ENV in ("staging", "production"):
+    _DEFAULT_STORAGE_BACKEND = "storages.backends.s3boto3.S3Boto3Storage"
+else:
+    _DEFAULT_STORAGE_BACKEND = "django.core.files.storage.FileSystemStorage"
+    MEDIA_ROOT = env("MEDIA_ROOT", default=BASE_DIR / "media")
+    MEDIA_URL = "/media/"
+
+# STORAGES dict — Django 4.2+ (no usar DEFAULT_FILE_STORAGE obsoleto).
+# staticfiles: se mantiene ManifestStaticFilesStorage
+# (collectstatic funciona sin cambios).
+# Usar el nombre completo de clase, no el singleton staticfiles_storage
+# (que es un objeto ya instanciado, no un string de clase).
+STORAGES = {
+    "default": {
+        "BACKEND": _DEFAULT_STORAGE_BACKEND,
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
 
 # Electronic Signature Service (CHG-301)
 ELECTRONIC_SIGNATURE_PROVIDER = env("ELECTRONIC_SIGNATURE_PROVIDER", default="mock")
