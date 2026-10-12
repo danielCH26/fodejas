@@ -186,6 +186,14 @@ Pendiente:
       exclusiones, acta PDF+SHA-256+firmas ElectronicSigner), API
       `/api/sessions/` con matriz de roles y ownership de voto,
       36 tests. Auditoría CAP-022 fail-closed.
+- [x] CHG-503 reportes de gestión (CAP-020, P0) — PR #26 mergeado
+      (`3435740`): apps/reporting recreada con ReportingService (KPIs
+      §14.1: postulaciones por convocatoria, beneficiarios, ejecución
+      presupuestal por periodo, seguimiento académico + tasa de
+      graduación, informe trimestral/anual), API /api/reporting/gestion/
+      (R-COORD/R-JUNTA/R-SECEDU/R-ADMIN, sin PII), 11 tests. Guard de
+      CHG-806 relajado para reporting. Suite 512✓ sqlite / 516✓ PG.
+- [ ] Restante post-MVP: Fases 4-5 (reporting/
 - [ ] Restante post-MVP: Fases 4-5 (reporting/transparencia —
 - [x] CHG-502 conflictos de interés (CAP-018) — PR #24 mergeado
       (`51de9b3`): declaración formal por punto (Ley 1952/2019),
