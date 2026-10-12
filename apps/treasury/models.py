@@ -4,19 +4,20 @@ import uuid
 
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class DisbursementAuthorization(models.Model):
     """Authorization for beneficiary disbursement."""
 
     class Status(models.TextChoices):
-        PENDIENTE = "PENDIENTE", "Pendiente"
-        AUTORIZADO = "AUTORIZADO", "Autorizado"
-        ORDENADO = "ORDENADO", "Ordenado a Tesorería"
-        RECIBIDO = "RECIBIDO", "Recibido por Tesorería"
-        PAGADO = "PAGADO", "Pagado"
-        RECHAZADO = "RECHAZADO", "Rechazado"
-        VENCIDO = "VENCIDO", "Vencido (5 días hábiles)"
+        PENDIENTE = "PENDIENTE", _("Pendiente")
+        AUTORIZADO = "AUTORIZADO", _("Autorizado")
+        ORDENADO = "ORDENADO", _("Ordenado a Tesorería")
+        RECIBIDO = "RECIBIDO", _("Recibido por Tesorería")
+        PAGADO = "PAGADO", _("Pagado")
+        RECHAZADO = "RECHAZADO", _("Rechazado")
+        VENCIDO = "VENCIDO", _("Vencido (5 días hábiles)")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     legalization_process = models.ForeignKey(

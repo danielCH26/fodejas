@@ -1,17 +1,18 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Panel OFIJUR - Apelaciones - FODEJAS{% endblock %}
+{% block title %}{% trans "Panel OFIJUR" %} - {% trans "Apelaciones" %} - FODEJAS{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-gavel me-2"></i>Panel OFIJUR - Apelaciones</h2>
+        <h2><i class="bi bi-gavel me-2"></i>{% trans "Panel OFIJUR" %} - {% trans "Apelaciones" %}</h2>
         <div>
             <a href="{% url 'claims:list' %}" class="btn btn-outline-secondary me-2">
-                <i class="bi bi-arrow-left me-2"></i>Reclamaciones
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Reclamaciones" %}
             </a>
             <a href="{% url 'claims:apelacion_list' %}" class="btn btn-outline-secondary">
-                <i class="bi bi-list me-2"></i>Todas las Apelaciones
+                <i class="bi bi-list me-2"></i>{% trans "Todas las Apelaciones" %}
             </a>
         </div>
     </div>
@@ -28,12 +29,12 @@
     {% if not apelaciones %}
     <div class="alert alert-info">
         <i class="bi bi-info-circle me-2"></i>
-        No hay apelaciones pendientes de revisión.
+        {% trans "No hay apelaciones pendientes de revisión." %}
     </div>
     {% else %}
     <div class="card">
         <div class="card-header">
-            <h5 class="mb-0">Apelaciones ({{ apelaciones.count }})</h5>
+            <h5 class="mb-0">{% trans "Apelaciones" %} ({{ apelaciones.count }})</h5>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -41,11 +42,11 @@
                     <thead>
                         <tr>
                             <th>UUID</th>
-                            <th>Aspirante</th>
-                            <th>Reclamación</th>
-                            <th>Estado</th>
-                            <th>Fecha Creación</th>
-                            <th>Acciones</th>
+                            <th>{% trans "Aspirante" %}</th>
+                            <th>{% trans "Reclamación" %}</th>
+                            <th>{% trans "Estado" %}</th>
+                            <th>{% trans "Fecha Creación" %}</th>
+                            <th>{% trans "Acciones" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,7 +69,7 @@
                             <td>{{ apelacion.created_at|date:"d/m/Y H:i" }}</td>
                             <td>
                                 <a href="{% url 'claims:apelacion_detail' apelacion.uuid %}" class="btn btn-sm btn-primary">
-                                    <i class="bi bi-eye"></i> Revisar
+                                    <i class="bi bi-eye"></i> {% trans "Revisar" %}
                                 </a>
                             </td>
                         </tr>

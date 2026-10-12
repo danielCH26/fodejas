@@ -98,3 +98,16 @@
 **Testing**: +14 tests (contrato de settings, pipeline FileField end-to-end, backend lazy). Suite 530✓ en la rama; los 6 tests de governance de actas pasan sin overrides.
 
 **Notas**: Desbloquea los links PDF del portal CHG-504 (acto.pdf.url ahora resuelve). En producción configurar `AWS_S3_ENDPOINT_URL` real.
+
+
+---
+
+## 9. chore/i18n-internal (apilada sobre feat/CHG-507-multilang)
+
+**Título**: chore(i18n): mark internal templates and wrap raw TextChoices (CAP-030)
+
+**Resumen**: Completa la deuda i18n interna: 33 templates marcados (governance, treasury, scoring, legalization no-PDF, claims admin, accounts admin) con el mismo contrato de regresión cero (msgids byte-idénticos al español actual), y TextChoices raw envueltos con gettext_lazy (treasury.Status 7 labels; academic_tracking 11 labels — cierra la inconsistencia detectada en la exploración de CHG-507). locale/en: +345 entradas -> 816 traducciones totales.
+
+**Testing**: Regresión 527✓ (sin tests nuevos — marcado mecánico; compile_mo valida cero duplicados). JS strings (2) quedan sin marcar según contrato, reportados.
+
+**Notas**: PR apilado — merge después de CHG-507. Restante documentado: errores de API DRF sin traducir (registro).

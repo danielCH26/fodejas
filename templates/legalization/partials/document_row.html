@@ -1,4 +1,5 @@
 {# Replaces #doc-row-<id> after successful signing (HX-Retarget) #}
+{% load i18n %}
 <tr id="doc-row-{{ document.id }}">
     <td><strong>{{ document.get_document_type_display }}</strong></td>
     <td>
@@ -30,7 +31,7 @@
     </td>
     <td>
         <span class="text-success small">
-            <i class="bi bi-check-circle"></i> Firmado
+            <i class="bi bi-check-circle"></i> {% trans "Firmado" %}
         </span>
     </td>
 </tr>

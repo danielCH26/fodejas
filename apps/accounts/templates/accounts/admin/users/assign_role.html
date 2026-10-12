@@ -1,15 +1,16 @@
 {% extends "accounts/admin/base.html" %}
+{% load i18n %}
 
-{% block title %}Asignar Roles - {{ user.email }} - Admin FODEJAS{% endblock %}
-{% block page_title %}Asignación de Roles{% endblock %}
+{% block title %}{% trans "Asignar Roles" %} - {{ user.email }} - Admin FODEJAS{% endblock %}
+{% block page_title %}{% trans "Asignación de Roles" %}{% endblock %}
 
 {% block breadcrumb %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'accounts_admin:user_list' %}">Usuarios</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">{% trans "Dashboard" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'accounts_admin:user_list' %}">{% trans "Usuarios" %}</a></li>
         <li class="breadcrumb-item"><a href="{% url 'accounts_admin:user_detail' user.pk %}">{{ user.email }}</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Roles</li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans "Roles" %}</li>
     </ol>
 </nav>
 {% endblock %}
@@ -20,7 +21,7 @@
         <!-- Assign Role Form -->
         <div class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">Asignar Nuevo Rol</h5>
+                <h5 class="card-title">{% trans "Asignar Nuevo Rol" %}</h5>
 
                 <form method="post">
                     {% csrf_token %}
@@ -39,7 +40,7 @@
                                 {{ form.role.label }}
                             </label>
                             <select name="{{ form.role.name }}" id="{{ form.role.id_for_label }}" class="form-select">
-                                <option value="">Seleccionar rol...</option>
+                                <option value="">{% trans "Seleccionar rol" %}...</option>
                                 {% for role in available_roles %}
                                 <option value="{{ role.pk }}">{{ role.code }} - {{ role.name }}</option>
                                 {% endfor %}
@@ -72,10 +73,10 @@
 
                     <div class="d-flex justify-content-end">
                         <a href="{% url 'accounts_admin:user_detail' user.pk %}" class="btn btn-outline-secondary me-2">
-                            <i class="bi bi-arrow-left"></i> Volver
+                            <i class="bi bi-arrow-left"></i> {% trans "Volver" %}
                         </a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-shield-plus"></i> Asignar Rol
+                            <i class="bi bi-shield-plus"></i> {% trans "Asignar Rol" %}
                         </button>
                     </div>
                 </form>
@@ -85,19 +86,19 @@
         <!-- Current Roles -->
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Roles Actuales</h5>
+                <h5 class="card-title">{% trans "Roles Actuales" %}</h5>
 
                 {% if user_roles %}
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Rol</th>
-                                <th>Nombre</th>
-                                <th>Tipo</th>
-                                <th>Convocatoria</th>
-                                <th>Asignado</th>
-                                <th>Acciones</th>
+                                <th>{% trans "Rol" %}</th>
+                                <th>{% trans "Nombre" %}</th>
+                                <th>{% trans "Tipo" %}</th>
+                                <th>{% trans "Convocatoria" %}</th>
+                                <th>{% trans "Asignado" %}</th>
+                                <th>{% trans "Acciones" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -109,16 +110,16 @@
                                 <td>{{ user_role.role.name }}</td>
                                 <td>
                                     {% if user_role.role.type == 'interno' %}
-                                        <span class="badge bg-info">Interno</span>
+                                        <span class="badge bg-info">{% trans "Interno" %}</span>
                                     {% else %}
-                                        <span class="badge bg-warning text-dark">Externo</span>
+                                        <span class="badge bg-warning text-dark">{% trans "Externo" %}</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if user_role.convocation_scope_id %}
                                         <code>{{ user_role.convocation_scope_id }}</code>
                                     {% else %}
-                                        <span class="text-muted">Global</span>
+                                        <span class="text-muted">{% trans "Global" %}</span>
                                     {% endif %}
                                 </td>
                                 <td>{{ user_role.created_at|date:"d/m/Y" }}</td>
@@ -127,7 +128,7 @@
                                           class="d-inline"
                                           onsubmit="return confirm('¿Está seguro de revocar el rol {{ user_role.role.code }}?');">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Revocar Rol">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="{% trans "Revocar Rol" %}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -140,7 +141,7 @@
                 {% else %}
                 <div class="alert alert-warning">
                     <i class="bi bi-exclamation-triangle"></i>
-                    Este usuario no tiene roles asignados.
+                    {% trans "Este usuario no tiene roles asignados." %}
                 </div>
                 {% endif %}
             </div>
@@ -151,34 +152,34 @@
         <!-- User Info -->
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Información del Usuario</h5>
+                <h5 class="card-title">{% trans "Información del Usuario" %}</h5>
 
                 <div class="mb-3">
-                    <strong>Email:</strong><br>
+                    <strong>{% trans "Email:" %}</strong><br>
                     <code>{{ user.email }}</code>
                 </div>
 
                 <div class="mb-3">
-                    <strong>Documento:</strong><br>
+                    <strong>{% trans "Documento:" %}</strong><br>
                     <code>{{ user.documento }}</code>
                 </div>
 
                 <div class="mb-3">
-                    <strong>Nombre:</strong><br>
+                    <strong>{% trans "Nombre:" %}</strong><br>
                     {{ user.first_name }} {{ user.last_name }}
                 </div>
 
                 <div class="mb-3">
-                    <strong>Estado:</strong><br>
+                    <strong>{% trans "Estado:" %}</strong><br>
                     {% if user.is_active %}
-                        <span class="badge bg-success">Activo</span>
+                        <span class="badge bg-success">{% trans "Activo" %}</span>
                     {% else %}
-                        <span class="badge bg-danger">Inactivo</span>
+                        <span class="badge bg-danger">{% trans "Inactivo" %}</span>
                     {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <strong>Total de roles:</strong><br>
+                    <strong>{% trans "Total de roles:" %}</strong><br>
                     <span class="badge bg-primary">{{ user_roles|length }}</span>
                 </div>
 
@@ -186,10 +187,10 @@
 
                 <div class="d-grid gap-2">
                     <a href="{% url 'accounts_admin:user_detail' user.pk %}" class="btn btn-outline-info">
-                        <i class="bi bi-eye"></i> Ver Detalle
+                        <i class="bi bi-eye"></i> {% trans "Ver Detalle" %}
                     </a>
                     <a href="{% url 'accounts_admin:user_update' user.pk %}" class="btn btn-outline-primary">
-                        <i class="bi bi-pencil"></i> Editar Usuario
+                        <i class="bi bi-pencil"></i> {% trans "Editar Usuario" %}
                     </a>
                 </div>
             </div>
@@ -198,7 +199,7 @@
         <!-- Available Roles -->
         <div class="card mt-4">
             <div class="card-body">
-                <h5 class="card-title">Roles Disponibles</h5>
+                <h5 class="card-title">{% trans "Roles Disponibles" %}</h5>
 
                 {% if available_roles %}
                 <div class="list-group">
@@ -208,21 +209,21 @@
                             <h6 class="mb-1">{{ role.code }}</h6>
                             <small>
                                 {% if role.type == 'interno' %}
-                                    <span class="badge bg-info">Interno</span>
+                                    <span class="badge bg-info">{% trans "Interno" %}</span>
                                 {% else %}
-                                    <span class="badge bg-warning text-dark">Externo</span>
+                                    <span class="badge bg-warning text-dark">{% trans "Externo" %}</span>
                                 {% endif %}
                             </small>
                         </div>
                         <p class="mb-1">{{ role.name }}</p>
-                        <small>{{ role.description|default:"Sin descripción" }}</small>
+                        <small>{{ role.description|default:"{% trans 'Sin descripción' %}" }}</small>
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
                 <div class="alert alert-info">
                     <i class="bi bi-info-circle"></i>
-                    El usuario ya tiene asignados todos los roles disponibles.
+                    {% trans "El usuario ya tiene asignados todos los roles disponibles." %}
                 </div>
                 {% endif %}
             </div>

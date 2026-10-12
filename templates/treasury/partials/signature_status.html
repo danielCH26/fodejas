@@ -1,8 +1,9 @@
 {# Signature status partial — replaces #signature-status after a successful authorize POST. #}
+{% load i18n %}
 
 <div class="card mb-4" id="signature-status">
     <div class="card-header">
-        <i class="bi bi-pen me-2"></i>Estado de doble firma
+        <i class="bi bi-pen me-2"></i>{% trans "Estado de doble firma" %}
     </div>
     <div class="card-body">
         <div class="row">
@@ -15,15 +16,15 @@
                         {% else %}
                             <i class="bi bi-clock text-warning me-1"></i>
                         {% endif %}
-                        Presidente (R-JUNTA)
+                        {% trans "Presidente (R-JUNTA)" %}
                     </h6>
                     {% if authorization.authorized_by_president %}
                         <p class="mb-0 small">
                             <strong>{{ authorization.authorized_by_president.email }}</strong>
-                            <br>Firmado: {{ authorization.authorized_at|date:"d/m/Y H:i" }}
+                            <br>{% trans "Firmado:" %} {{ authorization.authorized_at|date:"d/m/Y H:i" }}
                         </p>
                     {% else %}
-                        <p class="text-muted mb-0 small">Pendiente de firma</p>
+                        <p class="text-muted mb-0 small">{% trans "Pendiente de firma" %}</p>
                     {% endif %}
                 </div>
             </div>
@@ -36,15 +37,15 @@
                         {% else %}
                             <i class="bi bi-clock text-warning me-1"></i>
                         {% endif %}
-                        Secretario (R-COORDINADOR)
+                        {% trans "Secretario (R-COORDINADOR)" %}
                     </h6>
                     {% if authorization.authorized_by_secretary %}
                         <p class="mb-0 small">
                             <strong>{{ authorization.authorized_by_secretary.email }}</strong>
-                            <br>Firmado: {{ authorization.authorized_at|date:"d/m/Y H:i" }}
+                            <br>{% trans "Firmado:" %} {{ authorization.authorized_at|date:"d/m/Y H:i" }}
                         </p>
                     {% else %}
-                        <p class="text-muted mb-0 small">Pendiente de firma</p>
+                        <p class="text-muted mb-0 small">{% trans "Pendiente de firma" %}</p>
                     {% endif %}
                 </div>
             </div>
@@ -54,13 +55,13 @@
         <div class="mt-3">
             <span class="badge bg-success fs-6">
                 <i class="bi bi-check-circle me-1"></i>
-                ¡Desembolso autorizado! Ambas firmas completadas.
+                {% trans "¡Desembolso autorizado! Ambas firmas completadas." %}
             </span>
         </div>
         {% else %}
         <div class="mt-3">
             <span class="badge bg-warning text-dark">
-                Firmado: falta la otra autoridad ({{ authorization.authorized_at|date:"d/m/Y H:i" }})
+                {% trans "Firmado: falta la otra autoridad" %} ({{ authorization.authorized_at|date:"d/m/Y H:i" }})
             </span>
         </div>
         {% endif %}

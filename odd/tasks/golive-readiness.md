@@ -35,10 +35,12 @@
      - NOTA: 6 tests en governance/ usan FileField sin @override_settings;
        requieren django-storages instalado o su propio STORAGES override;
        no son tests de URL de anexos (ver docs/ops/05-known-gaps.md)
-4. **Deuda i18n interna** — slices futuros (~30 templates internos, API
-   errors DRF, TextChoices raw en treasury/academic_tracking). NO se
-   ejecuta en este programa salvo pedido explícito.
-   - [ ] 4.1 backlog documentado (este ítem es el registro)
+4. **Deuda i18n interna** — ejecutada por pedido del usuario ("sigue").
+   - [x] 4.1 33 templates internos marcados + TextChoices raw wrapped
+     (treasury 7 + academic_tracking 11 labels) en chore/i18n-internal
+     (apilada sobre feat/CHG-507); +345 msgids (816 total); regresión
+     527✓. Restante: errores API DRF (registro) y 2 strings JS
+     (scoring, assign_role) — tickets futuros
 5. **Acciones del usuario (fuera del repo)** — recordatorios, no tareas:
    - push + 5 PRs + merges (superset en odd/tasks)
    - primera prueba de restore en staging (protocolo docs/ops/02)
