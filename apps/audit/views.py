@@ -90,13 +90,13 @@ class AuditPermissionMixin:
         return [IsAuditViewer()]
 
     def get_login_url(self):
-        return reverse_lazy("login")
+        return reverse_lazy("accounts:login")
 
 
 class BaseAuditView(LoginRequiredMixin, AuditPermissionMixin, TemplateView):
     """Base view for audit pages."""
 
-    login_url = reverse_lazy("login")
+    login_url = reverse_lazy("accounts:login")
 
     def get(self, request, *args, **kwargs):
         # Check permission manually to show custom message
@@ -185,7 +185,7 @@ class AuditEventHtmlDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "event"
     pk_url_kwarg = "id"
 
-    login_url = reverse_lazy("login")
+    login_url = reverse_lazy("accounts:login")
 
     def get(self, request, *args, **kwargs):
         if not self.has_permission(request):
@@ -236,7 +236,7 @@ class AuditChainVerifyHtmlView(LoginRequiredMixin, TemplateView):
 
     template_name = "audit/verify.html"
 
-    login_url = reverse_lazy("login")
+    login_url = reverse_lazy("accounts:login")
 
     def get(self, request, *args, **kwargs):
         if not self.has_permission(request):
