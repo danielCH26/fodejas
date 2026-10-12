@@ -79,8 +79,15 @@
    - Pendiente: templates internos restantes (governance/treasury/
      legalization/scoring/claims-admin), API errors DRF, TextChoices raw
      (deuda documentada); PostgreSQL vía CI
-6. **Runbooks/DRP** (INF-011/012/015) — docs operativos, cuando el código
-   esté estable.
+6. **Runbooks/DRP** (INF-011/012/015) — docs operativos.
+   - [x] docs/ops/ completo: README índice, deploy runbook, DRP con RTO/RPO
+     PROPUESTOS, incident-response, monitoring-alerts, known-gaps (10 gaps
+     con evidencia; 3 bloqueantes go-live: MEDIA no servido, restore sin
+     probar, MinIO sin lifecycle) — commit de este turn
+   - Hallazgo verificado: /api/audit/verify/ NO registrada (solo HTML +
+     shell); corregido en docs, fix de código pendiente
+   - Pendiente para cierre INF: primera prueba de restore en staging
+     (roadmap:585 exige restore probado), backup-exporter, pg_stat_statements
 
 ## Reglas del programa
 
