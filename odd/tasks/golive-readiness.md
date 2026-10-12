@@ -39,8 +39,9 @@
    - [x] 4.1 33 templates internos marcados + TextChoices raw wrapped
      (treasury 7 + academic_tracking 11 labels) en chore/i18n-internal
      (apilada sobre feat/CHG-507); +345 msgids (816 total); regresión
-     527✓. Restante: errores API DRF (registro) y 2 strings JS
-     (scoring, assign_role) — tickets futuros
+     527✓. Errores API DRF también cerrados (047432e en
+     chore/i18n-api-errors: 12 strings, 828 traducciones). Restante:
+     2 strings JS (scoring, assign_role) — tickets futuros
 5. **Acciones del usuario (fuera del repo)** — recordatorios, no tareas:
    - push + 5 PRs + merges (superset en odd/tasks)
    - primera prueba de restore en staging (protocolo docs/ops/02)
