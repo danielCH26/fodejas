@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Mi Perfil - FODEJAS{% endblock %}
+{% block title %}{% trans "Mi Perfil - FODEJAS" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -9,7 +10,7 @@
             <div class="card-header bg-fodejas text-white">
                 <h4 class="mb-0">
                     <i class="bi bi-person me-2"></i>
-                    Mi Perfil
+                    {% trans "Mi Perfil" %}
                 </h4>
             </div>
             <div class="card-body">
@@ -19,31 +20,31 @@
 
                 <table class="table table-borderless">
                     <tr>
-                        <th class="text-muted">Nombres:</th>
+                        <th class="text-muted">{% trans "Nombres:" %}</th>
                         <td>{{ user.first_name }}</td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Apellidos:</th>
+                        <th class="text-muted">{% trans "Apellidos:" %}</th>
                         <td>{{ user.last_name }}</td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Correo:</th>
+                        <th class="text-muted">{% trans "Correo:" %}</th>
                         <td>{{ user.email }}</td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Documento:</th>
+                        <th class="text-muted">{% trans "Documento:" %}</th>
                         <td>{{ user.documento }}</td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Teléfono:</th>
-                        <td>{{ user.telefono|default:"No registrado" }}</td>
+                        <th class="text-muted">{% trans "Teléfono:" %}</th>
+                        <td>{{ user.telefono|default:"" }}</td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Fecha de nacimiento:</th>
-                        <td>{{ user.fecha_nacimiento|default:"No registrada" }}</td>
+                        <th class="text-muted">{% trans "Fecha de nacimiento:" %}</th>
+                        <td>{{ user.fecha_nacimiento|default:"" }}</td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Roles:</th>
+                        <th class="text-muted">{% trans "Roles:" %}</th>
                         <td>
                             {% for role in roles %}
                             <span class="badge bg-primary me-1">{{ role }}</span>
@@ -51,7 +52,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Último acceso:</th>
+                        <th class="text-muted">{% trans "Último acceso:" %}</th>
                         <td>{{ user.last_activity|date:"d/m/Y H:i" }}</td>
                     </tr>
                 </table>
@@ -59,7 +60,7 @@
                 <div class="d-grid gap-2 mt-4">
                     <a href="{% url 'accounts:dashboard' %}" class="btn btn-fodejas">
                         <i class="bi bi-arrow-left me-2"></i>
-                        Volver al panel
+                        {% trans "Volver al panel" %}
                     </a>
                 </div>
             </div>

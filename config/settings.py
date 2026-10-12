@@ -171,6 +171,11 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "apps.core.middleware.RequestIDMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    # CHG-507 — LocaleMiddleware runs AFTER SessionMiddleware and BEFORE
+    # CommonMiddleware so it can read the language cookie/session and
+    # set it before URL processing. Position contract:
+    # SessionMiddleware → LocaleMiddleware → CommonMiddleware
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -279,6 +284,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = "es-CO"
+
+# CHG-507 — Supported languages for the UI.
+# es-CO (Spanish of Colombia) is the default; en is the translated English UI.
+LANGUAGES = [
+    ("es-CO", "Español"),
+    ("en", "English"),
+]
+
+# CHG-507 — Where Django looks for compiled .mo translation files.
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
 
 TIME_ZONE = "America/Bogota"
 

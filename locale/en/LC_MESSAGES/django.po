@@ -1,0 +1,277 @@
+# English translations for FODEJAS.
+# CHG-507-multilang Unit A.
+msgid ""
+msgstr ""
+"Project-Id-Version: FODEJAS\n"
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# ============================================================================
+# base.html — navbar and footer strings
+# ============================================================================
+
+msgid "Convocatorias"
+msgstr "Calls for Applications"
+
+msgid "Scoring"
+msgstr "Scoring"
+
+msgid "Actos Admin"
+msgstr "Admin Acts"
+
+msgid "Listado Definitivo"
+msgstr "Final List"
+
+msgid "Reclamaciones"
+msgstr "Claims"
+
+msgid "Gestionar Reclamaciones"
+msgstr "Manage Claims"
+
+msgid "Legalización"
+msgstr "Legalization"
+
+msgid "Autorizaciones"
+msgstr "Authorizations"
+
+msgid "Gestionar Apelaciones"
+msgstr "Manage Appeals"
+
+msgid "Administración"
+msgstr "Administration"
+
+msgid "Usuarios"
+msgstr "Users"
+
+msgid "Roles"
+msgstr "Roles"
+
+msgid "Auditoría"
+msgstr "Audit Log"
+
+msgid "Perfil"
+msgstr "Profile"
+
+msgid "Cerrar sesión"
+msgstr "Log out"
+
+msgid "© 2026 FODEJAS - Fondo para el Desarrollo Educativo de los Jóvenes"
+msgstr "© 2026 FODEJAS - Fund for the Educational Development of the Youth of the Archipelago"
+
+# ============================================================================
+# login.html
+# ============================================================================
+
+msgid "Iniciar Sesión - FODEJAS"
+msgstr "Log In - FODEJAS"
+
+msgid "Iniciar Sesión"
+msgstr "Log In"
+
+msgid "FODEJAS"
+msgstr "FODEJAS"
+
+msgid "Fondo para el Desarrollo Educativo"
+msgstr "Fund for Educational Development"
+
+msgid "Ingresar"
+msgstr "Sign In"
+
+msgid "¿Olvidó su contraseña?"
+msgstr "Forgot your password?"
+
+msgid "Recuperar contraseña"
+msgstr "Recover password"
+
+msgid "¿No tiene cuenta?"
+msgstr "Don't have an account?"
+
+msgid "Registrarse como Aspirante"
+msgstr "Register as Applicant"
+
+# ============================================================================
+# register.html
+# ============================================================================
+
+msgid "Registrarse - FODEJAS"
+msgstr "Register - FODEJAS"
+
+msgid "Registrarse"
+msgstr "Register"
+
+msgid "Registro de Aspirante"
+msgstr "Applicant Registration"
+
+msgid "Complete el formulario para crear su cuenta de aspirante. Podrá postular a las convocatorias disponibles una vez registrado."
+msgstr "Fill out the form to create your applicant account. You will be able to apply to available calls once registered."
+
+msgid "¿Ya tiene cuenta?"
+msgstr "Already have an account?"
+
+msgid "Iniciar sesión"
+msgstr "Log in"
+
+# ============================================================================
+# profile.html
+# ============================================================================
+
+msgid "Mi Perfil - FODEJAS"
+msgstr "My Profile - FODEJAS"
+
+msgid "Mi Perfil"
+msgstr "My Profile"
+
+msgid "Nombres:"
+msgstr "First name:"
+
+msgid "Apellidos:"
+msgstr "Last name:"
+
+msgid "Correo:"
+msgstr "Email:"
+
+msgid "Documento:"
+msgstr "Document ID:"
+
+msgid "Teléfono:"
+msgstr "Phone:"
+
+msgid "Fecha de nacimiento:"
+msgstr "Date of birth:"
+
+msgid "Roles:"
+msgstr "Roles:"
+
+msgid "Último acceso:"
+msgstr "Last login:"
+
+msgid "No registrado"
+msgstr "Not recorded"
+
+msgid "No registrada"
+msgstr "Not recorded"
+
+msgid "Volver al panel"
+msgstr "Back to dashboard"
+
+# ============================================================================
+# dashboard.html
+# ============================================================================
+
+msgid "Panel Principal - FODEJAS"
+msgstr "Dashboard - FODEJAS"
+
+msgid "Panel Principal"
+msgstr "Dashboard"
+
+msgid "Menú"
+msgstr "Menu"
+
+msgid "Bienvenido, {{ user.first_name }}"
+msgstr "Welcome, {{ user.first_name }}"
+
+msgid "Accede a sus postulaciones, resultados y seguimiento académico."
+msgstr "Access your applications, results, and academic tracking."
+
+msgid "Gestione convocatorias, evaluaciones y resultados."
+msgstr "Manage calls, evaluations, and results."
+
+msgid "Acciones Rápidas"
+msgstr "Quick Actions"
+
+msgid "Actividad Reciente"
+msgstr "Recent Activity"
+
+msgid "No hay actividad reciente"
+msgstr "No recent activity"
+
+msgid "Notificaciones"
+msgstr "Notifications"
+
+msgid "No tiene notificaciones"
+msgstr "No notifications"
+
+msgid "Ver perfil"
+msgstr "View profile"
+
+# ============================================================================
+# password_reset.html
+# ============================================================================
+
+msgid "Recuperar Contraseña - FODEJAS"
+msgstr "Reset Password - FODEJAS"
+
+msgid "Recuperar Contraseña"
+msgstr "Reset Password"
+
+msgid "Ingrese su correo electrónico y le enviaremos instrucciones para restablecer su contraseña."
+msgstr "Enter your email address and we will send you instructions to reset your password."
+
+msgid "Enviar instrucciones"
+msgstr "Send instructions"
+
+msgid "Volver a iniciar sesión"
+msgstr "Back to login"
+
+# ============================================================================
+# password_reset_done.html
+# ============================================================================
+
+msgid "Correo Enviado - FODEJAS"
+msgstr "Email Sent - FODEJAS"
+
+msgid "Correo enviado"
+msgstr "Email sent"
+
+msgid "Hemos enviado instrucciones a su correo electrónico para restablecer su contraseña."
+msgstr "We have sent instructions to your email address to reset your password."
+
+msgid "Si no recibe el correo en unos minutos, revise su bandeja de spam o verifique que el correo ingresado sea correcto."
+msgstr "If you do not receive the email within a few minutes, check your spam folder or verify that the email address entered is correct."
+
+# ============================================================================
+# password_reset_confirm.html
+# ============================================================================
+
+msgid "Nueva Contraseña - FODEJAS"
+msgstr "New Password - FODEJAS"
+
+msgid "Nueva Contraseña"
+msgstr "New Password"
+
+msgid "Ingrese su nueva contraseña dos veces para confirmar."
+msgstr "Enter your new password twice to confirm."
+
+msgid "Cambiar contraseña"
+msgstr "Change password"
+
+msgid "Enlace inválido"
+msgstr "Invalid link"
+
+msgid "Este enlace de recuperación ya ha sido utilizado o ha expirado. Por favor, solicite una nueva recuperación de contraseña."
+msgstr "This recovery link has already been used or has expired. Please request a new password reset."
+
+msgid "Solicitar nuevo enlace"
+msgstr "Request new link"
+
+# ============================================================================
+# password_reset_complete.html
+# ============================================================================
+
+msgid "Contraseña Restablecida - FODEJAS"
+msgstr "Password Reset - FODEJAS"
+
+msgid "Contraseña restablecida"
+msgstr "Password reset"
+
+msgid "Su contraseña ha sido cambiada correctamente. Ahora puede iniciar sesión con su nueva contraseña."
+msgstr "Your password has been changed successfully. You can now log in with your new password."
+
+# ============================================================================
+# partials/login_success.html
+# ============================================================================
+
+msgid "Bienvenido, {{ user.first_name }}. Redirigiendo al panel..."
+msgstr "Welcome, {{ user.first_name }}. Redirecting to dashboard..."

@@ -1,7 +1,5 @@
-<div class="alert alert-success" role="alert">
-    <i class="bi bi-check-circle me-2"></i>
-    Bienvenido, {{ user.first_name }}. Redirigiendo al panel...
-</div>
+{% load i18n %}
+{% blocktrans with first_name=user.first_name|default:"" %}Bienvenido, {{ first_name }}. Redirigiendo al panel...{% endblocktrans %}
 <script>
     window.location.href = "{% url 'accounts:dashboard' %}";
 </script>
