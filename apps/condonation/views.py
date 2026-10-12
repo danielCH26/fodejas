@@ -1,5 +1,7 @@
 """Views for termination and sanction management."""
 
+from django.utils.translation import gettext as _
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -169,7 +171,7 @@ class SanctionViewSet(viewsets.ModelViewSet):
 
         if not _can_submit_justification(request.user, sanction):
             return Response(
-                {"error": "No tienes permiso para enviar justificación para esta sanción"},
+                {"error": _("No tienes permiso para enviar justificación para esta sanción")},
                 status=status.HTTP_403_FORBIDDEN,
             )
 

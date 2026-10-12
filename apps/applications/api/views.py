@@ -1,5 +1,7 @@
 """API views for applications."""
 
+from django.utils.translation import gettext as _
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -69,14 +71,14 @@ class SolicitudViewSet(viewsets.ModelViewSet):
             convocatoria = Convocatory.objects.get(pk=serializer.validated_data["convocatoria_id"])
         except Convocatory.DoesNotExist:
             return Response(
-                {"error": "Convocatoria no encontrada"},
+                {"error": _("Convocatoria no encontrada")},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
         # Check if user already has application for this convocation
         if Solicitud.objects.filter(convocatoria=convocatoria, aspirante=request.user).exists():
             return Response(
-                {"error": "Ya tienes una solicitud para esta convocatoria"},
+                {"error": _("Ya tienes una solicitud para esta convocatoria")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

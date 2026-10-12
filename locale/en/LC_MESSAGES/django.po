@@ -2775,3 +2775,43 @@ msgstr "Select"
 
 msgid "Revocar Rol"
 msgstr "Revoke Role"
+
+# ============================================================================
+# API error responses (i18n-api-errors: CHG-XXX / CAP-XXX)
+# ============================================================================
+
+msgid "Convocatoria no encontrada"
+msgstr "Call for applications not found"
+
+msgid "Ya tienes una solicitud para esta convocatoria"
+msgstr "You already have an application for this call"
+
+msgid " transición exitosa"
+msgstr " transition successful"
+
+msgid "No tienes permiso para firmar este documento."
+msgstr "You do not have permission to sign this document."
+
+msgid "El documento no tiene PDF cargado; cargue el archivo primero."
+msgstr "The document does not have a PDF uploaded; upload the file first."
+
+msgid "El documento no ha sido firmado aún."
+msgstr "The document has not been signed yet."
+
+msgid "El documento no tiene PDF para verificar."
+msgstr "The document does not have a PDF to verify."
+
+msgid "anio debe ser numérico"
+msgstr "year must be numeric"
+
+msgid "trimestre debe ser numérico"
+msgstr "quarter must be numeric"
+
+msgid "No tienes permiso para enviar justificación para esta sanción"
+msgstr "You do not have permission to submit justification for this sanction"
+
+msgid "Transición no permitida: %(estado_origen)s → %(estado_destino)s"
+msgstr "Transition not allowed: %(estado_origen)s → %(estado_destino)s"
+
+msgid "El motivo es requerido para cancelar"
+msgstr "The reason is required to cancel"

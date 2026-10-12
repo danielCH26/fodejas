@@ -72,7 +72,7 @@ class ConvocatoryViewSet(viewsets.ModelViewSet):
                 )
 
                 return Response(
-                    {"status": " transición exitosa", "estado": convocatoria.estado},
+                    {"status": _(" transición exitosa"), "estado": convocatoria.estado},
                     status=status.HTTP_200_OK,
                 )
 

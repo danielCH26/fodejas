@@ -10,6 +10,7 @@ AGENTS.md §1, Ley 1581/2012).
 from dataclasses import dataclass
 from datetime import datetime
 
+from django.utils.translation import gettext as _
 from django.views.generic import ListView, TemplateView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -44,7 +45,7 @@ def informe_gestion(request):
     try:
         anio = int(request.query_params.get("anio", 0))
     except ValueError:
-        return Response({"error": "anio debe ser numérico"}, status=400)
+        return Response({"error": _("anio debe ser numérico")}, status=400)
     if not anio:
         return Response({"error": "anio es requerido"}, status=400)
     trimestre = request.query_params.get("trimestre")
@@ -52,7 +53,7 @@ def informe_gestion(request):
         try:
             trimestre = int(trimestre)
         except ValueError:
-            return Response({"error": "trimestre debe ser numérico"}, status=400)
+            return Response({"error": _("trimestre debe ser numérico")}, status=400)
     try:
         informe = ReportingService.informe_periodo(anio, trimestre)
     except ValueError as e:
