@@ -2,18 +2,19 @@
 
 ## 1. Selectores públicos (apps/reporting/)
 
-- [ ] 1.1 Crear `apps/reporting/selectors/transparencia.py` con
+- [x] 1.1 Crear `apps/reporting/selectors/transparencia.py` con
   `TransparenciaSelectors.actos_publicados()` — filtra
   `ActoAdministrativo.estado=PUBLICADO`, no serializa nombres ni
   documentos, incluye `pdf_url`
-- [ ] 1.2 `TransparenciaSelectors.convocatorias_abiertas_cerradas()` —
-  queryset de `Convocatory` con estados `ABIERTA` y `CERRADA`,
+- [x] 1.2 `TransparenciaSelectors.convocatorias_abiertas_cerradas()` —
+  queryset de `Convocatory` con estados `EN_INSCRIPCION` y `CERRADA`,
   incluye `nombre`, `codigo`, `estado`, `fecha_apertura`,
   `fecha_cierre`
-- [ ] 1.3 `TransparenciaSelectors.estadisticas_agregadas(anio=None)`
-  — reutiliza métodos de `ReportingService` para totales por año/estado;
-  primera iteración sin desglose IES/municipio
-- [ ] 1.4 `TransparenciaSelectors.estadisticas_portal()` — compose de
+- [x] 1.3 `TransparenciaSelectors.estadisticas_agregadas(anio=None)`
+  — reutiliza métodos de `ReportingService`; filtro por año aplica a
+  ejecución presupuestal (desde/hasta), demás secciones acumuladas del
+  programa (limitación documentada); sin desglose IES/municipio
+- [x] 1.4 `TransparenciaSelectors.estadisticas_portal()` — compose de
   KPIs públicos para landing page
 
 ## 2. Portal HTML (templates/transparencia/)
@@ -37,15 +38,16 @@
 
 ## 3. API pública JSON
 
-- [ ] 3.1 Crear serializadores en `apps/reporting/serializers.py`:
+- [x] 3.1 Crear serializadores en `apps/reporting/serializers.py`:
   `TransparenciaActoSerializer` (sin campos PII), `TransparenciaConvocatoriaSerializer`,
   `TransparenciaEstadisticaSerializer`
-- [ ] 3.2 Vistas DRF en `apps/reporting/views.py`:
+- [x] 3.2 Vistas DRF en `apps/reporting/views.py`:
   `TransparenciaActosView`, `TransparenciaConvocatoriasView`,
   `TransparenciaEstadisticasView` con `permission_classes = [AllowAny]`
-- [ ] 3.3 Registrar URLs en `apps/reporting/urls.py` bajo la ruta
+- [x] 3.3 Registrar URLs: `apps/reporting/urls_transparencia.py`
+  (URLconf dedicado) montado en `config/urls.py` bajo
   `api/transparencia/`
-- [ ] 3.4 Asegurar que los serializadores nunca serializan campos
+- [x] 3.4 Asegurar que los serializadores nunca serializan campos
   `nombre`, `documento`, `email`, `datos_beneficiario`,
   `datos_academicos`
 

@@ -65,7 +65,7 @@ datos_academicos):
   `estado=PUBLICADO`, sin nombres de beneficiarios, incluyendo enlace al
   PDF oficial.
 - `TransparenciaSelectors.convocatorias_abiertas_cerradas()`: lista
-  de convocatorias con su estado (ABIERTA/CERRADA) y fechas.
+  de convocatorias con su estado (EN_INSCRIPCION/CERRADA) y fechas.
 - `TransparenciaSelectors.estadisticas_agregadas(anio=None,
   estado=None)`: reutiliza `ReportingService` para totales por año y
   estado — sin desglose IES/municipio en esta primera iteración.

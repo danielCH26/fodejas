@@ -86,25 +86,29 @@ personales, `project.md §13.2`) y la política de PII de
 - **THEN** la respuesta no contiene los campos `nombre`, `documento`,
   `email`, `datos_beneficiario` ni `datos_academicos`
 
-#### Scenario: Agregados por año
+#### Scenario: Agregados por año (ejecución presupuestal)
 
-- **GIVEN** postulaciones en diferentes años y estados
+- **GIVEN** giros (DisbursementAuthorization) creados en 2025 y en 2026
 - **WHEN** se filtra `?anio=2026`
-- **THEN** la respuesta contiene totales correspondientes al año 2026
-  y totales generales por estado
+- **THEN** la sección de ejecución presupuestal contiene únicamente los
+  montos del año 2026; sin el filtro, la respuesta contiene los
+  acumulados del programa. Las demás secciones (convocatorias,
+  beneficiarios, seguimiento académico) presentan totales acumulados
+  del programa en esta primera iteración (limitación documentada del
+  selector, heredada de los métodos de `ReportingService`).
 
 ---
 
 ### Requirement: Listado de convocatorias públicas
 
-El sistema SHALL exponer las convocatorias con estado `ABIERTA` y
+El sistema SHALL exponer las convocatorias con estado `EN_INSCRIPCION` (abierta a inscripción) y
 `CERRADA` de forma pública, incluyendo: código, nombre, estado,
 fecha de apertura y fecha de cierre. Las convocatorias en estado
 `BORRADOR` o `CANCELADA` no SHALL ser visibles.
 
 #### Scenario: Convocatoria abierta visible
 
-- **GIVEN** una convocatoria con `estado = Convocatory.Estado.ABIERTA`
+- **GIVEN** una convocatoria con `estado = Convocatory.Estado.EN_INSCRIPCION`
 - **WHEN** se consulta `GET /api/transparencia/convocatorias/`
 - **THEN** la respuesta incluye código, nombre, estado, fechas
 
