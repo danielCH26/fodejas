@@ -42,6 +42,7 @@ urlpatterns = [
     path(
         "api/sessions/", include("apps.governance.sessions.urls")
     ),  # Governance sessions API (CHG-501)
+    path("api/reporting/", include("apps.reporting.urls")),  # Management reports API (CHG-503)
     # HTML views
     path("convocatorias/", include("apps.convocatories.urls")),  # Convocatory HTML views
     path("applications/", include("apps.applications.urls")),  # Applications HTML views

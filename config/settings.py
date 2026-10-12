@@ -144,6 +144,7 @@ INSTALLED_APPS = [
     # CHG-806 — apps.reporting removida (stub). Ver docs/stubs-removed.md.
     "apps.condonation",
     "apps.governance",
+    "apps.reporting",
     "apps.audit",
     "apps.core",
     "crispy_forms",
