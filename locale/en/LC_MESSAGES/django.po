@@ -169,8 +169,9 @@ msgstr "Dashboard"
 msgid "Menú"
 msgstr "Menu"
 
-msgid "Bienvenido, {{ user.first_name }}"
-msgstr "Welcome, {{ user.first_name }}"
+msgctxt "dashboard welcome"
+msgid "Bienvenido, %(first_name)s"
+msgstr "Welcome, %(first_name)s"
 
 msgid "Accede a sus postulaciones, resultados y seguimiento académico."
 msgstr "Access your applications, results, and academic tracking."
@@ -273,5 +274,1294 @@ msgstr "Your password has been changed successfully. You can now log in with you
 # partials/login_success.html
 # ============================================================================
 
-msgid "Bienvenido, {{ user.first_name }}. Redirigiendo al panel..."
-msgstr "Welcome, {{ user.first_name }}. Redirecting to dashboard..."
+msgid "Bienvenido, %(first_name)s. Redirigiendo al panel..."
+msgstr "Welcome, %(first_name)s. Redirecting to dashboard..."
+
+# ============================================================================
+# CHG-507-multilang Unit B — convocatories/, applications/, audit/, claims/
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# convocatories/index.html
+# ----------------------------------------------------------------------------
+
+msgid "Nueva Convocatoria"
+msgstr "New Call for Applications"
+
+msgid "Buscar por nombre o código..."
+msgstr "Search by name or code..."
+
+msgid "Todos los estados"
+msgstr "All statuses"
+
+msgid "Todos los tipos"
+msgstr "All types"
+
+msgid "Filtrar"
+msgstr "Filter"
+
+msgid "Nombre"
+msgstr "Name"
+
+msgid "Código"
+msgstr "Code"
+
+msgid "Tipo"
+msgstr "Type"
+
+msgid "Período"
+msgstr "Period"
+
+msgid "Estado"
+msgstr "Status"
+
+msgid "Acciones"
+msgstr "Actions"
+
+msgid "No hay convocatorias registradas."
+msgstr "No calls for applications registered."
+
+# ----------------------------------------------------------------------------
+# convocatories/detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Volver"
+msgstr "Back"
+
+msgid "Editar"
+msgstr "Edit"
+
+msgid "Postularse"
+msgstr "Apply"
+
+msgid "Información"
+msgstr "Information"
+
+msgid "Código:"
+msgstr "Code:"
+
+msgid "Tipo:"
+msgstr "Type:"
+
+msgid "Período:"
+msgstr "Period:"
+
+msgid "Estado:"
+msgstr "Status:"
+
+msgid "Monto por semestre:"
+msgstr "Amount per semester:"
+
+msgid "Duración máxima:"
+msgstr "Maximum duration:"
+
+msgid "Cupo total:"
+msgstr "Total slots:"
+
+msgid "Cambiar Estado"
+msgstr "Change Status"
+
+msgid "Publicar"
+msgstr "Publish"
+
+msgid "Abrir Inscripciones"
+msgstr "Open Enrollments"
+
+msgid "Cerrar Inscripciones"
+msgstr "Close Enrollments"
+
+msgid "Iniciar Calificación"
+msgstr "Start Scoring"
+
+msgid "Publicar Resultados"
+msgstr "Publish Results"
+
+msgid "Cerrar Convocatoria"
+msgstr "Close Call"
+
+# ----------------------------------------------------------------------------
+# convocatories/form.html
+# ----------------------------------------------------------------------------
+
+msgid "Nueva Convocatoria"
+msgstr "New Call for Applications"
+
+msgid "Editar Convocatoria"
+msgstr "Edit Call for Applications"
+
+msgid "Nombre *"
+msgstr "Name *"
+
+msgid "Código único (slug)"
+msgstr "Unique code (slug)"
+
+msgid "Tipo *"
+msgstr "Type *"
+
+msgid "Período *"
+msgstr "Period *"
+
+msgid "Cupo Total"
+msgstr "Total Slots"
+
+msgid "Monto por Semestre (SMLMV)"
+msgstr "Amount per Semester (SMLMV)"
+
+msgid "Duración Máxima (semestres)"
+msgstr "Maximum Duration (semesters)"
+
+msgid "Crear Convocatoria"
+msgstr "Create Call for Applications"
+
+msgid "Guardar Cambios"
+msgstr "Save Changes"
+
+msgid "Cancelar"
+msgstr "Cancel"
+
+# ----------------------------------------------------------------------------
+# applications/list.html
+# ----------------------------------------------------------------------------
+
+msgid "Mis Postulaciones"
+msgstr "My Applications"
+
+msgid "Ver Convocatorias"
+msgstr "View Calls for Applications"
+
+msgid "Convocatoria"
+msgstr "Call for Applications"
+
+msgid "Radicado"
+msgstr "Filing Number"
+
+msgid "Fecha de Creación"
+msgstr "Creation Date"
+
+msgid "Última Actualización"
+msgstr "Last Update"
+
+msgid "Continuar"
+msgstr "Continue"
+
+msgid "No tienes postulaciones"
+msgstr "You have no applications"
+
+msgid "Comienza tu primera postulación seleccionando una convocatoria abierta."
+msgstr "Start your first application by selecting an open call for applications."
+
+# ----------------------------------------------------------------------------
+# applications/detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Postulación"
+msgstr "Application"
+
+msgid "Volver a la lista"
+msgstr "Back to list"
+
+msgid "Continuar Edición"
+msgstr "Continue Editing"
+
+msgid "Información de la Postulación"
+msgstr "Application Information"
+
+msgid "Convocatoria:"
+msgstr "Call for Applications:"
+
+msgid "Estado:"
+msgstr "Status:"
+
+msgid "Radicado:"
+msgstr "Filing Number:"
+
+msgid "UUID (para URLs):"
+msgstr "UUID (for URLs):"
+
+msgid "Fecha de Creación:"
+msgstr "Creation Date:"
+
+msgid "Última Actualización:"
+msgstr "Last Update:"
+
+msgid "Paso Actual:"
+msgstr "Current Step:"
+
+msgid "Consentimiento:"
+msgstr "Consent:"
+
+msgid "Aceptado el"
+msgstr "Accepted on"
+
+msgid "Pendiente"
+msgstr "Pending"
+
+msgid "Acciones"
+msgstr "Actions"
+
+msgid "Ver Todas las Postulaciones"
+msgstr "View All Applications"
+
+msgid "Continuar con el Wizard"
+msgstr "Continue with the Wizard"
+
+msgid "Descargar PDF"
+msgstr "Download PDF"
+
+msgid "Resultados publicados"
+msgstr "Results published"
+
+msgid "Presentar Reclamación"
+msgstr "Submit Claim"
+
+msgid "Progreso del Wizard"
+msgstr "Wizard Progress"
+
+msgid "Paso"
+msgstr "Step"
+
+msgid "de"
+msgstr "of"
+
+msgid "Datos Personales"
+msgstr "Personal Data"
+
+msgid "Información Académica"
+msgstr "Academic Information"
+
+msgid "Información Socioeconómica"
+msgstr "Socioeconomic Information"
+
+msgid "Anexos"
+msgstr "Attachments"
+
+msgid "Declaración y Consentimiento"
+msgstr "Declaration and Consent"
+
+msgid "Resultados de la Evaluación"
+msgstr "Evaluation Results"
+
+msgid "Puntaje Total"
+msgstr "Total Score"
+
+msgid "Ranking General"
+msgstr "General Ranking"
+
+msgid "Ranking Municipal"
+msgstr "Municipal Ranking"
+
+# ----------------------------------------------------------------------------
+# applications/wizard.html
+# ----------------------------------------------------------------------------
+
+msgid "Wizard FUI"
+msgstr "FUI Wizard"
+
+msgid "Volver al Detalle"
+msgstr "Back to Details"
+
+msgid "Ver Todas"
+msgstr "View All"
+
+msgid "Convocatoria:"
+msgstr "Call for Applications:"
+
+msgid "Estado:"
+msgstr "Status:"
+
+msgid "Anterior"
+msgstr "Previous"
+
+msgid "Guardar Draft"
+msgstr "Save Draft"
+
+msgid "Siguiente"
+msgstr "Next"
+
+msgid "Radicar Solicitud"
+msgstr "File Application"
+
+# ----------------------------------------------------------------------------
+# applications/partials/wizard_step_1.html
+# ----------------------------------------------------------------------------
+
+msgid "Ingresa tu información personal básica."
+msgstr "Enter your basic personal information."
+
+msgid "Nombre Completo *"
+msgstr "Full Name *"
+
+msgid "Tipo de Documento *"
+msgstr "Document Type *"
+
+msgid "Seleccionar..."
+msgstr "Select..."
+
+msgid "Cédula de Ciudadanía"
+msgstr "Citizenship ID"
+
+msgid "Cédula de Extranjería"
+msgstr "Foreign ID"
+
+msgid "Tarjeta de Identidad"
+msgstr "Identity Card"
+
+msgid "Pasaporte"
+msgstr "Passport"
+
+msgid "Número de Documento *"
+msgstr "Document Number *"
+
+msgid "Fecha de Nacimiento *"
+msgstr "Date of Birth *"
+
+msgid "Teléfono *"
+msgstr "Phone *"
+
+msgid "Email Alternativo"
+msgstr "Alternative Email"
+
+msgid "Para notificaciones adicionales"
+msgstr "For additional notifications"
+
+msgid "Dirección de Residencia *"
+msgstr "Residence Address *"
+
+msgid "Municipio/Isla *"
+msgstr "Municipality/Island *"
+
+msgid "Etnia/Pertenencia Étnica"
+msgstr "Ethnicity/Ethnic Affiliation"
+
+msgid "Información importante:"
+msgstr "Important information:"
+
+msgid "Todos los campos marcados con * son obligatorios. Asegúrate de que la información sea verídica y coincida con tus documentos oficiales."
+msgstr "All fields marked with * are required. Make sure the information is accurate and matches your official documents."
+
+# ----------------------------------------------------------------------------
+# applications/partials/wizard_step_2.html
+# ----------------------------------------------------------------------------
+
+msgid "Información sobre tu historial educativo y logros académicos."
+msgstr "Information about your educational history and academic achievements."
+
+msgid "Nivel de Formación *"
+msgstr "Education Level *"
+
+msgid "Técnico"
+msgstr "Technical"
+
+msgid "Tecnológico"
+msgstr "Technological"
+
+msgid "Pregrado"
+msgstr "Undergraduate"
+
+msgid "Especialización"
+msgstr "Specialization"
+
+msgid "Maestría"
+msgstr "Master's Degree"
+
+msgid "Doctorado"
+msgstr "Doctorate"
+
+msgid "Programa Académico *"
+msgstr "Academic Program *"
+
+msgid "Institución Educativa *"
+msgstr "Educational Institution *"
+
+msgid "Tipo de Institución *"
+msgstr "Institution Type *"
+
+msgid "Pública"
+msgstr "Public"
+
+msgid "Privada"
+msgstr "Private"
+
+msgid "Semestre Actual *"
+msgstr "Current Semester *"
+
+msgid "Promedio Acumulado *"
+msgstr "Cumulative Average *"
+
+msgid "Escala de 0.0 a 5.0"
+msgstr "Scale from 0.0 to 5.0"
+
+msgid "Logros Académicos"
+msgstr "Academic Achievements"
+
+msgid "Mención de honores, becas, publicaciones, etc."
+msgstr "Honors, scholarships, publications, etc."
+
+msgid "Poseo certificado de excelencia académica"
+msgstr "I have an academic excellence certificate"
+
+msgid "Participo en proyectos de investigación"
+msgstr "I participate in research projects"
+
+msgid "Importante para el scoring:"
+msgstr "Important for scoring:"
+
+msgid "La información académica es crucial para la evaluación. Asegúrate de que sea precisa y puedas respaldarla con documentos."
+msgstr "Academic information is crucial for evaluation. Make sure it is accurate and you can support it with documents."
+
+# ----------------------------------------------------------------------------
+# applications/partials/wizard_step_3.html
+# ----------------------------------------------------------------------------
+
+msgid "Información sobre tu contexto familiar y económico."
+msgstr "Information about your family and economic context."
+
+msgid "Estrato Socioeconómico *"
+msgstr "Socioeconomic Stratum *"
+
+msgid "Bajo-bajo"
+msgstr "Very low"
+
+msgid "Bajo"
+msgstr "Low"
+
+msgid "Medio-bajo"
+msgstr "Lower-middle"
+
+msgid "Medio"
+msgstr "Middle"
+
+msgid "Medio-alto"
+msgstr "Upper-middle"
+
+msgid "Alto"
+msgstr "High"
+
+msgid "Grupo SISBÉN (si aplica)"
+msgstr "SISBEN Group (if applicable)"
+
+msgid "No aplica / No tengo"
+msgstr "Not applicable / I don't have"
+
+msgid "Personas en el Hogar *"
+msgstr "People in Household *"
+
+msgid "Incluyéndote a ti"
+msgstr "Including yourself"
+
+msgid "Ingreso Familiar Mensual *"
+msgstr "Monthly Family Income *"
+
+msgid "En pesos colombianos"
+msgstr "In Colombian pesos"
+
+msgid "Personas Dependientes"
+msgstr "Dependents"
+
+msgid "Niños, adultos mayores, personas con discapacidad"
+msgstr "Children, elderly, persons with disabilities"
+
+msgid "Tipo de Vivienda *"
+msgstr "Housing Type *"
+
+msgid "Propia"
+msgstr "Own"
+
+msgid "Arrendada"
+msgstr "Rented"
+
+msgid "Familiar"
+msgstr "Family"
+
+msgid "Otro"
+msgstr "Other"
+
+msgid "Situación Laboral *"
+msgstr "Employment Status *"
+
+msgid "Empleado formal"
+msgstr "Formal employee"
+
+msgid "Trabajador independiente"
+msgstr "Independent worker"
+
+msgid "Desempleado"
+msgstr "Unemployed"
+
+msgid "Solo estudiante"
+msgstr "Student only"
+
+msgid "Observaciones Adicionales"
+msgstr "Additional Observations"
+
+msgid "Información adicional relevante sobre tu situación socioeconómica"
+msgstr "Additional relevant information about your socioeconomic situation"
+
+msgid "Confidencialidad garantizada:"
+msgstr "Confidentiality guaranteed:"
+
+msgid "Esta información es confidencial y se usa únicamente para la evaluación socioeconómica del beneficio. No se comparte con terceros."
+msgstr "This information is confidential and is only used for the socioeconomic evaluation of the benefit. It is not shared with third parties."
+
+# ----------------------------------------------------------------------------
+# applications/partials/wizard_step_4.html
+# ----------------------------------------------------------------------------
+
+msgid "Sube los documentos de soporte requeridos para tu postulación."
+msgstr "Upload the required supporting documents for your application."
+
+msgid "Atención:"
+msgstr "Attention:"
+
+msgid "Todos los documentos deben estar legibles y en formato PDF, JPG o PNG. Tamaño máximo por archivo: 10MB."
+msgstr "All documents must be legible and in PDF, JPG or PNG format. Maximum file size: 10MB."
+
+msgid "Documentos Obligatorios"
+msgstr "Required Documents"
+
+msgid "Documento de Identidad"
+msgstr "Identity Document"
+
+msgid "Cédula de ciudadanía, cédula de extranjería o pasaporte vigente."
+msgstr "Citizenship ID, foreign ID, or valid passport."
+
+msgid "Subido"
+msgstr "Uploaded"
+
+msgid "Certificado de Notas"
+msgstr "Transcript of Records"
+
+msgid "Certificado oficial de notas del último período académico."
+msgstr "Official transcript from the last academic period."
+
+msgid "Diploma o Certificación de Grado"
+msgstr "Diploma or Degree Certificate"
+
+msgid "Diploma del título más reciente o certificación de estar cursando."
+msgstr "Most recent degree diploma or enrollment certificate."
+
+msgid "Documentos Opcionales"
+msgstr "Optional Documents"
+
+msgid "Recibo de Pago de Matrícula"
+msgstr "Tuition Payment Receipt"
+
+msgid "Último recibo de pago de matrícula o derecho de grado."
+msgstr "Most recent tuition payment or degree fee receipt."
+
+msgid "Otros Documentos de Soporte"
+msgstr "Other Supporting Documents"
+
+msgid "Certificados de excelencia, cartas de recomendación, etc."
+msgstr "Excellence certificates, recommendation letters, etc."
+
+msgid "Arrastra y suelta archivos aquí"
+msgstr "Drag and drop files here"
+
+msgid "o haz clic para seleccionar archivos"
+msgstr "or click to select files"
+
+msgid "Seleccionar Archivos"
+msgstr "Select Files"
+
+msgid "Progreso de Subida"
+msgstr "Upload Progress"
+
+msgid "Preparando subida..."
+msgstr "Preparing upload..."
+
+msgid "Archivos Subidos"
+msgstr "Uploaded Files"
+
+msgid "Validado"
+msgstr "Validated"
+
+# ----------------------------------------------------------------------------
+# applications/partials/wizard_step_5.html
+# ----------------------------------------------------------------------------
+
+msgid "Declaración final y consentimiento para el tratamiento de datos."
+msgstr "Final declaration and consent for data processing."
+
+msgid "Resumen de la Postulación"
+msgstr "Application Summary"
+
+msgid "Información Verificada"
+msgstr "Verified Information"
+
+msgid "Datos Personales:"
+msgstr "Personal Data:"
+
+msgid "Información Académica:"
+msgstr "Academic Information:"
+
+msgid "Información Socioeconómica:"
+msgstr "Socioeconomic Information:"
+
+msgid "Documentos Subidos:"
+msgstr "Uploaded Documents:"
+
+msgid "archivos"
+msgstr "files"
+
+msgid "Estado de la Convocatoria"
+msgstr "Call Status"
+
+msgid "Convocatoria:"
+msgstr "Call for Applications:"
+
+msgid "Estado:"
+msgstr "Status:"
+
+msgid "Cierre de inscripciones:"
+msgstr "Enrollment deadline:"
+
+msgid "Declaración Jurada"
+msgstr "Sworn Declaration"
+
+msgid "Declaro bajo la gravedad del juramento"
+msgstr "I declare under oath"
+
+msgid "que la información proporcionada en esta solicitud es verídica, completa y exacta. Soy consciente que cualquier falsedad u omisión puede resultar en la descalificación de mi postulación y posibles sanciones legales."
+msgstr "that the information provided in this application is true, complete, and accurate. I am aware that any falsehood or omission may result in disqualification of my application and possible legal sanctions."
+
+msgid "Declaro que no recibo simultáneamente"
+msgstr "I declare that I do not receive simultaneously"
+
+msgid "otro beneficio educativo de carácter oficial (gubernamental) para el mismo nivel de formación o período académico, a menos que esté expresamente permitido por la normativa FODEJAS."
+msgstr "another official (government) educational benefit for the same level of education or academic period, unless expressly permitted by FODEJAS regulations."
+
+msgid "Me comprometo a mantener"
+msgstr "I commit to maintain"
+
+msgid "un rendimiento académico satisfactorio durante la vigencia del beneficio y a cumplir con todos los requisitos académicos y administrativos establecidos por FODEJAS y mi institución educativa."
+msgstr "satisfactory academic performance during the benefit period and to comply with all academic and administrative requirements established by FODEJAS and my educational institution."
+
+msgid "Consentimiento para Tratamiento de Datos"
+msgstr "Data Processing Consent"
+
+msgid "Ley 1581 de 2012"
+msgstr "Law 1581 of 2012"
+
+msgid "Decreto 1377 de 2013"
+msgstr "Decree 1377 of 2013"
+
+msgid "De acuerdo con la %(ley)s y el %(decreto)s, autorizo a FODEJAS para el tratamiento de mis datos personales conforme a la política de tratamiento de datos disponible en el portal de transparencia."
+msgstr "In accordance with %(ley)s and %(decreto)s, I authorize FODEJAS to process my personal data in accordance with the data processing policy available on the transparency portal."
+
+msgid "Autorizo el tratamiento de mis datos personales"
+msgstr "I authorize the processing of my personal data"
+
+msgid "para los fines relacionados con el proceso de postulación, evaluación, otorgamiento, seguimiento y control del beneficio educativo, así como para fines estadísticos y de mejora continua del programa FODEJAS."
+msgstr "for purposes related to the application, evaluation, granting, monitoring and control of the educational benefit, as well as for statistical purposes and continuous improvement of the FODEJAS program."
+
+msgid "Autorizo el envío de comunicaciones"
+msgstr "I authorize the sending of communications"
+
+msgid "relacionadas con mi postulación y beneficio a través de correo electrónico, mensajes de texto y notificaciones en la plataforma."
+msgstr "related to my application and benefit through email, text messages and platform notifications."
+
+msgid "Autorizo la verificación y auditoría"
+msgstr "I authorize verification and audit"
+
+msgid "de la información proporcionada por las entidades competentes, incluyendo la Secretaría de Educación Departamental y los órganos de control."
+msgstr "of the information provided by competent entities, including the Departmental Education Secretariat and control agencies."
+
+msgid "Fecha"
+msgstr "Date"
+
+msgid "Lugar"
+msgstr "Place"
+
+msgid "Importante:"
+msgstr "Important:"
+
+msgid "Una vez radicada la solicitud, no podrás modificarla. Asegúrate de haber revisado toda la información antes de proceder con la radicación."
+msgstr "Once the application is filed, you will not be able to modify it. Make sure you have reviewed all information before proceeding with filing."
+
+# ----------------------------------------------------------------------------
+# applications/review/list.html
+# ----------------------------------------------------------------------------
+
+msgid "Revisión de Requisitos"
+msgstr "Requirements Review"
+
+msgid "Solicitudes Pendientes de Verificación"
+msgstr "Pending Verification Requests"
+
+msgid "Aspirante"
+msgstr "Applicant"
+
+msgid "Fecha Radicación"
+msgstr "Filing Date"
+
+msgid "Progreso"
+msgstr "Progress"
+
+msgid "Sin radicado"
+msgstr "No filing number"
+
+msgid "Verificar"
+msgstr "Verify"
+
+msgid "No hay solicitudes pendientes"
+msgstr "No pending requests"
+
+msgid "No hay solicitudes que requieran verificación en este momento."
+msgstr "There are no requests that require verification at this time."
+
+# ----------------------------------------------------------------------------
+# applications/review/detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Volver a la Lista"
+msgstr "Back to List"
+
+msgid "Verificar Requisitos"
+msgstr "Verify Requirements"
+
+msgid "Información de la Solicitud"
+msgstr "Request Information"
+
+msgid "Radicado:"
+msgstr "Filing Number:"
+
+msgid "Aspirante:"
+msgstr "Applicant:"
+
+msgid "Convocatoria:"
+msgstr "Call for Applications:"
+
+msgid "Estado:"
+msgstr "Status:"
+
+msgid "Progreso de Verificación"
+msgstr "Verification Progress"
+
+msgid "verificados"
+msgstr "verified"
+
+msgid "verificados"
+msgstr "verified"
+
+msgid "rechazados"
+msgstr "rejected"
+
+msgid "pendientes"
+msgstr "pending"
+
+msgid "Lista de Requisitos"
+msgstr "Requirements List"
+
+msgid "Código:"
+msgstr "Code:"
+
+msgid "Observaciones:"
+msgstr "Observations:"
+
+msgid "Ver Evidencia"
+msgstr "View Evidence"
+
+msgid "Validado por:"
+msgstr "Validated by:"
+
+msgid "el"
+msgstr "on"
+
+msgid "Observaciones (opcional)"
+msgstr "Observations (optional)"
+
+msgid "Volver"
+msgstr "Back"
+
+msgid "Historial"
+msgstr "History"
+
+msgid "Rechazar Solicitud"
+msgstr "Reject Request"
+
+msgid "Aprobar Todos los Requisitos"
+msgstr "Approve All Requirements"
+
+# ----------------------------------------------------------------------------
+# applications/review/history.html
+# ----------------------------------------------------------------------------
+
+msgid "Volver a Verificación"
+msgstr "Back to Verification"
+
+msgid "Historial de Verificaciones"
+msgstr "Verification History"
+
+msgid "Estado Actual:"
+msgstr "Current Status:"
+
+msgid "Historial de Validaciones"
+msgstr "Validation History"
+
+msgid "Por:"
+msgstr "By:"
+
+msgid "Sin historial"
+msgstr "No history"
+
+msgid "No hay verificaciones registradas aún."
+msgstr "No verifications registered yet."
+
+# ----------------------------------------------------------------------------
+# audit/base.html
+# ----------------------------------------------------------------------------
+
+msgid "Auditoría"
+msgstr "Audit Log"
+
+msgid "Eventos"
+msgstr "Events"
+
+msgid "Verificar Cadena"
+msgstr "Verify Chain"
+
+msgid "Estadísticas"
+msgstr "Statistics"
+
+msgid "Total:"
+msgstr "Total:"
+
+msgid "Por acción:"
+msgstr "By action:"
+
+# ----------------------------------------------------------------------------
+# audit/index.html
+# ----------------------------------------------------------------------------
+
+msgid "Eventos de Auditoría"
+msgstr "Audit Events"
+
+msgid "Todas"
+msgstr "All"
+
+msgid "Entidad"
+msgstr "Entity"
+
+msgid "Módulo"
+msgstr "Module"
+
+msgid "Buscar"
+msgstr "Search"
+
+msgid "Entidad o módulo..."
+msgstr "Entity or module..."
+
+msgid "Desde"
+msgstr "From"
+
+msgid "Hasta"
+msgstr "To"
+
+msgid "Fecha/Hora"
+msgstr "Date/Time"
+
+msgid "Acción"
+msgstr "Action"
+
+msgid "Usuario"
+msgstr "User"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Sistema"
+msgstr "System"
+
+msgid "No se encontraron eventos de auditoría"
+msgstr "No audit events found"
+
+msgid "Primera"
+msgstr "First"
+
+msgid "Anterior"
+msgstr "Previous"
+
+msgid "Página"
+msgstr "Page"
+
+msgid "de"
+msgstr "of"
+
+msgid "Siguiente"
+msgstr "Next"
+
+msgid "Última"
+msgstr "Last"
+
+# ----------------------------------------------------------------------------
+# audit/detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Detalle del Evento"
+msgstr "Event Details"
+
+msgid "Información del Evento"
+msgstr "Event Information"
+
+msgid "ID:"
+msgstr "ID:"
+
+msgid "Fecha/Hora:"
+msgstr "Date/Time:"
+
+msgid "Acción:"
+msgstr "Action:"
+
+msgid "Entidad:"
+msgstr "Entity:"
+
+msgid "ID de Entidad:"
+msgstr "Entity ID:"
+
+msgid "Módulo:"
+msgstr "Module:"
+
+msgid "Usuario:"
+msgstr "User:"
+
+msgid "Dirección IP:"
+msgstr "IP Address:"
+
+msgid "User Agent:"
+msgstr "User Agent:"
+
+msgid "Cadena de Hash"
+msgstr "Hash Chain"
+
+msgid "Hash Anterior:"
+msgstr "Previous Hash:"
+
+msgid "Hash Actual:"
+msgstr "Current Hash:"
+
+msgid "Válido:"
+msgstr "Valid:"
+
+msgid "Válido"
+msgstr "Valid"
+
+msgid "Inválido"
+msgstr "Invalid"
+
+msgid "Cambios"
+msgstr "Changes"
+
+msgid "Antes"
+msgstr "Before"
+
+msgid "Después"
+msgstr "After"
+
+msgid "JSON Completo"
+msgstr "Complete JSON"
+
+# ----------------------------------------------------------------------------
+# audit/verify.html
+# ----------------------------------------------------------------------------
+
+msgid "Verificar Integridad de la Cadena"
+msgstr "Verify Chain Integrity"
+
+msgid "Cadena de Auditoría Válida"
+msgstr "Valid Audit Chain"
+
+msgid "La cadena de hash no ha sido alterada. La integridad de los registros de auditoría está verificada."
+msgstr "The hash chain has not been altered. The integrity of the audit records is verified."
+
+msgid "Cadena de Auditoría Comprometida"
+msgstr "Compromised Audit Chain"
+
+msgid "Se ha detectado una alteración en la cadena de hash. Los registros de auditoría pueden haber sido modificados."
+msgstr "An alteration has been detected in the hash chain. Audit records may have been modified."
+
+msgid "Detalles de la Verificación"
+msgstr "Verification Details"
+
+msgid "Estado:"
+msgstr "Status:"
+
+msgid "Último Hash Válido:"
+msgstr "Last Valid Hash:"
+
+msgid "Punto de Ruptura:"
+msgstr "Break Point:"
+
+msgid "¿Cómo funciona la verificación?"
+msgstr "How does verification work?"
+
+msgid "La cadena de auditoría utiliza cryptografía SHA-256 para garantizar la integridad:"
+msgstr "The audit chain uses SHA-256 cryptography to guarantee integrity:"
+
+msgid "Cada evento de auditoría contiene un previous_hash que apunta al evento anterior"
+msgstr "Each audit event contains a previous_hash that points to the previous event"
+
+msgid "El current_hash se calcula usando: timestamp, actor, acción, entidad, cambios y el hash anterior"
+msgstr "The current_hash is calculated using: timestamp, actor, action, entity, changes, and the previous hash"
+
+msgid "Si alguien modifica un evento histórico, su hash ya no coincidirá con el previous_hash del evento siguiente"
+msgstr "If someone modifies a historical event, their hash will no longer match the previous_hash of the next event"
+
+msgid "La verificación recorre toda la cadena comparando hashes para detectar cualquier manipulación"
+msgstr "The verification traverses the entire chain comparing hashes to detect any manipulation"
+
+msgid "Esta verificación es"
+msgstr "This verification is"
+
+msgid "irreversible"
+msgstr "irreversible"
+
+msgid "Cualquier modificación maliciosa queda registrada como un intento de violación de integridad."
+msgstr "Any malicious modification is recorded as an attempt to violate integrity."
+
+# ----------------------------------------------------------------------------
+# claims/create.html
+# ----------------------------------------------------------------------------
+
+msgid "Presentar Reclamación"
+msgstr "Submit Claim"
+
+msgid "Postulación:"
+msgstr "Application:"
+
+msgid "Tipo de Reclamación *"
+msgstr "Claim Type *"
+
+msgid "Seleccione..."
+msgstr "Select..."
+
+msgid "Descripción *"
+msgstr "Description *"
+
+msgid "Explique detalladamente el motivo de su reclamación..."
+msgstr "Explain in detail the reason for your claim..."
+
+msgid "Sea lo más específico posible. Incluya información que considere relevante para su reclamación."
+msgstr "Be as specific as possible. Include information you consider relevant to your claim."
+
+msgid "Evidencia (opcional)"
+msgstr "Evidence (optional)"
+
+msgid "Adjunte documentos que sustenten su reclamación (PDF, JPG, PNG)"
+msgstr "Attach documents supporting your claim (PDF, JPG, PNG)"
+
+msgid "Nota:"
+msgstr "Note:"
+
+msgid "Una vez presentada, la reclamación será revisada por la Junta Directiva. Recibirá una notificación cuando sea resuelta."
+msgstr "Once submitted, the claim will be reviewed by the Board. You will receive a notification when it is resolved."
+
+# ----------------------------------------------------------------------------
+# claims/list.html
+# ----------------------------------------------------------------------------
+
+msgid "Mis Reclamaciones"
+msgstr "My Claims"
+
+msgid "Fecha"
+msgstr "Date"
+
+msgid "Tipo"
+msgstr "Type"
+
+msgid "Acciones"
+msgstr "Actions"
+
+msgid "Ver"
+msgstr "View"
+
+msgid "No tienes reclamaciones presentadas."
+msgstr "You have no submitted claims."
+
+# ----------------------------------------------------------------------------
+# claims/detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Detalle de Reclamación"
+msgstr "Claim Details"
+
+msgid "Información de la Reclamación"
+msgstr "Claim Information"
+
+msgid "UUID"
+msgstr "UUID"
+
+msgid "Convocatoria"
+msgstr "Call for Applications"
+
+msgid "Radicado"
+msgstr "Filing Number"
+
+msgid "Tipo"
+msgstr "Type"
+
+msgid "Estado"
+msgstr "Status"
+
+msgid "Fecha de creación"
+msgstr "Creation date"
+
+msgid "Fecha de resolución"
+msgstr "Resolution date"
+
+msgid "Resuelto por"
+msgstr "Resolved by"
+
+msgid "Descripción"
+msgstr "Description"
+
+msgid "Respuesta"
+msgstr "Response"
+
+msgid "Evidencia Adjunta"
+msgstr "Attached Evidence"
+
+msgid "Descargar evidencia"
+msgstr "Download evidence"
+
+msgid "Historial"
+msgstr "History"
+
+msgid "Editar Reclamación"
+msgstr "Edit Claim"
+
+msgid "2ª Instancia"
+msgstr "2nd Instance"
+
+msgid "¿No estás de acuerdo con la resolución? Puedes presentar una apelación ante la Oficina Jurídica."
+msgstr "Do you disagree with the resolution? You can file an appeal with the Legal Office."
+
+msgid "Presentar Apelación"
+msgstr "Submit Appeal"
+
+# ----------------------------------------------------------------------------
+# claims/edit.html
+# ----------------------------------------------------------------------------
+
+msgid "Evidencia"
+msgstr "Evidence"
+
+msgid "actual:"
+msgstr "current:"
+
+msgid "Sin archivo"
+msgstr "No file"
+
+msgid "Deje en blanco para mantener el archivo actual"
+msgstr "Leave blank to keep the current file"
+
+# ----------------------------------------------------------------------------
+# claims/apelacion_create.html
+# ----------------------------------------------------------------------------
+
+msgid "Reclamación a apelar"
+msgstr "Claim to appeal"
+
+msgid "Respuesta de la Junta:"
+msgstr "Board Response:"
+
+msgid "Fundamentos de la Apelación *"
+msgstr "Appeal Grounds *"
+
+msgid "Explique los fundamentos de su apelación contra la decisión de la Junta Directiva..."
+msgstr "Explain the grounds of your appeal against the Board's decision..."
+
+msgid "Máximo 5000 caracteres. Sea específico sobre los motivos de su apelación."
+msgstr "Maximum 5000 characters. Be specific about the reasons for your appeal."
+
+msgid "Formatos permitidos: PDF, DOC, DOCX, JPG, PNG. Tamaño máximo: 10MB."
+msgstr "Allowed formats: PDF, DOC, DOCX, JPG, PNG. Maximum size: 10MB."
+
+msgid "La apelación debe presentarse dentro de los 30 días calendario siguientes a la resolución de la reclamación. Solo el aspirante titular puede presentar apelaciones."
+msgstr "The appeal must be filed within 30 calendar days following the claim resolution. Only the titular applicant can file appeals."
+
+# ----------------------------------------------------------------------------
+# claims/apelacion_list.html
+# ----------------------------------------------------------------------------
+
+msgid "Apelaciones"
+msgstr "Appeals"
+
+msgid "Reclamaciones"
+msgstr "Claims"
+
+msgid "Panel OFIJUR"
+msgstr "OFIJUR Panel"
+
+msgid "No tienes apelaciones registradas."
+msgstr "You have no registered appeals."
+
+msgid "Reclamación"
+msgstr "Claim"
+
+msgid "Fecha"
+msgstr "Date"
+
+# ----------------------------------------------------------------------------
+# claims/apelacion_detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Apelación"
+msgstr "Appeal"
+
+msgid "Volver a la lista"
+msgstr "Back to list"
+
+msgid "Información de la Apelación"
+msgstr "Appeal Information"
+
+msgid "UUID:"
+msgstr "UUID:"
+
+msgid "Estado:"
+msgstr "Status:"
+
+msgid "Reclamación:"
+msgstr "Claim:"
+
+msgid "Estado de Reclamación:"
+msgstr "Claim Status:"
+
+msgid "Fecha de Creación:"
+msgstr "Creation Date:"
+
+msgid "Fecha de Resolución:"
+msgstr "Resolution Date:"
+
+msgid "Descripción:"
+msgstr "Description:"
+
+msgid "Respuesta:"
+msgstr "Response:"
+
+msgid "Evidencia:"
+msgstr "Evidence:"
+
+msgid "Descargar evidencia"
+msgstr "Download evidence"
+
+msgid "Historial"
+msgstr "History"
+
+msgid "Acciones OFIJUR"
+msgstr "OFIJUR Actions"
+
+msgid "Iniciar Análisis"
+msgstr "Start Analysis"
+
+msgid "Resolver Apelación"
+msgstr "Resolve Appeal"
+
+msgid "Fundamentación:"
+msgstr "Reasoning:"
+
+msgid "Confirmar (Aceptar)"
+msgstr "Confirm (Accept)"
+
+msgid "Revocar (Rechazar)"
+msgstr "Revoke (Reject)"

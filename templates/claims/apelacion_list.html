@@ -1,18 +1,19 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Apelaciones - FODEJAS{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-gavel me-2"></i>Apelaciones</h2>
+        <h2><i class="bi bi-gavel me-2"></i>{% trans "Apelaciones" %}</h2>
         <div>
             <a href="{% url 'claims:list' %}" class="btn btn-outline-secondary me-2">
-                <i class="bi bi-arrow-left me-2"></i>Reclamaciones
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Reclamaciones" %}
             </a>
             {% if request.user.is_superuser or is_ofijur %}
             <a href="{% url 'claims:apelacion_admin_list' %}" class="btn btn-primary">
-                <i class="bi bi-gear me-2"></i>Panel OFIJUR
+                <i class="bi bi-gear me-2"></i>{% trans "Panel OFIJUR" %}
             </a>
             {% endif %}
         </div>
@@ -30,7 +31,7 @@
     {% if not apelaciones %}
     <div class="alert alert-info">
         <i class="bi bi-info-circle me-2"></i>
-        No tienes apelaciones registradas.
+        {% trans "No tienes apelaciones registradas." %}
     </div>
     {% else %}
     <div class="card">
@@ -39,11 +40,11 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>UUID</th>
-                            <th>Reclamación</th>
-                            <th>Estado</th>
-                            <th>Fecha</th>
-                            <th>Acciones</th>
+                            <th>{% trans "UUID" %}</th>
+                            <th>{% trans "Reclamación" %}</th>
+                            <th>{% trans "Estado" %}</th>
+                            <th>{% trans "Fecha" %}</th>
+                            <th>{% trans "Acciones" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -63,7 +64,7 @@
                             <td>{{ apelacion.created_at|date:"d/m/Y" }}</td>
                             <td>
                                 <a href="{% url 'claims:apelacion_detail' apelacion.uuid %}" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye"></i> Ver
+                                    <i class="bi bi-eye"></i> {% trans "Ver" %}
                                 </a>
                             </td>
                         </tr>

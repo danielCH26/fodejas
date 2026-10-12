@@ -1,24 +1,25 @@
+{% load i18n %}
 <div id="wizard-step-3">
-    <p class="text-muted mb-4">Información sobre tu contexto familiar y económico.</p>
+    <p class="text-muted mb-4">{% trans "Información sobre tu contexto familiar y económico." %}</p>
 
     <form id="step-3-form">
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="estrato" class="form-label">Estrato Socioeconómico *</label>
+                <label for="estrato" class="form-label">{% trans "Estrato Socioeconómico" %} *</label>
                 <select class="form-select" id="estrato" name="estrato" required>
-                    <option value="">Seleccionar...</option>
-                    <option value="1" {% if application.datos_socioeconomicos.estrato == '1' %}selected{% endif %}>1 - Bajo-bajo</option>
-                    <option value="2" {% if application.datos_socioeconomicos.estrato == '2' %}selected{% endif %}>2 - Bajo</option>
-                    <option value="3" {% if application.datos_socioeconomicos.estrato == '3' %}selected{% endif %}>3 - Medio-bajo</option>
-                    <option value="4" {% if application.datos_socioeconomicos.estrato == '4' %}selected{% endif %}>4 - Medio</option>
-                    <option value="5" {% if application.datos_socioeconomicos.estrato == '5' %}selected{% endif %}>5 - Medio-alto</option>
-                    <option value="6" {% if application.datos_socioeconomicos.estrato == '6' %}selected{% endif %}>6 - Alto</option>
+                    <option value="">{% trans "Seleccionar..." %}</option>
+                    <option value="1" {% if application.datos_socioeconomicos.estrato == '1' %}selected{% endif %}>1 - {% trans "Bajo-bajo" %}</option>
+                    <option value="2" {% if application.datos_socioeconomicos.estrato == '2' %}selected{% endif %}>2 - {% trans "Bajo" %}</option>
+                    <option value="3" {% if application.datos_socioeconomicos.estrato == '3' %}selected{% endif %}>3 - {% trans "Medio-bajo" %}</option>
+                    <option value="4" {% if application.datos_socioeconomicos.estrato == '4' %}selected{% endif %}>4 - {% trans "Medio" %}</option>
+                    <option value="5" {% if application.datos_socioeconomicos.estrato == '5' %}selected{% endif %}>5 - {% trans "Medio-alto" %}</option>
+                    <option value="6" {% if application.datos_socioeconomicos.estrato == '6' %}selected{% endif %}>6 - {% trans "Alto" %}</option>
                 </select>
             </div>
             <div class="col-md-6 mb-3">
-                <label for="grupo_sisben" class="form-label">Grupo SISBÉN (si aplica)</label>
+                <label for="grupo_sisben" class="form-label">{% trans "Grupo SISBÉN (si aplica)" %}</label>
                 <select class="form-select" id="grupo_sisben" name="grupo_sisben">
-                    <option value="">No aplica / No tengo</option>
+                    <option value="">{% trans "No aplica / No tengo" %}</option>
                     <option value="A" {% if application.datos_socioeconomicos.grupo_sisben == 'A' %}selected{% endif %}>Grupo A</option>
                     <option value="B" {% if application.datos_socioeconomicos.grupo_sisben == 'B' %}selected{% endif %}>Grupo B</option>
                     <option value="C" {% if application.datos_socioeconomicos.grupo_sisben == 'C' %}selected{% endif %}>Grupo C</option>
@@ -29,7 +30,7 @@
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="personas_hogar" class="form-label">Personas en el Hogar *</label>
+                <label for="personas_hogar" class="form-label">{% trans "Personas en el Hogar" %} *</label>
                 <input type="number"
                        class="form-control"
                        id="personas_hogar"
@@ -38,10 +39,10 @@
                        max="20"
                        value="{{ application.datos_socioeconomicos.personas_hogar|default:'' }}"
                        required>
-                <div class="form-text">Incluyéndote a ti</div>
+                <div class="form-text">{% trans "Incluyéndote a ti" %}</div>
             </div>
             <div class="col-md-6 mb-3">
-                <label for="ingreso_familiar" class="form-label">Ingreso Familiar Mensual *</label>
+                <label for="ingreso_familiar" class="form-label">{% trans "Ingreso Familiar Mensual" %} *</label>
                 <div class="input-group">
                     <span class="input-group-text">$</span>
                     <input type="number"
@@ -53,13 +54,13 @@
                            value="{{ application.datos_socioeconomicos.ingreso_familiar|default:'' }}"
                            required>
                 </div>
-                <div class="form-text">En pesos colombianos</div>
+                <div class="form-text">{% trans "En pesos colombianos" %}</div>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="personas_dependientes" class="form-label">Personas Dependientes</label>
+                <label for="personas_dependientes" class="form-label">{% trans "Personas Dependientes" %}</label>
                 <input type="number"
                        class="form-control"
                        id="personas_dependientes"
@@ -67,23 +68,23 @@
                        min="0"
                        max="10"
                        value="{{ application.datos_socioeconomicos.personas_dependientes|default:0 }}">
-                <div class="form-text">Niños, adultos mayores, personas con discapacidad</div>
+                <div class="form-text">{% trans "Niños, adultos mayores, personas con discapacidad" %}</div>
             </div>
             <div class="col-md-6 mb-3">
-                <label for="vivienda_propia" class="form-label">Tipo de Vivienda *</label>
+                <label for="vivienda_propia" class="form-label">{% trans "Tipo de Vivienda" %} *</label>
                 <select class="form-select" id="vivienda_propia" name="vivienda_propia" required>
-                    <option value="">Seleccionar...</option>
-                    <option value="propia" {% if application.datos_socioeconomicos.vivienda_propia == 'propia' %}selected{% endif %}>Propia</option>
-                    <option value="arrendada" {% if application.datos_socioeconomicos.vivienda_propia == 'arrendada' %}selected{% endif %}>Arrendada</option>
-                    <option value="familiar" {% if application.datos_socioeconomicos.vivienda_propia == 'familiar' %}selected{% endif %}>Familiar</option>
-                    <option value="otro" {% if application.datos_socioeconomicos.vivienda_propia == 'otro' %}selected{% endif %}>Otro</option>
+                    <option value="">{% trans "Seleccionar..." %}</option>
+                    <option value="propia" {% if application.datos_socioeconomicos.vivienda_propia == 'propia' %}selected{% endif %}>{% trans "Propia" %}</option>
+                    <option value="arrendada" {% if application.datos_socioeconomicos.vivienda_propia == 'arrendada' %}selected{% endif %}>{% trans "Arrendada" %}</option>
+                    <option value="familiar" {% if application.datos_socioeconomicos.vivienda_propia == 'familiar' %}selected{% endif %}>{% trans "Familiar" %}</option>
+                    <option value="otro" {% if application.datos_socioeconomicos.vivienda_propia == 'otro' %}selected{% endif %}>{% trans "Otro" %}</option>
                 </select>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-12 mb-3">
-                <label class="form-label">Situación Laboral *</label>
+                <label class="form-label">{% trans "Situación Laboral" %} *</label>
                 <div class="form-check">
                     <input class="form-check-input"
                            type="radio"
@@ -93,7 +94,7 @@
                            {% if application.datos_socioeconomicos.situacion_laboral == 'empleado' %}checked{% endif %}
                            required>
                     <label class="form-check-label" for="empleado">
-                        Empleado formal
+                        {% trans "Empleado formal" %}
                     </label>
                 </div>
                 <div class="form-check">
@@ -104,7 +105,7 @@
                            value="independiente"
                            {% if application.datos_socioeconomicos.situacion_laboral == 'independiente' %}checked{% endif %}>
                     <label class="form-check-label" for="independiente">
-                        Trabajador independiente
+                        {% trans "Trabajador independiente" %}
                     </label>
                 </div>
                 <div class="form-check">
@@ -115,7 +116,7 @@
                            value="desempleado"
                            {% if application.datos_socioeconomicos.situacion_laboral == 'desempleado' %}checked{% endif %}>
                     <label class="form-check-label" for="desempleado">
-                        Desempleado
+                        {% trans "Desempleado" %}
                     </label>
                 </div>
                 <div class="form-check">
@@ -126,7 +127,7 @@
                            value="estudiante"
                            {% if application.datos_socioeconomicos.situacion_laboral == 'estudiante' %}checked{% endif %}>
                     <label class="form-check-label" for="estudiante">
-                        Solo estudiante
+                        {% trans "Solo estudiante" %}
                     </label>
                 </div>
             </div>
@@ -134,20 +135,19 @@
 
         <div class="row">
             <div class="col-md-12 mb-3">
-                <label for="observaciones_socioeconomicas" class="form-label">Observaciones Adicionales</label>
+                <label for="observaciones_socioeconomicas" class="form-label">{% trans "Observaciones Adicionales" %}</label>
                 <textarea class="form-control"
                           id="observaciones_socioeconomicas"
                           name="observaciones_socioeconomicas"
                           rows="3">{{ application.datos_socioeconomicos.observaciones_socioeconomicas|default:'' }}</textarea>
-                <div class="form-text">Información adicional relevante sobre tu situación socioeconómica</div>
+                <div class="form-text">{% trans "Información adicional relevante sobre tu situación socioeconómica" %}</div>
             </div>
         </div>
     </form>
 
     <div class="alert alert-info mt-4">
         <i class="bi bi-info-circle me-2"></i>
-        <strong>Confidencialidad garantizada:</strong> Esta información es confidencial y se usa únicamente
-        para la evaluación socioeconómica del beneficio. No se comparte con terceros.
+        <strong>{% trans "Confidencialidad garantizada:" %}</strong> {% trans "Esta información es confidencial y se usa únicamente para la evaluación socioeconómica del beneficio. No se comparte con terceros." %}
     </div>
 </div>
 

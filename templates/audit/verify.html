@@ -1,12 +1,13 @@
 {% extends "audit/base.html" %}
+{% load i18n %}
 
 {% block audit_title %}Verificar Cadena{% endblock %}
 
 {% block audit_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-shield-check me-2"></i>Verificar Integridad de la Cadena</h2>
+    <h2><i class="bi bi-shield-check me-2"></i>{% trans "Verificar Integridad de la Cadena" %}</h2>
     <a href="{% url 'audit_dashboard' %}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-2"></i>Volver
+        <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
     </a>
 </div>
 
@@ -17,14 +18,14 @@
         <div class="mb-4">
             <i class="bi bi-shield-check text-success" style="font-size: 5rem;"></i>
         </div>
-        <h3 class="text-success mb-3">Cadena de Auditoría Válida</h3>
-        <p class="text-muted">La cadena de hash no ha sido alterada. La integridad de los registros de auditoría está verificada.</p>
+        <h3 class="text-success mb-3">{% trans "Cadena de Auditoría Válida" %}</h3>
+        <p class="text-muted">{% trans "La cadena de hash no ha sido alterada. La integridad de los registros de auditoría está verificada." %}</p>
         {% else %}
         <div class="mb-4">
             <i class="bi bi-shield-exclamation text-danger" style="font-size: 5rem;"></i>
         </div>
-        <h3 class="text-danger mb-3">Cadena de Auditoría Comprometida</h3>
-        <p class="text-muted">Se ha detectado una alteración en la cadena de hash. Los registros de auditoría pueden haber sido modificados.</p>
+        <h3 class="text-danger mb-3">{% trans "Cadena de Auditoría Comprometida" %}</h3>
+        <p class="text-muted">{% trans "Se ha detectado una alteración en la cadena de hash. Los registros de auditoría pueden haber sido modificados." %}</p>
         {% endif %}
     </div>
 </div>
@@ -32,27 +33,27 @@
 <!-- Details -->
 <div class="card mb-4">
     <div class="card-header">
-        <i class="bi bi-info-circle me-2"></i>Detalles de la Verificación
+        <i class="bi bi-info-circle me-2"></i>{% trans "Detalles de la Verificación" %}
     </div>
     <div class="card-body">
         <table class="table table-borderless">
             <tr>
-                <th class="text-muted" style="width: 40%;">Estado:</th>
+                <th class="text-muted" style="width: 40%;">{% trans "Estado:" %}</th>
                 <td>
                     {% if is_valid %}
-                    <span class="badge bg-success">Válido</span>
+                    <span class="badge bg-success">{% trans "Válido" %}</span>
                     {% else %}
-                    <span class="badge bg-danger">Inválido</span>
+                    <span class="badge bg-danger">{% trans "Inválido" %}</span>
                     {% endif %}
                 </td>
             </tr>
             <tr>
-                <th class="text-muted">Último Hash Válido:</th>
+                <th class="text-muted">{% trans "Último Hash Válido:" %}</th>
                 <td><code class="text-break">{{ last_valid_hash|default:"—" }}</code></td>
             </tr>
             {% if break_point %}
             <tr>
-                <th class="text-muted">Punto de Ruptura:</th>
+                <th class="text-muted">{% trans "Punto de Ruptura:" %}</th>
                 <td><code>{{ break_point }}</code></td>
             </tr>
             {% endif %}
@@ -63,20 +64,20 @@
 <!-- Explanation -->
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-question-circle me-2"></i>¿Cómo funciona la verificación?
+        <i class="bi bi-question-circle me-2"></i>{% trans "¿Cómo funciona la verificación?" %}
     </div>
     <div class="card-body">
-        <p>La cadena de auditoría utiliza <strong>cryptografía SHA-256</strong> para garantizar la integridad:</p>
+        <p>{% trans "La cadena de auditoría utiliza cryptografía SHA-256 para garantizar la integridad:" %}</p>
         <ol>
-            <li>Cada evento de auditoría contiene un <code>previous_hash</code> que apunta al evento anterior</li>
-            <li>El <code>current_hash</code> se calcula usando: timestamp, actor, acción, entidad, cambios y el hash anterior</li>
-            <li>Si alguien modifica un evento histórico, su hash ya no coincidirá con el <code>previous_hash</code> del evento siguiente</li>
-            <li>La verificación recorre toda la cadena comparando hashes para detectar cualquier manipulación</li>
+            <li>{% trans "Cada evento de auditoría contiene un previous_hash que apunta al evento anterior" %}</li>
+            <li>{% trans "El current_hash se calcula usando: timestamp, actor, acción, entidad, cambios y el hash anterior" %}</li>
+            <li>{% trans "Si alguien modifica un evento histórico, su hash ya no coincidirá con el previous_hash del evento siguiente" %}</li>
+            <li>{% trans "La verificación recorre toda la cadena comparando hashes para detectar cualquier manipulación" %}</li>
         </ol>
         <hr>
         <p class="text-muted mb-0">
             <i class="bi bi-info-circle me-2"></i>
-            Esta verificación es<span class="text-danger"> irreversible</span>. Cualquier modificación maliciosa queda registrada como un intento de violación de integridad.
+            {% trans "Esta verificación es" %}<span class="text-danger">{% trans "irreversible" %}</span>. {% trans "Cualquier modificación maliciosa queda registrada como un intento de violación de integridad." %}
         </p>
     </div>
 </div>

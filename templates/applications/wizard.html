@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Wizard FUI - Paso {{ current_step }}{% endblock %}
 
@@ -41,13 +42,13 @@
 <div class="container-fluid py-4"
      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-magic me-2"></i>Wizard FUI - {{ application.convocatoria.nombre }}</h2>
+        <h2><i class="bi bi-magic me-2"></i>{% trans "Wizard FUI" %} - {{ application.convocatoria.nombre }}</h2>
         <div>
             <a href="{% url 'applications:detail' application.uuid %}" class="btn btn-outline-secondary me-2">
-                <i class="bi bi-arrow-left me-2"></i>Volver al Detalle
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Volver al Detalle" %}
             </a>
             <a href="{% url 'applications:list' %}" class="btn btn-outline-primary">
-                <i class="bi bi-list me-2"></i>Ver Todas
+                <i class="bi bi-list me-2"></i>{% trans "Ver Todas" %}
             </a>
         </div>
     </div>
@@ -128,7 +129,7 @@
                    hx-get="{% url 'applications:wizard_step' application.uuid current_step|add:'-1' %}"
                    hx-target="#wizard-step-content"
                    hx-push-url="true">
-                    <i class="bi bi-chevron-left me-2"></i>Anterior
+                    <i class="bi bi-chevron-left me-2"></i>{% trans "Anterior" %}
                 </a>
                 {% else %}
                 <div></div>
@@ -138,7 +139,7 @@
                     <button type="button"
                             class="btn btn-outline-primary me-2"
                             onclick="saveDraft()">
-                        <i class="bi bi-save me-2"></i>Guardar Draft
+                        <i class="bi bi-save me-2"></i>{% trans "Guardar Draft" %}
                     </button>
 
                     {% if current_step < 5 %}
@@ -147,13 +148,13 @@
                        hx-get="{% url 'applications:wizard_step' application.uuid current_step|add:'1' %}"
                        hx-target="#wizard-step-content"
                        hx-push-url="true">
-                        Siguiente <i class="bi bi-chevron-right ms-2"></i>
+                        {% trans "Siguiente" %} <i class="bi bi-chevron-right ms-2"></i>
                     </a>
                     {% else %}
                     <button type="button"
                             class="btn btn-success"
                             onclick="submitApplication()">
-                        <i class="bi bi-send-check me-2"></i>Radicar Solicitud
+                        <i class="bi bi-send-check me-2"></i>{% trans "Radicar Solicitud" %}
                     </button>
                     {% endif %}
                 </div>
@@ -166,11 +167,11 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <strong>Convocatoria:</strong>
+                    <strong>{% trans "Convocatoria:" %}</strong>
                     <p>{{ application.convocatoria.nombre }}</p>
                 </div>
                 <div class="col-md-6">
-                    <strong>Estado:</strong>
+                    <strong>{% trans "Estado:" %}</strong>
                     <p>
                         <span class="badge bg-{% if application.estado == 'borrador' %}secondary{% elif application.estado == 'completa' %}info{% elif application.estado == 'radicada' %}success{% elif application.estado == 'rechazada' %}danger{% else %}warning{% endif %}">
                             {{ application.get_estado_display }}

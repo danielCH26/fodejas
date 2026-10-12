@@ -1,22 +1,23 @@
+{% load i18n %}
 <div id="wizard-step-2">
-    <p class="text-muted mb-4">Información sobre tu historial educativo y logros académicos.</p>
+    <p class="text-muted mb-4">{% trans "Información sobre tu historial educativo y logros académicos." %}</p>
 
     <form id="step-2-form">
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="nivel_formacion" class="form-label">Nivel de Formación *</label>
+                <label for="nivel_formacion" class="form-label">{% trans "Nivel de Formación" %} *</label>
                 <select class="form-select" id="nivel_formacion" name="nivel_formacion" required>
-                    <option value="">Seleccionar...</option>
-                    <option value="tecnico" {% if application.datos_academicos.nivel_formacion == 'tecnico' %}selected{% endif %}>Técnico</option>
-                    <option value="tecnologico" {% if application.datos_academicos.nivel_formacion == 'tecnologico' %}selected{% endif %}>Tecnológico</option>
-                    <option value="pregrado" {% if application.datos_academicos.nivel_formacion == 'pregrado' %}selected{% endif %}>Pregrado</option>
-                    <option value="especializacion" {% if application.datos_academicos.nivel_formacion == 'especializacion' %}selected{% endif %}>Especialización</option>
-                    <option value="maestria" {% if application.datos_academicos.nivel_formacion == 'maestria' %}selected{% endif %}>Maestría</option>
-                    <option value="doctorado" {% if application.datos_academicos.nivel_formacion == 'doctorado' %}selected{% endif %}>Doctorado</option>
+                    <option value="">{% trans "Seleccionar..." %}</option>
+                    <option value="tecnico" {% if application.datos_academicos.nivel_formacion == 'tecnico' %}selected{% endif %}>{% trans "Técnico" %}</option>
+                    <option value="tecnologico" {% if application.datos_academicos.nivel_formacion == 'tecnologico' %}selected{% endif %}>{% trans "Tecnológico" %}</option>
+                    <option value="pregrado" {% if application.datos_academicos.nivel_formacion == 'pregrado' %}selected{% endif %}>{% trans "Pregrado" %}</option>
+                    <option value="especializacion" {% if application.datos_academicos.nivel_formacion == 'especializacion' %}selected{% endif %}>{% trans "Especialización" %}</option>
+                    <option value="maestria" {% if application.datos_academicos.nivel_formacion == 'maestria' %}selected{% endif %}>{% trans "Maestría" %}</option>
+                    <option value="doctorado" {% if application.datos_academicos.nivel_formacion == 'doctorado' %}selected{% endif %}>{% trans "Doctorado" %}</option>
                 </select>
             </div>
             <div class="col-md-6 mb-3">
-                <label for="programa" class="form-label">Programa Académico *</label>
+                <label for="programa" class="form-label">{% trans "Programa Académico" %} *</label>
                 <input type="text"
                        class="form-control"
                        id="programa"
@@ -29,7 +30,7 @@
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="institucion" class="form-label">Institución Educativa *</label>
+                <label for="institucion" class="form-label">{% trans "Institución Educativa" %} *</label>
                 <input type="text"
                        class="form-control"
                        id="institucion"
@@ -39,18 +40,18 @@
                 <div class="form-text">Ej: Universidad Nacional de Colombia</div>
             </div>
             <div class="col-md-6 mb-3">
-                <label for="tipo_institucion" class="form-label">Tipo de Institución *</label>
+                <label for="tipo_institucion" class="form-label">{% trans "Tipo de Institución" %} *</label>
                 <select class="form-select" id="tipo_institucion" name="tipo_institucion" required>
-                    <option value="">Seleccionar...</option>
-                    <option value="publica" {% if application.datos_academicos.tipo_institucion == 'publica' %}selected{% endif %}>Pública</option>
-                    <option value="privada" {% if application.datos_academicos.tipo_institucion == 'privada' %}selected{% endif %}>Privada</option>
+                    <option value="">{% trans "Seleccionar..." %}</option>
+                    <option value="publica" {% if application.datos_academicos.tipo_institucion == 'publica' %}selected{% endif %}>{% trans "Pública" %}</option>
+                    <option value="privada" {% if application.datos_academicos.tipo_institucion == 'privada' %}selected{% endif %}>{% trans "Privada" %}</option>
                 </select>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="semestre_actual" class="form-label">Semestre Actual *</label>
+                <label for="semestre_actual" class="form-label">{% trans "Semestre Actual" %} *</label>
                 <input type="number"
                        class="form-control"
                        id="semestre_actual"
@@ -61,7 +62,7 @@
                        required>
             </div>
             <div class="col-md-6 mb-3">
-                <label for="promedio_acumulado" class="form-label">Promedio Acumulado *</label>
+                <label for="promedio_acumulado" class="form-label">{% trans "Promedio Acumulado" %} *</label>
                 <input type="number"
                        class="form-control"
                        id="promedio_acumulado"
@@ -71,18 +72,18 @@
                        step="0.01"
                        value="{{ application.datos_academicos.promedio_acumulado|default:'' }}"
                        required>
-                <div class="form-text">Escala de 0.0 a 5.0</div>
+                <div class="form-text">{% trans "Escala de 0.0 a 5.0" %}</div>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-12 mb-3">
-                <label for="logros_academicos" class="form-label">Logros Académicos</label>
+                <label for="logros_academicos" class="form-label">{% trans "Logros Académicos" %}</label>
                 <textarea class="form-control"
                           id="logros_academicos"
                           name="logros_academicos"
                           rows="3">{{ application.datos_academicos.logros_academicos|default:'' }}</textarea>
-                <div class="form-text">Mención de honores, becas, publicaciones, etc.</div>
+                <div class="form-text">{% trans "Mención de honores, becas, publicaciones, etc." %}</div>
             </div>
         </div>
 
@@ -95,7 +96,7 @@
                            name="excelencia_academica"
                            {% if application.datos_academicos.excelencia_academica %}checked{% endif %}>
                     <label class="form-check-label" for="excelencia_academica">
-                        Poseo certificado de excelencia académica
+                        {% trans "Poseo certificado de excelencia académica" %}
                     </label>
                 </div>
 
@@ -106,7 +107,7 @@
                            name="investigacion"
                            {% if application.datos_academicos.investigacion %}checked{% endif %}>
                     <label class="form-check-label" for="investigacion">
-                        Participo en proyectos de investigación
+                        {% trans "Participo en proyectos de investigación" %}
                     </label>
                 </div>
             </div>
@@ -115,8 +116,7 @@
 
     <div class="alert alert-info mt-4">
         <i class="bi bi-info-circle me-2"></i>
-        <strong>Importante para el scoring:</strong> La información académica es crucial para la evaluación.
-        Asegúrate de que sea precisa y puedas respaldarla con documentos.
+        <strong>{% trans "Importante para el scoring:" %}</strong> {% trans "La información académica es crucial para la evaluación. Asegúrate de que sea precisa y puedas respaldarla con documentos." %}
     </div>
 </div>
 
