@@ -76,14 +76,14 @@
   `test_reports.py:test_respuesta_sin_pii`): búsqueda de strings de
   datos sintéticos (nombres, documentos, emails) en respuestas HTML y
   JSON
-- [ ] 5.6 Suite completa verde en sqlite y PostgreSQL
+- [ ] 5.6 Suite completa verde en sqlite y PostgreSQL (sqlite ✓ 557 passed; PostgreSQL pendiente CI al push)
 
 ## 6. Verificación final
 
-- [ ] 6.1 `pytest apps/reporting/tests/test_transparencia*.py` — todos
+- [x] 6.1 `pytest apps/reporting/tests/test_transparencia*.py` — todos
   verdes
-- [ ] 6.2 `python manage.py check` — sin errores
-- [ ] 6.3 `python manage.py makemigrations --check` — sin cambios
+- [x] 6.2 `python manage.py check` — sin errores
+- [x] 6.3 `python manage.py makemigrations --check` — sin cambios
   pendientes (no hay modelos nuevos)
 - [ ] 6.4 Revisión manual: navegar incognito todas las páginas del
   portal y verificar ausencia visual de nombres/documentos
