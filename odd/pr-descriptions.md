@@ -74,3 +74,27 @@
 **Testing**: +6 tests de ruta y render (JSON payload, 401 anónimo, HTML verify/dashboard/detail). Suite 522✓ en la rama.
 
 **Notas**: Los runbooks `docs/ops/03-incident-response.md` referencian `/accounts/audit/verify/` (HTML) y el shell — siguen válidos; el endpoint JSON ahora complementa.
+
+---
+
+## 7. `chore/ops-hardening`
+
+**Título**: `chore(ops): close gaps #2/#3/#6/#10 — backup-exporter, pg_stat_statements, MinIO lifecycle, CI static+translations`
+
+**Resumen**: Cierra 4 gaps de `docs/ops/05-known-gaps.md`: servicio `backup-exporter` (node-exporter + textfile collector, compartiendo el volumen `backup_metrics`), `pg_stat_statements` (preload + init script; caveat initdb para volúmenes existentes), `docker/minio-init/lifecycle.sh` (versioning + nocurrent 90d + uploads incompletos 30d), y pasos `collectstatic` + `compilemessages` en CI (traducciones: validación only). **BONUS**: corrige la lógica invertida de la alerta `BackupJobFailed` (script escribe 0=éxito; la alerta decía `== 0`).
+
+**Validación**: `docker compose config -q` con los 3 overrides; yaml CI; `bash -n`. Suite 516✓ (sin cambios de código Django).
+
+**Notas**: Si CHG-507 se mergeó antes, resolver docs/ops/04-05 tomando esta rama (versiones canónicas + estados de gap actualizados).
+
+---
+
+## 8. `chore/media-serving`
+
+**Título**: `feat(storage): conditional STORAGES wiring — MinIO signed URLs in prod, local media in dev (INF-008, Gap #1)`
+
+**Resumen**: Cierra el Gap #1 (bloqueante go-live): `STORAGES` seleccionado por `DJANGO_ENV` — development/test usa `FileSystemStorage` + `MEDIA_ROOT/MEDIA_URL` (runserver sirve media; la suite nunca toca la red); staging/production usa `S3Boto3Storage` contra MinIO/S3 con **URLs firmadas** (bucket privado — anexos con datos personales, Ley 1581/2012) y path-style addressing (obligatorio para endpoints MinIO). `STATIC_ROOT` definido (collectstatic funciona localmente). Seed de bucket en `docker/minio-init/lifecycle.sh`.
+
+**Testing**: +14 tests (contrato de settings, pipeline FileField end-to-end, backend lazy). Suite 530✓ en la rama; los 6 tests de governance de actas pasan sin overrides.
+
+**Notas**: Desbloquea los links PDF del portal CHG-504 (acto.pdf.url ahora resuelve). En producción configurar `AWS_S3_ENDPOINT_URL` real.

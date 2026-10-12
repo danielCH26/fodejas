@@ -10,7 +10,7 @@
 
 | # | Gap | Severidad | ¿Bloqueante go-live? | Estado |
 |---|---|---|---|---|
-| 1 | FileField/MEDIA no configurado — PDFs y anexos no servibles | Alta | ✅ Sí | Pendiente |
+| 1 | FileField/MEDIA no configurado — PDFs y anexos no servibles. **CERRADO (chore/media-serving):** `STORAGES` condicional — FileSystemStorage + MEDIA_URL en development, S3Boto3Storage con URLs firmadas (bucket privado, Ley 1581/2012) en staging/production; path-style para MinIO; seed en `docker/minio-init/lifecycle.sh`. | Alta | ✅ Sí | Cerrado |
 | 2 | `backup-exporter` no existía — alertas de backup no confiables. **CERRADO (chore/ops-hardening):** servicio node-exporter añadido compartiendo el volumen `backup_metrics`; lógica invertida de `BackupJobFailed` corregida (== 0 → == 1). | Alta | No | Cerrado |
 | 3 | `pg_stat_statements` no habilitado — `PostgresSlowQueries` siempre null. **CERRADO (chore/ops-hardening):** preload + init script. Caveat: en volúmenes existentes correr `CREATE EXTENSION IF NOT EXISTS pg_stat_statements;` y reiniciar db. | Media | No | Cerrado (con caveat initdb) |
 | 4 | `backup_verify.sh` no ejecuta `pg_restore` — restore sin probar | **Crítica** | ✅ **Sí** | **PENDIENTE — primera ejecución obligatoria** |
@@ -23,7 +23,7 @@
 
 ---
 
-## Gap #1 — FileField/MEDIA no configurado
+## Gap #1 — FileField/MEDIA no configurado — CERRADO (chore/media-serving)
 
 **Descripción:** Los campos `FileField` en los modelos de la aplicación
 (GestiónDocumento, anexos de convocatoria, etc.) no tienen un storage backend

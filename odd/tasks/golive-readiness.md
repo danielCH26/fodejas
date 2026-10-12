@@ -25,8 +25,16 @@
    (o feat/ con mini-OpenSpec si el delta lo amerita). Explorar
    django-storages/STORAGES y el plan .kilo (MinIO dev, volúmenes prod).
    Decisión de producto si hay ambigüedad real.
-   - [ ] 3.1 exploración + decisión
-   - [ ] 3.2 implementación + tests de URL de anexos
+   - [x] 3.1 exploración + decisión (bucket privado + URLs firmadas, Ley 1581;
+     MinIO path-style; prefijo media/; roadmap.md §INF-008 autoritativo)
+   - [x] 3.2 implementación + tests de URL de anexos
+     - STORAGES dict + AWS vars en config/settings.py ✓
+     - docker/minio-init/lifecycle.sh (bucket + versioning + lifecycle) ✓
+     - apps/core/tests/test_media_storage.py: 12✓ 1skipped (host sin
+       django-storages; pasa en Docker) — ver evidencia abajo
+     - NOTA: 6 tests en governance/ usan FileField sin @override_settings;
+       requieren django-storages instalado o su propio STORAGES override;
+       no son tests de URL de anexos (ver docs/ops/05-known-gaps.md)
 4. **Deuda i18n interna** — slices futuros (~30 templates internos, API
    errors DRF, TextChoices raw en treasury/academic_tracking). NO se
    ejecuta en este programa salvo pedido explícito.
