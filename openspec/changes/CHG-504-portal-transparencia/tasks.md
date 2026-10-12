@@ -19,21 +19,21 @@
 
 ## 2. Portal HTML (templates/transparencia/)
 
-- [ ] 2.1 `templates/transparencia/base.html` — extiende
+- [x] 2.1 `templates/transparencia/base.html` — extiende
   `templates/base.html`, incluye navbar con enlaces a actos,
   convocatorias y estadísticas
-- [ ] 2.2 `templates/transparencia/index.html` — landing
+- [x] 2.2 `templates/transparencia/index.html` — landing
   `/transparencia/` con cifras resumen (convocatorias activas,
   beneficiarios agregados, actos publicados) y accesos directos
-- [ ] 2.3 `templates/transparencia/actos.html` — listado paginado de
+- [x] 2.3 `templates/transparencia/actos.html` — listado paginado de
   actos publicados con número, fecha y enlace al PDF; paginate_by
   configurado
-- [ ] 2.4 `templates/transparencia/convocatorias.html` — listado
+- [x] 2.4 `templates/transparencia/convocatorias.html` — listado
   paginado de convocatorias abiertas/cerradas con estado y fechas
-- [ ] 2.5 `templates/transparencia/estadisticas.html` — gráficas y
+- [x] 2.5 `templates/transparencia/estadisticas.html` — gráficas y
   tablas de totales agregados por año/estado (sin IES/municipio);
   selector de año
-- [ ] 2.6 Actualizar `templates/base.html` para incluir enlace
+- [x] 2.6 Actualizar `templates/base.html` para incluir enlace
   "Transparencia" en la navegación
 
 ## 3. API pública JSON
@@ -53,26 +53,26 @@
 
 ## 4. URLs y navegación
 
-- [ ] 4.1 Registrar rutas en `apps/reporting/urls.py`:
+- [x] 4.1 Registrar rutas en `apps/reporting/urls.py`:
   `/transparencia/`, `/transparencia/actos/`,
   `/transparencia/convocatorias/`, `/transparencia/estadisticas/`
-- [ ] 4.2 Incluir URLs en el root `urls.py` bajo `transparencia/`
-- [ ] 4.3 Añadir enlace "Transparencia" en `templates/base.html`
+- [x] 4.2 Incluir URLs en el root `urls.py` bajo `transparencia/`
+- [x] 4.3 Añadir enlace "Transparencia" en `templates/base.html`
 
 ## 5. Pruebas
 
-- [ ] 5.1 Unitarias de selectores: cada método de
+- [x] 5.1 Unitarias de selectores: cada método de
   `TransparenciaSelectors` devuelve únicamente campos documentados;
   aserción PII-negativa (nombres, emails, documentos nunca en
   resultado) con datos sintéticos
-- [ ] 5.2 Integración HTML anónima: `APIClient` sin autenticar accede a
+- [x] 5.2 Integración HTML anónima: `APIClient` sin autenticar accede a
   las 4 páginas del portal → todas devuelven HTTP 200
-- [ ] 5.3 Integración API anónima: `APIClient` sin autenticar accede a
+- [x] 5.3 Integración API anónima: `APIClient` sin autenticar accede a
   los 3 endpoints JSON → todos devuelven HTTP 200
-- [ ] 5.4 Test solo actos PUBLICADO: crear acto en estado BORRADOR,
+- [x] 5.4 Test solo actos PUBLICADO: crear acto en estado BORRADOR,
   verificar que no aparece en `/api/transparencia/actos/` ni en
   `/transparencia/actos/`
-- [ ] 5.5 Tests de aserción PII-negativa (patrón
+- [x] 5.5 Tests de aserción PII-negativa (patrón
   `test_reports.py:test_respuesta_sin_pii`): búsqueda de strings de
   datos sintéticos (nombres, documentos, emails) en respuestas HTML y
   JSON

@@ -13,7 +13,7 @@ from apps.reporting.views import (
     transparencia_estadisticas,
 )
 
-app_name = "transparencia"
+app_name = "transparencia_api"
 
 urlpatterns = [
     path("actos/", transparencia_actos, name="actos"),

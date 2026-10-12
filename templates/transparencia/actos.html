@@ -1,0 +1,111 @@
+{% extends "transparencia/base.html" %}
+
+{% block title %}Actos Administrativos - Portal de Transparencia - FODEJAS{% endblock %}
+
+{% block transparencia_content %}
+<div class="mb-4">
+    <h2>
+        <i class="bi bi-file-earmark-text me-2"></i>Actos Administrativos Publicados
+    </h2>
+    <p class="text-muted">Resoluciones y actos administrativos publicados por FODEJAS</p>
+</div>
+
+{% if actos %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover border rounded bg-white">
+        <thead class="table-primary">
+            <tr>
+                <th scope="col">Número</th>
+                <th scope="col">Fecha de publicación</th>
+                <th scope="col">Convocatoria</th>
+                <th scope="col" class="text-center">Documento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for acto in actos %}
+            <tr>
+                <td>
+                    <code class="text-dark">{{ acto.numero }}</code>
+                </td>
+                <td>
+                    {% if acto.fecha_publicacion %}
+                        {{ acto.fecha_publicacion|date:"d/m/Y" }}
+                    {% else %}
+                        <span class="text-muted">—</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if acto.convocatoria_nombre %}
+                        {{ acto.convocatoria_nombre }}
+                    {% else %}
+                        <span class="text-muted">General</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if acto.pdf_url %}
+                        <a href="{{ acto.pdf_url }}" target="_blank" rel="noopener noreferrer"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-file-pdf me-1"></i>Ver PDF
+                        </a>
+                    {% else %}
+                        <span class="text-muted small">Sin PDF</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# Pagination #}
+{% if page_obj.has_other_pages %}
+<nav aria-label="Paginación de actos">
+    <ul class="pagination justify-content-center flex-wrap">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                Anterior
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                Siguiente
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="bi bi-info-circle me-2"></i>
+    No hay actos administrativos publicados actualmente.
+</div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{% url 'transparencia:index' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Volver al inicio
+    </a>
+</div>
+{% endblock %}
