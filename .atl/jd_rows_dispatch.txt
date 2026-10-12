@@ -1,0 +1,56 @@
+[
+  {
+    "causal_disposition": "introduced",
+    "claim": "ActaSesionSerializer omits the `pdf` FileField. After POST to generar_acta, the response omits the PDF attachment URL. Clients cannot retrieve the generated PDF via the API.",
+    "evidence_class": "deterministic",
+    "id": "JD-A1",
+    "location": "apps/governance/sessions/serializers.py:45-52",
+    "proof_refs": [
+      "ActaSesionSerializer fields list does not include 'pdf'",
+      "ActaSesion model defines pdf = models.FileField(upload_to='governance/actas/', ...)",
+      "generar_acta returns ActaSesionSerializer(acta).data - pdf URL never serialized",
+      "ActaViewSet uses same ActaSesionSerializer for read operations - no download URL exposed"
+    ],
+    "severity": "CRITICAL"
+  },
+  {
+    "causal_disposition": "introduced",
+    "claim": "When a formal DeclaracionConflicto is resolved RECHAZADA, MiembroSesion.conflicto_declarado is never reset to False. If set True through registrar_asistencia (attended with flag=True), it persists across future sessions and incorrectly blocks voting in can_vote() even after the formal impediment is cleared. Conversely, when resolved APROBADA the flag is never set True, so session-level blockers do not reflect the approved impediment.",
+    "evidence_class": "deterministic",
+    "id": "JD-A2",
+    "location": "apps/governance/sessions/services.py:870-894",
+    "proof_refs": [
+      "votar_impedimento sets declaracion.estado=RECHAZADA, saves revisado_at, but never writes MiembroSesion.conflicto_declarado",
+      "registrar_asistencia uses update_or_create, so conflicto_declarado=True persists if set in a prior call",
+      "MiembroSesion.can_vote(): checks self.conflicto_declarado without checking DeclaracionConflicto state",
+      "_voting_blockers: checks miembro.conflicto_declarado independently of DeclaracionConflicto state"
+    ],
+    "severity": "CRITICAL"
+  },
+  {
+    "causal_disposition": "introduced",
+    "claim": "The PDF fallback HTML builder interpolates sesion.asunto, user names, and rol strings without HTML escaping into HTML(string=html_content). A malicious asunto or user name containing HTML/JavaScript renders in the PDF (WeasyPrint renders raw HTML without sanitization).",
+    "evidence_class": "deterministic",
+    "id": "JD-A3",
+    "location": "apps/governance/sessions/services.py:701-703",
+    "proof_refs": [
+      "miembros_html uses f-string with m.user.get_full_name() or m.user.email directly in HTML li element - no escaping",
+      "sesion.asunto inserted via {sesion.asunto} in Python f-string, producing HTML content",
+      "sesion.asunto is a TextField accepting arbitrary user input from the API",
+      "WeasyPrint HTML(string=html_content) renders the raw HTML without server-side sanitization"
+    ],
+    "severity": "CRITICAL"
+  },
+  {
+    "causal_disposition": "introduced",
+    "claim": "votar_impedimento habilitado filter excludes es_miembro_cargo=True and conflicto_declarado=True but does NOT exclude members who have a formal DeclaracionConflicto (PENDIENTE or APROBADA) on the same punto. A member with an approved formal COI on punto X could cast the deciding vote on whether another member's COI on the same punto X is approved - a direct conflict of interest in the impediment resolution process.",
+    "evidence_class": "deterministic",
+    "id": "JD-B4",
+    "location": "apps/governance/sessions/services.py:862-871",
+    "proof_refs": [
+      "habilitados filter: only es_miembro_cargo and boolean conflicto_declarado checked; no filter for DeclaracionConflicto records on the specific punto",
+      "_voting_blockers DOES check DeclaracionConflicto records for the specific punto when blocking votes on that punto, but this check is absent from the habilitado filter"
+    ],
+    "severity": "CRITICAL"
+  }
+]

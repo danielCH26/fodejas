@@ -187,3 +187,83 @@ class TestVotarImpedimento:
             module="governance",
             action="SESSION_IMPEDIMENTO_RESUELTO",
         ).exists()
+
+
+@pytest.mark.django_db
+class TestJDFixes:
+    """Round-1 fixes (JD-A1/A2/A3/B4)."""
+
+    def test_aprobada_setea_flag_sesion(self, db):
+        """JD-A2: APROBADA sets conflicto_declarado=True on the member."""
+        sesion, punto, miembros, _ = _setup()
+        declaracion = SessionService.declarar_conflicto(
+            sesion.id, punto.id, miembros[0].id, "Declaracion sintetica"
+        )
+        SessionService.votar_impedimento(declaracion.id, miembros[1].id, True)
+        SessionService.votar_impedimento(declaracion.id, miembros[2].id, True)
+        miembros[0].refresh_from_db()
+        assert miembros[0].conflicto_declarado is True
+
+    def test_rechazada_resetea_flag_sesion(self, db):
+        """JD-A2: RECHAZADA resets conflicto_declarado=False."""
+        sesion, punto, miembros, _ = _setup()
+        miembros[0].conflicto_declarado = True
+        miembros[0].save()
+        declaracion = SessionService.declarar_conflicto(
+            sesion.id, punto.id, miembros[0].id, "Declaracion sintetica"
+        )
+        SessionService.votar_impedimento(declaracion.id, miembros[1].id, False)
+        SessionService.votar_impedimento(declaracion.id, miembros[2].id, False)
+        miembros[0].refresh_from_db()
+        assert miembros[0].conflicto_declarado is False
+
+    def test_miembro_con_coi_aprobado_no_vota_impedimento_ajeno(self, db):
+        """JD-B4: a member with an APPROVED COI on the punto cannot vote
+        on another member's impediment for the same punto."""
+        sesion, punto, miembros, _ = _setup()
+        declaracion = SessionService.declarar_conflicto(
+            sesion.id, punto.id, miembros[0].id, "Declaracion sintetica"
+        )
+        SessionService.votar_impedimento(declaracion.id, miembros[1].id, True)
+        SessionService.votar_impedimento(declaracion.id, miembros[2].id, True)
+        declaracion.refresh_from_db()
+        assert declaracion.estado == DeclaracionConflicto.Estado.APROBADA
+
+        declaracion2 = SessionService.declarar_conflicto(
+            sesion.id, punto.id, miembros[3].id, "Otra declaracion sintetica"
+        )
+        with pytest.raises(ValueError):
+            SessionService.votar_impedimento(declaracion2.id, miembros[0].id, True)
+
+    def test_acta_html_escapa_contenido(self, db, monkeypatch):
+        """JD-A3: names with HTML must be escaped in the acta HTML."""
+        import hashlib
+
+        pdf_bytes = b"%PDF-1.4 acta-escaped"
+        monkeypatch.setattr(
+            SessionService,
+            "_generar_pdf_bytes",
+            lambda sesion: pdf_bytes,
+        )
+
+        sesion = _convocar(7)
+        malicioso = _make_user(777)
+        malicioso.first_name = "<b>Inyeccion</b>"
+        malicioso.last_name = "<script>alert(1)</script>"
+        malicioso.save()
+        SessionService.registrar_asistencia(
+            sesion.id,
+            [{"user_id": malicioso.id, "rol": "Miembro", "asistencia": "PRESENTE"}],
+            actor=None,
+        )
+        SessionService.abrir_sesion(sesion.id, actor=None)
+        SessionService.finalizar_sesion(sesion.id, actor=None)
+        acta = SessionService.generar_acta(sesion.id, actor=None)
+        assert acta.pdf_sha256 == hashlib.sha256(pdf_bytes).hexdigest()
+        # JD-A3: the acta HTML must contain the ESCAPED payload, never
+        # the raw HTML/script tags.
+        html_out = SessionService._construir_acta_html(sesion)
+        assert "<script>alert(1)</script>" not in html_out
+        import html as _html
+
+        assert _html.escape("<script>alert(1)</script>") in html_out
