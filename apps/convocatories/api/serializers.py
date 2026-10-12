@@ -1,5 +1,7 @@
 """Serializers for Convocatory API."""
 
+from django.utils.translation import gettext as _
+
 from rest_framework import serializers
 
 from apps.convocatories.domain import Estado, get_transiciones_disponibles
@@ -64,11 +66,12 @@ class TransitionSerializer(serializers.Serializer):
 
         if not es_valida:
             raise ValidationError(
-                {"destino": f"Transición no permitida: {estado_origen} → {estado_destino}"}
+                {"destino": _("Transición no permitida: %(estado_origen)s → %(estado_destino)s")
+                % {"estado_origen": estado_origen, "estado_destino": estado_destino}}
             )
 
         # Require motivo for CANCELADA
         if estado_destino == Estado.CANCELADA and not attrs.get("motivo"):
-            raise ValidationError({"motivo": "El motivo es requerido para cancelar"})
+            raise ValidationError({"motivo": _("El motivo es requerido para cancelar")})
 
         return attrs

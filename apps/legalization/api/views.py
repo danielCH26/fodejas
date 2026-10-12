@@ -1,5 +1,7 @@
 """Views for the legalization API (CHG-301, CAP-029)."""
 
+from django.utils.translation import gettext as _
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -78,7 +80,7 @@ class LegalDocumentViewSet(viewsets.ReadOnlyModelViewSet):
             and document.process.beneficiary_id != user.id
         ):
             return Response(
-                {"detail": "No tienes permiso para firmar este documento."},
+                {"detail": _("No tienes permiso para firmar este documento.")},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -89,7 +91,7 @@ class LegalDocumentViewSet(viewsets.ReadOnlyModelViewSet):
 
         if not document.pdf:
             return Response(
-                {"detail": "El documento no tiene PDF cargado; cargue el archivo primero."},
+                {"detail": _("El documento no tiene PDF cargado; cargue el archivo primero.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -118,13 +120,13 @@ class LegalDocumentViewSet(viewsets.ReadOnlyModelViewSet):
 
         if not document.pre_sign_hash:
             return Response(
-                {"detail": "El documento no ha sido firmado aún."},
+                {"detail": _("El documento no ha sido firmado aún.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         if not document.pdf:
             return Response(
-                {"detail": "El documento no tiene PDF para verificar."},
+                {"detail": _("El documento no tiene PDF para verificar.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
