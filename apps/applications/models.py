@@ -1,5 +1,6 @@
 """Models for applications (FUI)."""
 
+import re
 import uuid
 
 from django.conf import settings
@@ -108,6 +109,22 @@ class Solicitud(models.Model):
         default=1,
     )
 
+    # Impact study fields (CHG-506)
+    ies_nombre = models.CharField(
+        _("nombre de IES"),
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    municipio_origen = models.ForeignKey(
+        "core.MunicipioIsla",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="solicitudes",
+        verbose_name=_("municipio/isla de origen"),
+    )
+
     # Timestamps
     created_at = models.DateTimeField(
         _("fecha de creación"),
@@ -131,6 +148,12 @@ class Solicitud(models.Model):
 
     def __str__(self):
         return self.radicado or f"Solicitud {self.id} - {self.aspirante.email}"
+
+    def save(self, *args, **kwargs):
+        # Normalize ies_nombre: strip + collapse multiple spaces (CHG-506)
+        if self.ies_nombre:
+            self.ies_nombre = re.sub(r" {2,}", " ", self.ies_nombre.strip())
+        super().save(*args, **kwargs)
 
     def puede_editar(self):
         """Check if application can still be edited."""

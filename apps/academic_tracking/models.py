@@ -37,6 +37,12 @@ class AcademicRecord(models.Model):
         help_text="Consecutive semesters below 3.5",
     )
     last_reviewed_at = models.DateTimeField(null=True, blank=True)
+    # CHG-506: retorno al Archipiélago
+    retorno_archipelago = models.BooleanField(
+        null=True,
+        blank=True,
+        help_text="True=retornó al Archipiélago, False=no retornó, null=sin anotar",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
