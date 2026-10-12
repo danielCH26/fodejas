@@ -5,7 +5,7 @@ services:
       dockerfile: docker/Dockerfile
     container_name: fodejas_app
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - ..:/app
     environment:
@@ -24,7 +24,11 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
-    command: python manage.py runserver 0.0.0.0:8000
+    # entrypoint bypass: el wait-script requiere pg_isready/redis-cli
+    # (ausentes en slim) y duplicaba "python manage.py"; los depends_on
+    # con service_healthy ya gatean el arranque.
+    entrypoint: []
+    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
 
   celery:
     build:
@@ -43,6 +47,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    entrypoint: []
     command: celery -A config worker -l INFO
 
   celery-beat:
@@ -62,4 +67,5 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    entrypoint: []
     command: celery -A config beat -l INFO

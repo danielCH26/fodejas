@@ -12,7 +12,7 @@ services:
     container_name: fodejas_app
     command: python manage.py runserver 0.0.0.0:8000
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       - DATABASE_URL=postgres://fodejas_user:fodejas_password@db:5432/fodejas_db
       - REDIS_URL=redis://redis:6379/0
@@ -85,8 +85,8 @@ services:
       POSTGRES_DB: fodejas_db
       POSTGRES_USER: fodejas_user
       POSTGRES_PASSWORD: fodejas_password
-    ports:
-      - "5432:5432"
+    # sin mapeo host: la app conecta por la red interna (host "db");
+    # psql directo: docker compose exec db psql -U fodejas_user -d fodejas_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres.conf:/etc/postgresql/postgresql.conf
@@ -103,16 +103,21 @@ services:
     container_name: fodejas_pgbouncer
     ports:
       - "6432:6432"
-    volumes:
-      - ./pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
-      - ./pgbouncer_userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    # sin mounts: el entrypoint del image genera pgbouncer.ini + userlist
+    # desde las env DATABASES_* (el mount ro bloqueaba la generacion)
     environment:
       DATABASE_URL: postgres://fodejas_user:fodejas_password@db:5432/fodejas_db
+      DATABASES_HOST: db
+      DATABASES_PORT: "5432"
+      DATABASES_USER: fodejas_user
+      DATABASES_PASSWORD: fodejas_password
+      DATABASES_DBNAME: fodejas_db
     depends_on:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "pgbouncer -V"]
+      # el binario pgbouncer no está en PATH del exec; nc -z verifica el puerto
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 6432"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -255,18 +260,21 @@ services:
   # Enables versioning and lifecycle rules on fodejas-media bucket.
   # Runs once on first deploy; exits successfully and stays stopped.
   minio-init:
-    image: minio/mc:latest
+    # boto3-based init (no minio/mc image dependency - some registries
+    # block it). Reuses the built app image; see scripts/minio_init.py.
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     container_name: fodejas_minio_init
-    volumes:
-      - ./minio-init/lifecycle.sh:/lifecycle.sh:ro
-      - minio_data:/data:ro
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - AWS_STORAGE_BUCKET_NAME=fodejas-media
+      - AWS_S3_ENDPOINT_URL=http://minio:9000
     depends_on:
       minio:
         condition: service_healthy
-    entrypoint: ["sh", "/lifecycle.sh"]
+    entrypoint: ["python", "scripts/minio_init.py"]
     restart: "no"
 
 volumes:
