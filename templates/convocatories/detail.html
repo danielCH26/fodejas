@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Convocatoria - {{ convocatory.nombre }}{% endblock %}
 
@@ -8,16 +9,16 @@
         <h2><i class="bi bi-calendar-event me-2"></i>{{ convocatory.nombre }}</h2>
         <div>
             <a href="{% url 'convocatories:list' %}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-2"></i>Volver
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
             </a>
             {% if can_manage and convocatory.estado == 'borrador' %}
             <a href="{% url 'convocatories:update' convocatory.pk %}" class="btn btn-primary">
-                <i class="bi bi-pencil me-2"></i>Editar
+                <i class="bi bi-pencil me-2"></i>{% trans "Editar" %}
             </a>
             {% endif %}
             {% if not can_manage and convocatory.estado == 'en_inscripcion' %}
             <a href="{% url 'applications:apply' convocatory.pk %}" class="btn btn-success">
-                <i class="bi bi-send me-2"></i>Postularse
+                <i class="bi bi-send me-2"></i>{% trans "Postularse" %}
             </a>
             {% endif %}
         </div>
@@ -35,24 +36,24 @@
     <!-- Info -->
     <div class="card mb-4">
         <div class="card-header">
-            <i class="bi bi-info-circle me-2"></i>Información
+            <i class="bi bi-info-circle me-2"></i>{% trans "Información" %}
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>Código:</strong> <code>{{ convocatory.codigo }}</code></p>
-                    <p><strong>Tipo:</strong> {{ convocatory.get_tipo_display }}</p>
-                    <p><strong>Período:</strong> {{ convocatory.periodo }}</p>
-                    <p><strong>Estado:</strong>
+                    <p><strong>{% trans "Código:" %}</strong> <code>{{ convocatory.codigo }}</code></p>
+                    <p><strong>{% trans "Tipo:" %}</strong> {{ convocatory.get_tipo_display }}</p>
+                    <p><strong>{% trans "Período:" %}</strong> {{ convocatory.periodo }}</p>
+                    <p><strong>{% trans "Estado:" %}</strong>
                         <span class="badge bg-{% if convocatory.estado == 'borrador' %}secondary{% elif convocatory.estado == 'publicada' or convocatory.estado == 'definitiva' %}success{% elif convocatory.estado == 'en_inscripcion' %}primary{% elif convocatory.estado == 'cerrada' %}dark{% else %}warning{% endif %}">
                             {{ convocatory.get_estado_display }}
                         </span>
                     </p>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Monto por semestre:</strong> {{ convocatory.monto_semestre_smlmv }} SMLMV</p>
-                    <p><strong>Duración máxima:</strong> {{ convocatory.duracion_maxima_semestres }} semestres</p>
-                    <p><strong>Cupo total:</strong> {{ convocatory.cupo_total }}</p>
+                    <p><strong>{% trans "Monto por semestre:" %}</strong> {{ convocatory.monto_semestre_smlmv }} SMLMV</p>
+                    <p><strong>{% trans "Duración máxima:" %}</strong> {{ convocatory.duracion_maxima_semestres }} semestres</p>
+                    <p><strong>{% trans "Cupo total:" %}</strong> {{ convocatory.cupo_total }}</p>
                 </div>
             </div>
         </div>
@@ -62,7 +63,7 @@
     {% if available_transitions %}
     <div class="card mb-4">
         <div class="card-header">
-            <i class="bi bi-arrow-right-circle me-2"></i>Cambiar Estado
+            <i class="bi bi-arrow-right-circle me-2"></i>{% trans "Cambiar Estado" %}
         </div>
         <div class="card-body">
             <form method="post" action="{% url 'convocatories:transition' convocatory.pk %}">
@@ -71,12 +72,12 @@
                     {% for transition in available_transitions %}
                     <button type="submit" name="transition" value="{{ transition }}" class="btn btn-success">
                         <i class="bi bi-check-circle me-1"></i>
-                        {% if transition == 'publicar' %}Publicar
-                        {% elif transition == 'abrir_inscripciones' %}Abrir Inscripciones
-                        {% elif transition == 'cerrar_inscripciones' %}Cerrar Inscripciones
-                        {% elif transition == 'iniciar_calificacion' %}Iniciar Calificación
-                        {% elif transition == 'publicar_resultados' %}Publicar Resultados
-                        {% elif transition == 'cerrar' %}Cerrar Convocatoria
+                        {% if transition == 'publicar' %}{% trans "Publicar" %}
+                        {% elif transition == 'abrir_inscripciones' %}{% trans "Abrir Inscripciones" %}
+                        {% elif transition == 'cerrar_inscripciones' %}{% trans "Cerrar Inscripciones" %}
+                        {% elif transition == 'iniciar_calificacion' %}{% trans "Iniciar Calificación" %}
+                        {% elif transition == 'publicar_resultados' %}{% trans "Publicar Resultados" %}
+                        {% elif transition == 'cerrar' %}{% trans "Cerrar Convocatoria" %}
                         {% endif %}
                     </button>
                     {% endfor %}

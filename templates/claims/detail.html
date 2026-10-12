@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Reclamación {{ reclamacion.uuid }} - FODEJAS{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-exclamation-triangle me-2"></i>Detalle de Reclamación</h2>
+        <h2><i class="bi bi-exclamation-triangle me-2"></i>{% trans "Detalle de Reclamación" %}</h2>
         <a href="{% url 'claims:list' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Volver
+            <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
         </a>
     </div>
 
@@ -24,37 +25,37 @@
         <div class="col-md-8">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0">Información de la Reclamación</h5>
+                    <h5 class="mb-0">{% trans "Información de la Reclamación" %}</h5>
                 </div>
                 <div class="card-body">
                     <dl class="row mb-0">
-                        <dt class="col-sm-3">UUID</dt>
+                        <dt class="col-sm-3">{% trans "UUID" %}</dt>
                         <dd class="col-sm-9"><code>{{ reclamacion.uuid }}</code></dd>
 
-                        <dt class="col-sm-3">Convocatoria</dt>
+                        <dt class="col-sm-3">{% trans "Convocatoria" %}</dt>
                         <dd class="col-sm-9">{{ reclamacion.solicitud.convocatoria.nombre }}</dd>
 
-                        <dt class="col-sm-3">Radicado</dt>
+                        <dt class="col-sm-3">{% trans "Radicado" %}</dt>
                         <dd class="col-sm-9">{{ reclamacion.solicitud.radicado }}</dd>
 
-                        <dt class="col-sm-3">Tipo</dt>
+                        <dt class="col-sm-3">{% trans "Tipo" %}</dt>
                         <dd class="col-sm-9">{{ reclamacion.get_tipo_display }}</dd>
 
-                        <dt class="col-sm-3">Estado</dt>
+                        <dt class="col-sm-3">{% trans "Estado" %}</dt>
                         <dd class="col-sm-9">
                             <span class="badge bg-{% if reclamacion.estado == 'presentada' %}secondary{% elif reclamacion.estado == 'en_revision' %}warning{% elif reclamacion.estado == 'resuelta' %}success{% else %}danger{% endif %}">
                                 {{ reclamacion.get_estado_display }}
                             </span>
                         </dd>
 
-                        <dt class="col-sm-3">Fecha de creación</dt>
+                        <dt class="col-sm-3">{% trans "Fecha de creación" %}</dt>
                         <dd class="col-sm-9">{{ reclamacion.created_at|date:"d/m/Y H:i" }}</dd>
 
                         {% if reclamacion.fecha_resolucion %}
-                        <dt class="col-sm-3">Fecha de resolución</dt>
+                        <dt class="col-sm-3">{% trans "Fecha de resolución" %}</dt>
                         <dd class="col-sm-9">{{ reclamacion.fecha_resolucion|date:"d/m/Y H:i" }}</dd>
 
-                        <dt class="col-sm-3">Resuelto por</dt>
+                        <dt class="col-sm-3">{% trans "Resuelto por" %}</dt>
                         <dd class="col-sm-9">{{ reclamacion.resuelto_por|default:"-" }}</dd>
                         {% endif %}
                     </dl>
@@ -63,7 +64,7 @@
 
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0">Descripción</h5>
+                    <h5 class="mb-0">{% trans "Descripción" %}</h5>
                 </div>
                 <div class="card-body">
                     <p>{{ reclamacion.descripcion|linebreaks }}</p>
@@ -73,7 +74,7 @@
             {% if reclamacion.respuesta %}
             <div class="card mb-4 border-success">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Respuesta</h5>
+                    <h5 class="mb-0">{% trans "Respuesta" %}</h5>
                 </div>
                 <div class="card-body">
                     <p>{{ reclamacion.respuesta|linebreaks }}</p>
@@ -84,11 +85,11 @@
             {% if reclamacion.evidencia %}
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0">Evidencia Adjunta</h5>
+                    <h5 class="mb-0">{% trans "Evidencia Adjunta" %}</h5>
                 </div>
                 <div class="card-body">
                     <a href="{{ reclamacion.evidencia.url }}" class="btn btn-outline-primary" target="_blank">
-                        <i class="bi bi-paperclip me-2"></i>Descargar evidencia
+                        <i class="bi bi-paperclip me-2"></i>{% trans "Descargar evidencia" %}
                     </a>
                 </div>
             </div>
@@ -98,7 +99,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">Historial</h5>
+                    <h5 class="mb-0">{% trans "Historial" %}</h5>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
@@ -114,7 +115,7 @@
                             {% endif %}
                         </li>
                         {% empty %}
-                        <li class="list-group-item text-muted">Sin historial</li>
+                        <li class="list-group-item text-muted">{% trans "Sin historial" %}</li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -124,7 +125,7 @@
             <div class="card mt-4">
                 <div class="card-body">
                     <a href="{% url 'claims:edit' reclamacion.uuid %}" class="btn btn-outline-primary w-100 mb-2">
-                        <i class="bi bi-pencil me-2"></i>Editar Reclamación
+                        <i class="bi bi-pencil me-2"></i>{% trans "Editar Reclamación" %}
                     </a>
                 </div>
             </div>
@@ -133,12 +134,12 @@
             {% if reclamacion.estado in 'resuelta rechazada' %}
             <div class="card mt-4 border-info">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="bi bi-gavel me-2"></i>2ª Instancia</h5>
+                    <h5 class="mb-0"><i class="bi bi-gavel me-2"></i>{% trans "2ª Instancia" %}</h5>
                 </div>
                 <div class="card-body">
-                    <p class="small">¿No estás de acuerdo con la resolución? Puedes presentar una apelación ante la Oficina Jurídica.</p>
+                    <p class="small">{% trans "¿No estás de acuerdo con la resolución? Puedes presentar una apelación ante la Oficina Jurídica." %}</p>
                     <a href="{% url 'claims:apelacion_create' reclamacion.uuid %}" class="btn btn-outline-info w-100">
-                        <i class="bi bi-gavel me-2"></i>Presentar Apelación
+                        <i class="bi bi-gavel me-2"></i>{% trans "Presentar Apelación" %}
                     </a>
                 </div>
             </div>

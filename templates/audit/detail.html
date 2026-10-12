@@ -1,12 +1,13 @@
 {% extends "audit/base.html" %}
+{% load i18n %}
 
 {% block audit_title %}Detalle de Evento{% endblock %}
 
 {% block audit_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-journal-text me-2"></i>Detalle del Evento</h2>
+    <h2><i class="bi bi-journal-text me-2"></i>{% trans "Detalle del Evento" %}</h2>
     <a href="{% url 'audit_dashboard' %}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-2"></i>Volver
+        <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
     </a>
 </div>
 
@@ -15,20 +16,20 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <i class="bi bi-info-circle me-2"></i>Información del Evento
+                <i class="bi bi-info-circle me-2"></i>{% trans "Información del Evento" %}
             </div>
             <div class="card-body">
                 <table class="table table-borderless">
                     <tr>
-                        <th class="text-muted" style="width: 40%;">ID:</th>
+                        <th class="text-muted" style="width: 40%;">{% trans "ID:" %}</th>
                         <td><code>{{ event.id }}</code></td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Fecha/Hora:</th>
+                        <th class="text-muted">{% trans "Fecha/Hora:" %}</th>
                         <td>{{ event.timestamp|date:"d/m/Y H:i:s" }}</td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Acción:</th>
+                        <th class="text-muted">{% trans "Acción:" %}</th>
                         <td>
                             <span class="badge bg-{% if event.action == 'CREATE' %}success{% elif event.action == 'UPDATE' %}warning{% elif event.action == 'DELETE' %}danger{% elif event.action == 'LOGIN' %}info{% else %}secondary{% endif %}">
                                 {{ event.action }}
@@ -36,34 +37,34 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Entidad:</th>
+                        <th class="text-muted">{% trans "Entidad:" %}</th>
                         <td><strong>{{ event.entity }}</strong></td>
                     </tr>
                     <tr>
-                        <th class="text-muted">ID de Entidad:</th>
+                        <th class="text-muted">{% trans "ID de Entidad:" %}</th>
                         <td><code>{{ event.entity_id }}</code></td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Módulo:</th>
+                        <th class="text-muted">{% trans "Módulo:" %}</th>
                         <td>{{ event.module }}</td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Usuario:</th>
+                        <th class="text-muted">{% trans "Usuario:" %}</th>
                         <td>
                             {% if event.actor %}
                             {{ event.actor.email }}<br>
                             <small class="text-muted">{{ event.actor.first_name }} {{ event.actor.last_name }}</small>
                             {% else %}
-                            <span class="text-muted">Sistema</span>
+                            <span class="text-muted">{% trans "Sistema" %}</span>
                             {% endif %}
                         </td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Dirección IP:</th>
+                        <th class="text-muted">{% trans "Dirección IP:" %}</th>
                         <td>{{ event.ip_address|default:"—" }}</td>
                     </tr>
                     <tr>
-                        <th class="text-muted">User Agent:</th>
+                        <th class="text-muted">{% trans "User Agent:" %}</th>
                         <td><small>{{ event.user_agent|default:"—"|truncatechars:50 }}</small></td>
                     </tr>
                 </table>
@@ -75,25 +76,25 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <i class="bi bi-shield-lock me-2"></i>Cadena de Hash
+                <i class="bi bi-shield-lock me-2"></i>{% trans "Cadena de Hash" %}
             </div>
             <div class="card-body">
                 <table class="table table-borderless">
                     <tr>
-                        <th class="text-muted" style="width: 40%;">Hash Anterior:</th>
+                        <th class="text-muted" style="width: 40%;">{% trans "Hash Anterior:" %}</th>
                         <td><code class="small">{{ event.previous_hash|default:"—" }}</code></td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Hash Actual:</th>
+                        <th class="text-muted">{% trans "Hash Actual:" %}</th>
                         <td><code class="small">{{ event.current_hash }}</code></td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Válido:</th>
+                        <th class="text-muted">{% trans "Válido:" %}</th>
                         <td>
                             {% if event.is_valid %}
-                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Válido</span>
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>{% trans "Válido" %}</span>
                             {% else %}
-                            <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Inválido</span>
+                            <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>{% trans "Inválido" %}</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -107,19 +108,19 @@
 {% if changes_display %}
 <div class="card mb-4">
     <div class="card-header">
-        <i class="bi bi-arrow-left-right me-2"></i>Cambios
+        <i class="bi bi-arrow-left-right me-2"></i>{% trans "Cambios" %}
     </div>
     <div class="card-body">
         <div class="row">
             {% if changes_display.before %}
             <div class="col-md-6">
-                <h6 class="text-muted mb-3"><i class="bi bi-arrow-left-circle me-2"></i>Antes</h6>
+                <h6 class="text-muted mb-3"><i class="bi bi-arrow-left-circle me-2"></i>{% trans "Antes" %}</h6>
                 <pre class="bg-light p-3 rounded"><code>{{ changes_display.before|pretty_json }}</code></pre>
             </div>
             {% endif %}
             {% if changes_display.after %}
             <div class="col-md-6">
-                <h6 class="text-muted mb-3"><i class="bi bi-arrow-right-circle me-2"></i>Después</h6>
+                <h6 class="text-muted mb-3"><i class="bi bi-arrow-right-circle me-2"></i>{% trans "Después" %}</h6>
                 <pre class="bg-light p-3 rounded"><code>{{ changes_display.after|pretty_json }}</code></pre>
             </div>
             {% endif %}
@@ -131,7 +132,7 @@
 <!-- Raw JSON -->
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-code me-2"></i>JSON Completo
+        <i class="bi bi-code me-2"></i>{% trans "JSON Completo" %}
     </div>
     <div class="card-body">
         <pre><code>{{ event|pretty_json }}</code></pre>

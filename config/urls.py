@@ -25,6 +25,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("healthz", liveness, name="healthz"),
     path("readyz", readiness, name="readyz"),
+    # CHG-507 — Language switcher (set_language view).
+    path("i18n/", include("django.conf.urls.i18n")),
     path("", include("django_prometheus.urls")),
     path("", root_view, name="root"),  # Redirect to login
     # HTML views for accounts (before API to avoid conflict)

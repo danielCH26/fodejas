@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Editar Reclamación - FODEJAS{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-pencil me-2"></i>Editar Reclamación</h2>
+        <h2><i class="bi bi-pencil me-2"></i>{% trans "Editar Reclamación" %}</h2>
         <a href="{% url 'claims:detail' object.uuid %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Cancelar
+            <i class="bi bi-arrow-left me-2"></i>{% trans "Cancelar" %}
         </a>
     </div>
 
@@ -26,23 +27,23 @@
                 {% csrf_token %}
 
                 <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción *</label>
+                    <label for="descripcion" class="form-label">{% trans "Descripción" %} *</label>
                     <textarea class="form-control" id="descripcion" name="descripcion"
                               rows="6" required>{{ object.descripcion }}</textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label for="evidencia" class="form-label">Evidencia (actual: {{ object.evidencia|default:"Sin archivo" }})</label>
+                    <label for="evidencia" class="form-label">{% trans "Evidencia" %} ({% trans "actual:" %} {{ object.evidencia|default:"{% trans "Sin archivo" %}" }})</label>
                     <input type="file" class="form-control" id="evidencia" name="evidencia">
-                    <div class="form-text">Deje en blanco para mantener el archivo actual</div>
+                    <div class="form-text">{% trans "Deje en blanco para mantener el archivo actual" %}</div>
                 </div>
 
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save me-2"></i>Guardar Cambios
+                        <i class="bi bi-save me-2"></i>{% trans "Guardar Cambios" %}
                     </button>
                     <a href="{% url 'claims:detail' object.uuid %}" class="btn btn-outline-secondary">
-                        Cancelar
+                        {% trans "Cancelar" %}
                     </a>
                 </div>
             </form>

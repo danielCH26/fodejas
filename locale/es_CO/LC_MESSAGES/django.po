@@ -1,0 +1,13 @@
+# Spanish (Colombia) translations for FODEJAS.
+# CHG-507-multilang Unit A.
+# This file is a placeholder — msgids are already in Spanish (the default
+# language), so no active translations are needed here. Django falls back
+# to msgid when no .mo or an empty msgstr is found, which preserves the
+# existing Spanish UI without any .mo file.
+msgid ""
+msgstr ""
+"Project-Id-Version: FODEJAS\n"
+"Language: es-CO\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"

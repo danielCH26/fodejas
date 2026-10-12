@@ -64,8 +64,30 @@
      PostgreSQL vía CI al push
 5. **CHG-507 — Multilenguaje** (CAP-030) — al final: es transversal y cada
    feature nueva agrega templates a traducir.
-6. **Runbooks/DRP** (INF-011/012/015) — docs operativos, cuando el código
-   esté estable.
+   - [x] OpenSpec: proposal + tasks + delta → `748b06e` (alcance público
+     ~40 archivos + es-CO/en elegidos por usuario; creole decisión abierta
+     documentada; PDFs legales excluidos)
+   - [x] Unidad A (infra + accounts): LocaleMiddleware (posición comentada),
+     LANGUAGES/LOCALE_PATHS, locale/{es_CO,en} con polib (scripts/
+     compile_mo.py, .mo deterministas commiteados), switcher en base.html,
+     76 strings accounts → `6a3f170` (11 tests i18n)
+   - [x] Unidad B (públicas): 22 templates marcados, .po 76→471 entradas
+     → `3914b80`; fix post-writer: 3 msgids con sintaxis {{ }} que nunca
+     matchearían → placeholders %(var)s + msgctxt
+   - Rama `feat/CHG-507-multilang`; suite 527✓/8 skip (516 master + 11);
+     regresión es-CO contract: msgids byte-idénticos al texto actual
+   - Pendiente: templates internos restantes (governance/treasury/
+     legalization/scoring/claims-admin), API errors DRF, TextChoices raw
+     (deuda documentada); PostgreSQL vía CI
+6. **Runbooks/DRP** (INF-011/012/015) — docs operativos.
+   - [x] docs/ops/ completo: README índice, deploy runbook, DRP con RTO/RPO
+     PROPUESTOS, incident-response, monitoring-alerts, known-gaps (10 gaps
+     con evidencia; 3 bloqueantes go-live: MEDIA no servido, restore sin
+     probar, MinIO sin lifecycle) — commit de este turn
+   - Hallazgo verificado: /api/audit/verify/ NO registrada (solo HTML +
+     shell); corregido en docs, fix de código pendiente
+   - Pendiente para cierre INF: primera prueba de restore en staging
+     (roadmap:585 exige restore probado), backup-exporter, pg_stat_statements
 
 ## Reglas del programa
 

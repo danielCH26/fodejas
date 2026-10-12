@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Historial de Verificaciones - {{ solicitud.radicado }}{% endblock %}
 
@@ -7,33 +8,33 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <a href="{% url 'applications:review_detail' solicitud.uuid %}" class="btn btn-outline-secondary mb-2">
-                <i class="bi bi-arrow-left me-2"></i>Volver a Verificación
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Volver a Verificación" %}
             </a>
-            <h2><i class="bi bi-clock-history me-2"></i>Historial de Verificaciones</h2>
+            <h2><i class="bi bi-clock-history me-2"></i>{% trans "Historial de Verificaciones" %}</h2>
         </div>
     </div>
 
     <!-- Solicitud Info -->
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="mb-0">Información de la Solicitud</h5>
+            <h5 class="mb-0">{% trans "Información de la Solicitud" %}</h5>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
-                    <strong>Radicado:</strong>
+                    <strong>{% trans "Radicado:" %}</strong>
                     <p>{{ solicitud.radicado|default:"Sin radicado" }}</p>
                 </div>
                 <div class="col-md-3">
-                    <strong>Aspirante:</strong>
+                    <strong>{% trans "Aspirante:" %}</strong>
                     <p>{{ solicitud.aspirante.first_name }} {{ solicitud.aspirante.last_name }}</p>
                 </div>
                 <div class="col-md-3">
-                    <strong>Convocatoria:</strong>
+                    <strong>{% trans "Convocatoria:" %}</strong>
                     <p>{{ solicitud.convocatoria.nombre }}</p>
                 </div>
                 <div class="col-md-3">
-                    <strong>Estado Actual:</strong>
+                    <strong>{% trans "Estado Actual:" %}</strong>
                     <p>
                         <span class="badge bg-{% if solicitud.estado == 'radicada' %}warning{% elif solicitud.estado == 'verificada' %}success{% elif solicitud.estado == 'rechazada' %}danger{% else %}secondary{% endif %}">
                             {{ solicitud.get_estado_display }}
@@ -47,7 +48,7 @@
     <!-- Validation History -->
     <div class="card">
         <div class="card-header">
-            <h5 class="mb-0">Historial de Validaciones</h5>
+            <h5 class="mb-0">{% trans "Historial de Validaciones" %}</h5>
         </div>
         <div class="card-body">
             {% if validaciones %}
@@ -63,17 +64,17 @@
                                         {{ validacion.get_estado_display }}
                                     </span>
                                 </h5>
-                                <p class="text-muted mb-1">Código: {{ validacion.requisito_code }}</p>
+                                <p class="text-muted mb-1">{% trans "Código:" %} {{ validacion.requisito_code }}</p>
 
                                 {% if validacion.observaciones %}
                                 <div class="alert alert-info mb-2">
-                                    <strong>Observaciones:</strong> {{ validacion.observaciones }}
+                                    <strong>{% trans "Observaciones:" %}</strong> {{ validacion.observaciones }}
                                 </div>
                                 {% endif %}
 
                                 {% if validacion.evidencia %}
                                 <a href="{{ validacion.evidencia.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
-                                    <i class="bi bi-paperclip me-1"></i>Ver Evidencia
+                                    <i class="bi bi-paperclip me-1"></i>{% trans "Ver Evidencia" %}
                                 </a>
                                 {% endif %}
                             </div>
@@ -81,7 +82,7 @@
                             <div class="text-end">
                                 {% if validacion.validado_por %}
                                 <small class="text-muted d-block">
-                                    Por: {{ validacion.validado_por.first_name|default:validacion.validado_por.username }}
+                                    {% trans "Por:" %} {{ validacion.validado_por.first_name|default:validacion.validado_por.username }}
                                 </small>
                                 {% endif %}
                                 <small class="text-muted">
@@ -96,8 +97,8 @@
             {% else %}
             <div class="text-center py-5">
                 <i class="bi bi-clock-history text-muted" style="font-size: 4rem;"></i>
-                <h4 class="mt-3">Sin historial</h4>
-                <p class="text-muted">No hay verificaciones registradas aún.</p>
+                <h4 class="mt-3">{% trans "Sin historial" %}</h4>
+                <p class="text-muted">{% trans "No hay verificaciones registradas aún." %}</p>
             </div>
             {% endif %}
         </div>

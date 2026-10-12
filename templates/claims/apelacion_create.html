@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Presentar Apelación - FODEJAS{% endblock %}
 
@@ -7,9 +8,9 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="bi bi-gavel me-2"></i>Presentar Apelación</h2>
+                <h2><i class="bi bi-gavel me-2"></i>{% trans "Presentar Apelación" %}</h2>
                 <a href="{% url 'claims:apelacion_list' %}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Cancelar
+                    <i class="bi bi-arrow-left me-2"></i>{% trans "Cancelar" %}
                 </a>
             </div>
 
@@ -25,16 +26,16 @@
             {% if reclamacion %}
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Reclamación a apelar</h5>
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>{% trans "Reclamación a apelar" %}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <strong>Radicado:</strong>
+                            <strong>{% trans "Radicado:" %}</strong>
                             <p>{{ reclamacion.radicado|default:reclamacion.uuid }}</p>
                         </div>
                         <div class="col-md-6">
-                            <strong>Estado:</strong>
+                            <strong>{% trans "Estado:" %}</strong>
                             <p>
                                 <span class="badge bg-{% if reclamacion.estado == 'resuelta' %}success{% elif reclamacion.estado == 'rechazada' %}danger{% endif %}">
                                     {{ reclamacion.get_estado_display }}
@@ -44,7 +45,7 @@
                     </div>
                     {% if reclamacion.respuesta %}
                     <div class="mt-3">
-                        <strong>Respuesta de la Junta:</strong>
+                        <strong>{% trans "Respuesta de la Junta:" %}</strong>
                         <p class="mt-1">{{ reclamacion.respuesta|linebreaks }}</p>
                     </div>
                     {% endif %}
@@ -59,7 +60,7 @@
 
                         <div class="mb-3">
                             <label for="id_descripcion" class="form-label">
-                                <strong>Fundamentos de la Apelación *</strong>
+                                <strong>{% trans "Fundamentos de la Apelación" %} *</strong>
                             </label>
                             <textarea
                                 name="descripcion"
@@ -67,16 +68,16 @@
                                 class="form-control"
                                 rows="6"
                                 required
-                                placeholder="Explique los fundamentos de su apelación contra la decisión de la Junta Directiva..."
+                                placeholder="{% trans "Explique los fundamentos de su apelación contra la decisión de la Junta Directiva..." %}"
                             ></textarea>
                             <div class="form-text">
-                                Máximo 5000 caracteres. Sea específico sobre los motivos de su apelación.
+                                {% trans "Máximo 5000 caracteres. Sea específico sobre los motivos de su apelación." %}
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="id_evidencia" class="form-label">
-                                <strong>Evidencia (opcional)</strong>
+                                <strong>{% trans "Evidencia (opcional)" %}</strong>
                             </label>
                             <input
                                 type="file"
@@ -86,22 +87,21 @@
                                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                             >
                             <div class="form-text">
-                                Formatos permitidos: PDF, DOC, DOCX, JPG, PNG. Tamaño máximo: 10MB.
+                                {% trans "Formatos permitidos: PDF, DOC, DOCX, JPG, PNG. Tamaño máximo: 10MB." %}
                             </div>
                         </div>
 
                         <div class="alert alert-info">
                             <i class="bi bi-info-circle me-2"></i>
-                            <strong>Nota:</strong> La apelación debe presentarse dentro de los 30 días calendario siguientes a la resolución de la reclamación.
-                            Solo el aspirante titular puede presentar apelaciones.
+                            <strong>{% trans "Nota:" %}</strong> {% trans "La apelación debe presentarse dentro de los 30 días calendario siguientes a la resolución de la reclamación. Solo el aspirante titular puede presentar apelaciones." %}
                         </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-send me-2"></i>Presentar Apelación
+                                <i class="bi bi-send me-2"></i>{% trans "Presentar Apelación" %}
                             </button>
                             <a href="{% url 'claims:apelacion_list' %}" class="btn btn-outline-secondary">
-                                Cancelar
+                                {% trans "Cancelar" %}
                             </a>
                         </div>
                     </form>

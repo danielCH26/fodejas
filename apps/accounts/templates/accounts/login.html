@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load i18n %}
 
-{% block title %}Iniciar Sesión - FODEJAS{% endblock %}
+{% block title %}{% trans "Iniciar Sesión - FODEJAS" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -10,12 +11,12 @@
             <div class="card-header bg-fodejas text-white text-center py-3">
                 <h4 class="mb-0">
                     <i class="bi bi-mortarboard-fill me-2"></i>
-                    FODEJAS
+                    {% trans "FODEJAS" %}
                 </h4>
-                <small class="text-white-50">Fondo para el Desarrollo Educativo</small>
+                <small class="text-white-50">{% trans "Fondo para el Desarrollo Educativo" %}</small>
             </div>
             <div class="card-body p-4">
-                <h5 class="card-title text-center mb-4">Iniciar Sesión</h5>
+                <h5 class="card-title text-center mb-4">{% trans "Iniciar Sesión" %}</h5>
 
                 <form method="post" action="{% url 'accounts:login' %}">
                     {% csrf_token %}
@@ -25,7 +26,7 @@
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-fodejas btn-lg">
                             <i class="bi bi-box-arrow-in-right me-2"></i>
-                            Ingresar
+                            {% trans "Ingresar" %}
                         </button>
                     </div>
                 </form>
@@ -33,19 +34,19 @@
                 <hr class="my-4">
 
                 <div class="text-center">
-                    <p class="mb-2">¿Olvidó su contraseña?</p>
+                    <p class="mb-2">{% trans "¿Olvidó su contraseña?" %}</p>
                     <a href="{% url 'accounts:password_reset' %}" class="btn btn-outline-secondary btn-sm">
-                        Recuperar contraseña
+                        {% trans "Recuperar contraseña" %}
                     </a>
                 </div>
 
                 <hr class="my-4">
 
                 <div class="text-center">
-                    <p class="mb-2">¿No tiene cuenta?</p>
+                    <p class="mb-2">{% trans "¿No tiene cuenta?" %}</p>
                     <a href="{% url 'accounts:register' %}" class="btn btn-fodejas-accent">
                         <i class="bi bi-person-plus me-2"></i>
-                        Registrarse como Aspirante
+                        {% trans "Registrarse como Aspirante" %}
                     </a>
                 </div>
             </div>

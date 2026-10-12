@@ -42,6 +42,7 @@ dev = [
     "pytest-django>=4.7",
     "pytest-mock>=3.12",
     "factory-boy>=3.3",
+    "polib>=1.2",  # CHG-507 — pure-Python .po/.mo compiler (no gettext required).
     "pre-commit>=3.5",
     "detect-secrets>=1.4",
 ]
