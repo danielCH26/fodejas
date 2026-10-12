@@ -17,6 +17,7 @@ from apps.accounts.permissions import IsAuditExporter, IsAuditViewer
 
 from .models import AuditEvent
 from .selectors import get_audit_events, verify_audit_chain
+from .services import verify_chain
 from .serializers import AuditChainVerifySerializer, AuditEventSerializer
 
 

@@ -18,5 +18,4 @@ urlpatterns = [
     # JSON API contract for the /api/ prefix. The HTML page lives at
     # /accounts/audit/verify/ (apps/accounts/urls.py, name "audit_verify").
     path("verify/", AuditChainVerifyView.as_view(), name="audit-chain-verify"),
->>>>>>> chore/audit-verify-url
 ]
