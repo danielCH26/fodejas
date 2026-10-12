@@ -20,22 +20,16 @@ class ReportingService:
     def resumen_convocatorias():
         """Applications per convocatoria with state breakdown."""
         qs = (
-            Solicitud.objects.values(
-                "convocatoria__codigo", "convocatoria__nombre"
-            )
+            Solicitud.objects.values("convocatoria__codigo", "convocatoria__nombre")
             .annotate(total=Count("id"))
             .order_by("convocatoria__codigo")
         )
-        por_estado = (
-            Solicitud.objects.values(
-                "convocatoria__codigo", "estado"
-            ).annotate(total=Count("id"))
+        por_estado = Solicitud.objects.values("convocatoria__codigo", "estado").annotate(
+            total=Count("id")
         )
         estados = {}
         for row in por_estado:
-            estados.setdefault(row["convocatoria__codigo"], {})[
-                row["estado"]
-            ] = row["total"]
+            estados.setdefault(row["convocatoria__codigo"], {})[row["estado"]] = row["total"]
         return [
             {
                 "convocatoria": row["convocatoria__codigo"],
@@ -50,20 +44,16 @@ class ReportingService:
     def beneficiarios_por_convocatoria():
         """Legalization processes per convocatoria with status counts."""
         qs = (
-            LegalizationProcess.objects.values(
-                "convocatoria__codigo", "convocatoria__nombre"
-            )
+            LegalizationProcess.objects.values("convocatoria__codigo", "convocatoria__nombre")
             .annotate(total=Count("id"))
             .order_by("convocatoria__codigo")
         )
-        por_estado = LegalizationProcess.objects.values(
-            "convocatoria__codigo", "status"
-        ).annotate(total=Count("id"))
+        por_estado = LegalizationProcess.objects.values("convocatoria__codigo", "status").annotate(
+            total=Count("id")
+        )
         estados = {}
         for row in por_estado:
-            estados.setdefault(row["convocatoria__codigo"], {})[
-                row["status"]
-            ] = row["total"]
+            estados.setdefault(row["convocatoria__codigo"], {})[row["status"]] = row["total"]
         return [
             {
                 "convocatoria": row["convocatoria__codigo"],
@@ -101,17 +91,13 @@ class ReportingService:
     def seguimiento_academico():
         """Academic tracking states and graduation rate (§14.1)."""
         total = AcademicRecord.objects.count()
-        por_estado = AcademicRecord.objects.values("status").annotate(
-            total=Count("id")
-        )
+        por_estado = AcademicRecord.objects.values("status").annotate(total=Count("id"))
         estados = {c["status"]: c["total"] for c in por_estado}
         graduados = estados.get(AcademicRecord.Status.GRADUADO, 0)
         return {
             "total_expedientes": total,
             "por_estado": estados,
-            "tasa_graduacion": (
-                round(graduados / total, 4) if total else None
-            ),
+            "tasa_graduacion": (round(graduados / total, 4) if total else None),
         }
 
     @staticmethod

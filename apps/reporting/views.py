@@ -38,9 +38,7 @@ def informe_gestion(request):
         try:
             trimestre = int(trimestre)
         except ValueError:
-            return Response(
-                {"error": "trimestre debe ser numérico"}, status=400
-            )
+            return Response({"error": "trimestre debe ser numérico"}, status=400)
     try:
         informe = ReportingService.informe_periodo(anio, trimestre)
     except ValueError as e:

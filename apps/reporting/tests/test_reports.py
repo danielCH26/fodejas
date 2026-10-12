@@ -4,6 +4,7 @@ All fixtures use synthetic data (AGENTS.md §6.1 — no PII). KPI values
 are verified against hand-computed aggregates from the seeded data.
 """
 
+from datetime import UTC
 from decimal import Decimal
 
 import pytest
@@ -86,9 +87,7 @@ class TestKpis:
         _make_legalized(conv, 1)
         _make_legalized(conv, 2)
         beneficiarios = ReportingService.beneficiarios_por_convocatoria()
-        entry = next(
-            b for b in beneficiarios if b["convocatoria"] == conv.codigo
-        )
+        entry = next(b for b in beneficiarios if b["convocatoria"] == conv.codigo)
         assert entry["beneficiarios"] == 2
 
     def test_ejecucion_presupuestal_suma_por_estado(self, db):
@@ -124,17 +123,15 @@ class TestKpis:
         )
         # Force the old disbursement into a previous year.
         from datetime import datetime as _dt
-        from datetime import timezone as _tz
-        viejo.created_at = _dt(2020, 1, 1, tzinfo=_tz.utc)
+
+        viejo.created_at = _dt(2020, 1, 1, tzinfo=UTC)
         viejo.save()
-        reciente = DisbursementAuthorization.objects.create(
+        DisbursementAuthorization.objects.create(
             legalization_process=proceso,
             amount=Decimal("100.00"),
             status=DisbursementAuthorization.Status.PAGADO,
         )
-        ejecucion = ReportingService.ejecucion_presupuestal(
-            desde="2026-01-01", hasta="2026-12-31"
-        )
+        ejecucion = ReportingService.ejecucion_presupuestal(desde="2026-01-01", hasta="2026-12-31")
         assert Decimal(str(ejecucion["pagados"])) == Decimal("100.00")
 
     def test_informe_periodo_trimestral(self, db):
