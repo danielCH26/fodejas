@@ -22,6 +22,7 @@ Business rules (project.md §6.1.1-6.1.2, approved spec delta):
 from __future__ import annotations
 
 import hashlib
+import html
 from datetime import date, timedelta
 
 from django.core.files.base import ContentFile
@@ -686,20 +687,28 @@ class SessionService:
                 "WeasyPrint no está instalado. Instala con: pip install weasyprint"
             ) from exc
 
+        html_content = SessionService._construir_acta_html(sesion)
+
+        return HTML(string=html_content).write_pdf()
+
+    @staticmethod
+    def _construir_acta_html(sesion: Sesion) -> str:
+        """Build the acta HTML (all interpolated values HTML-escaped,
+        JD-A3: WeasyPrint renders raw HTML without sanitization)."""
         # Build puntos HTML
         puntos_html = ""
         for punto in sesion.puntos.all():
             estado_punto = punto.get_estado_display()
             puntos_html += f"""
             <tr>
-                <td>{punto.numero}</td>
-                <td>{punto.texto}</td>
-                <td>{estado_punto}</td>
+                <td>{html.escape(str(punto.numero))}</td>
+                <td>{html.escape(punto.texto)}</td>
+                <td>{html.escape(estado_punto)}</td>
             </tr>
             """
 
         miembros_html = "".join(
-            f"<li>{m.user.get_full_name() or m.user.email} ({m.get_asistencia_display()}){' — MIEMBRO POR CARGO' if m.es_miembro_cargo else ''}{' — CONFLICTO DE INTERÉS' if m.conflicto_declarado else ''}</li>"
+            f"<li>{html.escape(m.user.get_full_name() or m.user.email)} ({html.escape(m.get_asistencia_display())}){' — MIEMBRO POR CARGO' if m.es_miembro_cargo else ''}{' — CONFLICTO DE INTERÉS' if m.conflicto_declarado else ''}</li>"
             for m in sesion.miembros.select_related("user").all()
         )
 
@@ -707,7 +716,7 @@ class SessionService:
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Acta de Sesión {sesion.get_tipo_display()} {sesion.get_organo_display()}</title>
+<title>Acta de Sesión {html.escape(sesion.get_tipo_display())} {html.escape(sesion.get_organo_display())}</title>
 <style>
 body {{ font-family: sans-serif; margin: 2cm; }}
 h1 {{ text-align: center; }}
@@ -718,10 +727,10 @@ th {{ background: #f0f0f0; }}
 </head>
 <body>
 <h1>Acta de Sesión</h1>
-<p><strong>Tipo:</strong> {sesion.get_tipo_display()}</p>
-<p><strong>Órgano:</strong> {sesion.get_organo_display()}</p>
-<p><strong>Fecha y hora:</strong> {sesion.fecha_hora.strftime('%d/%m/%Y %H:%M')}</p>
-<p><strong>Asunto:</strong> {sesion.asunto}</p>
+<p><strong>Tipo:</strong> {html.escape(sesion.get_tipo_display())}</p>
+<p><strong>Órgano:</strong> {html.escape(sesion.get_organo_display())}</p>
+<p><strong>Fecha y hora:</strong> {html.escape(sesion.fecha_hora.strftime('%d/%m/%Y %H:%M'))}</p>
+<p><strong>Asunto:</strong> {html.escape(sesion.asunto)}</p>
 
 <h2>Miembros asistentes</h2>
 <ul>{miembros_html}</ul>
@@ -734,7 +743,7 @@ th {{ background: #f0f0f0; }}
 </body>
 </html>"""
 
-        return HTML(string=html_content).write_pdf()
+        return html_content
 
     # -------------------------------------------------------------------------
     # Sign
@@ -898,7 +907,10 @@ th {{ background: #f0f0f0; }}
             defaults={"a_favor": a_favor},
         )
 
-        # Present voting members excluding the declarant
+        # Present voting members excluding the declarant AND any member
+        # with a formal COI declaration (PENDIENTE/APROBADA) on the SAME
+        # punto (JD-B4: a conflicted member cannot vote on another
+        # member's impediment for that punto).
         habilitados = (
             sesion.miembros.filter(
                 es_miembro_cargo=False,
@@ -906,6 +918,13 @@ th {{ background: #f0f0f0; }}
             )
             .exclude(asistencia=MiembroSesion.Asistencia.AUSENTE)
             .exclude(id=declaracion.miembro_sesion_id)
+            .exclude(
+                declaraciones_conflicto__punto=declaracion.punto,
+                declaraciones_conflicto__estado__in=[
+                    DeclaracionConflicto.Estado.PENDIENTE,
+                    DeclaracionConflicto.Estado.APROBADA,
+                ],
+            )
             .count()
         )
         mayoria = habilitados // 2 + 1
@@ -928,6 +947,13 @@ th {{ background: #f0f0f0; }}
                 module="governance",
             )
             return declaracion
+
+        # JD-A2: sync the session-level flag with the formal resolution —
+        # APROBADA excludes the member's vote; RECHAZADA restores it.
+        declaracion.miembro_sesion.conflicto_declarado = (
+            declaracion.estado == DeclaracionConflicto.Estado.APROBADA
+        )
+        declaracion.miembro_sesion.save(update_fields=["conflicto_declarado"])
 
         declaracion.revisado_at = timezone.now()
         declaracion.save(update_fields=["estado", "revisado_at"])

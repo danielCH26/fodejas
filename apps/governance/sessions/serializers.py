@@ -56,6 +56,7 @@ class ActaSesionSerializer(serializers.ModelSerializer):
         model = ActaSesion
         fields = [
             "id",
+            "pdf",
             "pdf_sha256",
             "pre_sign_hash",
             "post_sign_hash",
