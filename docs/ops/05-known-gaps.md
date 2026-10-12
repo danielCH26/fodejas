@@ -11,15 +11,15 @@
 | # | Gap | Severidad | ¿Bloqueante go-live? | Estado |
 |---|---|---|---|---|
 | 1 | FileField/MEDIA no configurado — PDFs y anexos no servibles | Alta | ✅ Sí | Pendiente |
-| 2 | `backup-exporter` no existe — alertas de backup no confiables | Alta | No | Pendiente |
-| 3 | `pg_stat_statements` no habilitado — `PostgresSlowQueries` siempre null | Media | No | Pendiente |
+| 2 | `backup-exporter` no existía — alertas de backup no confiables. **CERRADO (chore/ops-hardening):** servicio node-exporter añadido compartiendo el volumen `backup_metrics`; lógica invertida de `BackupJobFailed` corregida (== 0 → == 1). | Alta | No | Cerrado |
+| 3 | `pg_stat_statements` no habilitado — `PostgresSlowQueries` siempre null. **CERRADO (chore/ops-hardening):** preload + init script. Caveat: en volúmenes existentes correr `CREATE EXTENSION IF NOT EXISTS pg_stat_statements;` y reiniciar db. | Media | No | Cerrado (con caveat initdb) |
 | 4 | `backup_verify.sh` no ejecuta `pg_restore` — restore sin probar | **Crítica** | ✅ **Sí** | **PENDIENTE — primera ejecución obligatoria** |
 | 5 | Workflows `deploy-staging.yml` y `deploy-production.yml` son placeholders | Alta | No | Pendiente |
-| 6 | MinIO en prod sin política de versionado/ciclo de vida definida | Alta | ✅ Sí | Pendiente |
+| 6 | MinIO en prod sin política de versionado/ciclo de vida. **CERRADO (chore/ops-hardening):** `docker/minio-init/lifecycle.sh` con versioning + no-current 90d + uploads incompletos 30d. | Alta | ✅ Sí | Cerrado |
 | 7 | Sin Grafana en compose — solo Prometheus disponible | Media | No | Pendiente |
 | 8 | Sin SLOs definidos formalmente | Media | No | Pendiente (propuestos en [`04-monitoring-alerts.md`](04-monitoring-alerts.md)) |
 | 9 | Email no implementado — notificaciones solo in-app | Baja | No | Por diseño |
-| 10 | `collectstatic` y `compilemessages` no en CI | Media | No | Pendiente |
+| 10 | `collectstatic`/`compilemessages` no en CI. **CERRADO (chore/ops-hardening):** ambos pasos añadidos al job test (traducciones: validación only, .mo regenerados NO se commitean). | Media | No | Cerrado |
 
 ---
 

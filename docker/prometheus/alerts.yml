@@ -89,13 +89,13 @@ groups:
     rules:
       # Backup job alerts
       - alert: BackupJobFailed
-        expr: backup_job_last_run_status == 0
+        expr: backup_job_last_run_status == 1  # FIXED: was == 0 (inverted). Script writes 0=success, 1=failed.
         for: 5m
         labels:
           severity: critical
         annotations:
           summary: "Backup job failed"
-          description: "Backup job {{ $labels.job }} failed on {{ $labels.instance }}."
+          description: "Backup job {{ $labels.job }} failed on {{ $labels.instance }}."}
 
       - alert: BackupNotRunning
         expr: time() - backup_job_last_success_timestamp > 86400 * 2

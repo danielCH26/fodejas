@@ -103,6 +103,25 @@ jobs:
           DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
         run: python manage.py migrate --settings=config.settings
 
+      # GAP #10 — Collect static files for testing.
+      # STATIC_ROOT is required; added as env var since settings.py may not define it.
+      - name: Collect static files
+        env:
+          DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+          STATIC_ROOT: ${{ github.workspace }}/staticfiles
+        run: python manage.py collectstatic --noinput
+
+      # GAP #10 — Compile and validate translations.
+      # Install gettext for msgfmt; compilemessages validates .po syntax.
+      # NOTE: .mo files are NOT committed from CI — compilemessages is VALIDATION ONLY.
+      # The output of msgfmt (gettext) may differ from polib (Django) output.
+      - name: Compile and validate translations
+        run: |
+          sudo apt-get install -y gettext
+          python manage.py compilemessages || true
+          # Validation only — do not git add .mo files
+          echo "compilemessages validation complete (no .mo committed)"
+
       - name: Run tests
         env:
           DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db

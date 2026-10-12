@@ -63,7 +63,7 @@ curl http://localhost:8000/metrics | head -30
 |---|---|---|---|---|
 | `postgres` | `postgres-exporter:9187` | 9187 | ✅ Funcionando | Métricas vía `postgres_exporter` |
 | `pgbouncer` | `pgbouncer-exporter:9631` | 9631 | ✅ Funcionando | Métricas vía `pgbouncer_exporter` |
-| `backup-jobs` | `backup-exporter:9100` | 9100 | ❌ **NO EXISTE** | **Gap #2 — alertas de backup no confiables** |
+| `backup-jobs` | `backup-exporter:9100` | 9100 | ✅ Existe (chore/ops-hardening) | Ver §4 — cerrado |
 
 El contenedor `backup-exporter` **no está definido** en `docker-compose.yml`.
 Prometheus está configurado para hacer scrape de él pero no existe.
@@ -81,7 +81,7 @@ Prometheus está configurado para hacer scrape de él pero no existe.
 | `PostgresTooManyConnections` | `pg_stat_database_numbackends / pg_settings_max_connections > 0.8` | 5m | warning | >80% conexiones en uso | Revisar procesos activos |
 | `PostgresConnectionNearLimit` | `pg_stat_database_numbackends / pg_settings_max_connections > 0.9` | 1m | **critical** | >90% conexiones | Escalar: conexiones al límite |
 | `PostgresLowCacheHitRatio` | `pg_stat_database_blks_hit / (blks_hit + blks_read) < 0.90` | 5m | warning | Cache hit < 90% | Investigar queries que leen mucho disco |
-| `PostgresSlowQueries` | `rate(pg_stat_statements_mean_exec_time_ms[5m]) > 1000` | 5m | warning | Queries con tiempo medio >1s | **⚠ GAP #3 — SIEMPRE NULL** (pg_stat_statements no habilitado) |
+| `PostgresSlowQueries` | `rate(pg_stat_statements_mean_exec_time_ms[5m]) > 1000` | 5m | warning | Queries con tiempo medio >1s | ✅ Funcional (chore/ops-hardening; caveat initdb en volúmenes existentes) |
 | `PostgresDown` | `pg_up == 0` | 1m | **critical** | PostgreSQL no responde | Ir a [`03-incident-response.md`](03-incident-response.md) §2 |
 
 ### 3.2 PgBouncer
@@ -101,7 +101,15 @@ Prometheus está configurado para hacer scrape de él pero no existe.
 
 ---
 
-## 4. Alertas rotas (gaps activos)
+## 4. Alertas corregidas (chore/ops-hardening)
+
+> **ACTUALIZACIÓN:** los gaps #2 y #3 fueron cerrados en la rama
+> `chore/ops-hardening`: servicio `backup-exporter` (node-exporter con
+> textfile collector) añadido al compose, lógica invertida de
+> `BackupJobFailed` corregida (el script escribe 0=éxito, 1=falla; la
+> alerta decía `== 0`), y `pg_stat_statements` habilitado vía
+> `shared_preload_libraries` + init script. Detalle histórico abajo.
+
 
 ### Gap #2: `BackupJobFailed` y `BackupNotRunning` no funcionan
 

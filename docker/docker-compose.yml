@@ -90,6 +90,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres.conf:/etc/postgresql/postgresql.conf
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U fodejas_user -d fodejas_db"]
@@ -233,6 +234,40 @@ services:
         crond -f -l 2
       '
     restart: unless-stopped
+
+  # GAP #2 — Exposes backup metrics from textfile collector to Prometheus.
+  # Uses node-exporter in textfile-only mode pointing at the shared backup_metrics volume.
+  backup-exporter:
+    image: quay.io/prometheus/node-exporter:v1.8.1
+    container_name: fodejas_backup_exporter
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.textfile.directory=/var/lib/node_exporter/textfile_collector'
+      - '--web.listen-address=:9100'
+    volumes:
+      - backup_metrics:/var/lib/node_exporter/textfile_collector
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    restart: unless-stopped
+
+  # GAP #6 — One-shot MinIO lifecycle initializer.
+  # Enables versioning and lifecycle rules on fodejas-media bucket.
+  # Runs once on first deploy; exits successfully and stays stopped.
+  minio-init:
+    image: minio/mc:latest
+    container_name: fodejas_minio_init
+    volumes:
+      - ./minio-init/lifecycle.sh:/lifecycle.sh:ro
+      - minio_data:/data:ro
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ["sh", "/lifecycle.sh"]
+    restart: "no"
 
 volumes:
   postgres_data:
