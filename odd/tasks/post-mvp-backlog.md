@@ -49,6 +49,19 @@
      sha256(body)==header bajo tráfico concurrente (test nuevo)
    - Pendiente: PostgreSQL vía CI al push
 4. **CHG-506 — Estudio de impacto** (CAP-027) — reportes de impacto.
+   - [x] OpenSpec: proposal + tasks + delta → `084bbd0` (k=3, denormalización
+     y retorno como decisiones de producto del usuario)
+   - [x] Unidad A (datos): Solicitud.ies_nombre/municipio_origen,
+     AcademicRecord.retorno_archipelago, seed MunicipioIsla (3 filas 1:1
+     con wizard), backfill idempotente → `22c0591` (16 tests)
+   - [x] Unidad B (servicio/endpoints): estudio_impacto con k-supresión,
+     GET /api/reporting/estudio-impacto/ (REPORT_ROLES+R-CT), PATCH
+     anotar_retorno con audit atómico fail-closed → `439324a` (33 tests)
+   - Rama `feat/CHG-506-impact-study`; suite 565✓/8 skip; migraciones ✓;
+     sin PII; fix post-writer: audit en try/except que tragaba excepciones
+     → transaction.atomic + propagar (convención CAP-022)
+   - Pendiente: ejecutar backfill_impact_fields + seed en deploy;
+     PostgreSQL vía CI al push
 5. **CHG-507 — Multilenguaje** (CAP-030) — al final: es transversal y cada
    feature nueva agrega templates a traducir.
 6. **Runbooks/DRP** (INF-011/012/015) — docs operativos, cuando el código

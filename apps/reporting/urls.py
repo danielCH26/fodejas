@@ -1,8 +1,10 @@
-"""URL configuration for reporting (CHG-503) and Portal de Transparencia (CHG-504)."""
+"""URL configuration for reporting (CHG-503), Portal de Transparencia (CHG-504)
+and Estudio de Impacto (CHG-506)."""
 
 from django.urls import path
 
 from apps.reporting.views import (
+    estudio_impacto_view,
     informe_gestion,
     transparencia_actos,
     transparencia_convocatorias,
@@ -18,4 +20,6 @@ urlpatterns = [
     path("transparencia/actos/", transparencia_actos, name="transparencia-actos"),
     path("transparencia/convocatorias/", transparencia_convocatorias, name="transparencia-convocatorias"),
     path("transparencia/estadisticas/", transparencia_estadisticas, name="transparencia-estadisticas"),
+    # Impact study (CHG-506)
+    path("estudio-impacto/", estudio_impacto_view, name="estudio-impacto"),
 ]

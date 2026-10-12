@@ -1,5 +1,6 @@
-"""Views for academic tracking."""
+"""Views for academic tracking (CHG-506, CAP-027)."""
 
+from django.db import transaction
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -11,10 +12,11 @@ from apps.academic_tracking.serializers import (
 )
 from apps.academic_tracking.services import AcademicTrackingService
 from apps.accounts.permissions import HasAnyRole
+from apps.audit.services import log_audit_event
 
 # CAP-011 fine-grained role matrix:
-# R-COORD: Coordinador Técnico FODEJAS — día a día del seguimiento
-# R-ADMIN: Administrador — acceso completo
+# R-COORD: Coordinador Tecnico FODEJAS - dia a dia del seguimiento
+# R-ADMIN: Administrador - acceso completo
 # Superusers bypass.
 
 
@@ -93,6 +95,51 @@ class AcademicRecordViewSet(viewsets.ModelViewSet):
             return Response({"status": record.status})
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["patch"])
+    def anotar_retorno(self, request, pk=None):
+        """Annotate the retorno_archipelago field (CHG-506, CAP-027).
+
+        Body: {"retorno_archipelago": true|false}
+
+        - Strict boolean type check (JSON true/false only; strings or
+          numbers -> 400).
+        - Permission: _AcademicManagementPermission (R-COORD, R-ADMIN).
+        - Audit event: action=academic_retorno_annotate, module=academic_tracking.
+          Fail-closed: if log_audit_event raises, return 500 and do NOT save.
+        """
+        # Strict boolean validation
+        raw = request.data.get("retorno_archipelago")
+        if not isinstance(raw, bool):
+            return Response(
+                {"error": "retorno_archipelago debe ser un booleano (true o false)"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        value = raw
+
+        # Fetch record
+        try:
+            record = AcademicRecord.objects.get(pk=pk)
+        except AcademicRecord.DoesNotExist:
+            return Response(
+                {"error": "Academic record not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Fail-closed + atomic: audit event and annotation commit or roll
+        # back together (CAP-022 convention: never swallow audit errors).
+        with transaction.atomic():
+            log_audit_event(
+                actor=request.user,
+                action="academic_retorno_annotate",
+                entity="academicrecord",
+                entity_id=record.id,
+                changes={"after": {"retorno_archipelago": value}},
+                module="academic_tracking",
+            )
+            record.retorno_archipelago = value
+            record.save(update_fields=["retorno_archipelago"])
+        return Response({"retorno_archipelago": value})
 
 
 class AcademicAlertViewSet(viewsets.ModelViewSet):
