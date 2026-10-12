@@ -956,7 +956,8 @@ th {{ background: #f0f0f0; }}
         declaracion.miembro_sesion.save(update_fields=["conflicto_declarado"])
 
         declaracion.revisado_at = timezone.now()
-        declaracion.save(update_fields=["estado", "revisado_at"])
+        declaracion.revisado_por = actor
+        declaracion.save(update_fields=["estado", "revisado_at", "revisado_por"])
         log_audit_event(
             actor=actor,
             action="SESSION_IMPEDIMENTO_RESUELTO",

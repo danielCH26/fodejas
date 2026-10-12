@@ -35,6 +35,7 @@ from apps.governance.sessions.models import (
     Sesion,
     Voto,
 )
+from apps.governance.sessions.models import DeclaracionConflicto
 from apps.governance.sessions.services import (
     SessionService,
     _add_working_days,
@@ -122,6 +123,23 @@ class TestWorkingDays:
 
     def test_add_working_days_zero(self):
         assert _add_working_days(timezone.now().date(), 0) == timezone.now().date()
+
+    def test_add_working_days_backward_skip_weekend(self):
+        """_add_working_days with negative days skips Sat/Sun (backward walk)."""
+        # Friday 2025-01-10 - 3 WD = Tuesday 2025-01-07
+        # (skips Sat 11, Sun 12)
+        start = timezone.datetime(2025, 1, 10).date()  # Fri
+        result = _add_working_days(start, -3)
+        assert result.weekday() < 5  # Mon–Fri
+        assert result == timezone.datetime(2025, 1, 7).date()
+
+    def test_add_working_days_backward_one_day(self):
+        """_add_working_days with -1 on Monday returns previous Friday."""
+        # Monday 2025-01-13 - 1 WD = Friday 2025-01-10
+        start = timezone.datetime(2025, 1, 13).date()  # Mon
+        result = _add_working_days(start, -1)
+        assert result.weekday() < 5
+        assert result == timezone.datetime(2025, 1, 10).date()
 
     def test_working_days_between_same_day(self):
         d = timezone.datetime(2026, 1, 5).date()
@@ -313,6 +331,40 @@ class TestQuorum:
         with pytest.raises(ValueError) as exc_info:
             SessionService.abrir_sesion(sesion.id, actor=None)
         assert "quórum" in str(exc_info.value).lower()
+
+    def test_quorum_exactly_one_voting_member(self, user_factory):
+        """Quórum is met with exactly 1 voting member present.
+
+        majority = floor(1/2) + 1 = 1.  One member is enough.
+        """
+        today = timezone.now().date()
+        fecha_hora = timezone.make_aware(
+            datetime.combine(_add_working_days(today, 10), time(9, 0))
+        )
+        sesion = SessionService.convocar_sesion(
+            organo=Sesion.Organo.JUNTA,
+            tipo=Sesion.Tipo.ORDINARIA,
+            fecha_hora=fecha_hora,
+            asunto="Quórum con un miembro",
+            actor=None,
+        )
+        voting_user = user_factory(role_codes=["R-JUNTA"])
+        SessionService.registrar_asistencia(
+            sesion_id=sesion.id,
+            member_records=[
+                {
+                    "user_id": voting_user.id,
+                    "rol": "Miembro",
+                    "asistencia": MiembroSesion.Asistencia.PRESENTE,
+                    "es_miembro_cargo": False,
+                    "conflicto_declarado": False,
+                }
+            ],
+            actor=None,
+        )
+        sesion.refresh_from_db()
+        assert sesion.voting_members_present() == 1
+        assert sesion.quorum_met() is True
 
     def test_cargo_exempt_no_vote_no_quorum_count(self, user_factory):
         """Cargo-exempt members never vote and do not count toward quórum."""
@@ -566,6 +618,42 @@ class TestVoto:
             actor=None,
         )
 
+        punto_cerrado = SessionService.cerrar_punto(punto.id, actor=None)
+        assert punto_cerrado.estado == OrdenDelDiaPunto.Estado.RECHAZADO
+
+    def test_punto_cerrar_cero_votos_rechazado(self, sesion_con_convocados):
+        """Punto is RECHAZADO when no votes are cast at all (a_favor=0, en_contra=0)."""
+        sesion, users = sesion_con_convocados
+        punto = SessionService.agregar_punto(sesion.id, numero=1, texto="Sin votos")
+        sesion.refresh_from_db()
+        SessionService.abrir_sesion(sesion.id, actor=None)
+        # Deliberately cast NO votes; close the punto
+        punto_cerrado = SessionService.cerrar_punto(punto.id, actor=None)
+        assert punto_cerrado.estado == OrdenDelDiaPunto.Estado.RECHAZADO
+
+    def test_punto_cerrar_solo_abstencion_rechazado(self, sesion_con_convocados):
+        """Punto is RECHAZADO when all present members voted ABSTENCION."""
+        sesion, users = sesion_con_convocados
+        punto = SessionService.agregar_punto(sesion.id, numero=1, texto="Solo abstención")
+        sesion.refresh_from_db()
+        SessionService.abrir_sesion(sesion.id, actor=None)
+        # Both members vote ABSTENCION (a_favor=0, en_contra=0 → RECHAZADO)
+        miembro_a = MiembroSesion.objects.get(sesion_id=sesion.id, user_id=users[0].id)
+        miembro_b = MiembroSesion.objects.get(sesion_id=sesion.id, user_id=users[1].id)
+        SessionService.registrar_voto(
+            sesion_id=sesion.id,
+            punto_id=punto.id,
+            miembro_sesion_id=miembro_a.id,
+            valor=Voto.Valor.ABSTENCION,
+            actor=None,
+        )
+        SessionService.registrar_voto(
+            sesion_id=sesion.id,
+            punto_id=punto.id,
+            miembro_sesion_id=miembro_b.id,
+            valor=Voto.Valor.ABSTENCION,
+            actor=None,
+        )
         punto_cerrado = SessionService.cerrar_punto(punto.id, actor=None)
         assert punto_cerrado.estado == OrdenDelDiaPunto.Estado.RECHAZADO
 
@@ -1024,6 +1112,100 @@ class TestAuditEvents:
             ).count()
             == initial + 1
         )
+
+
+class TestDeclaracionConflicto:
+    @pytest.fixture
+    def sesion_for_conflicto(self, user_factory):
+        """Session with 3 voting members (declarant + 2 voters), ready to open."""
+        today = timezone.now().date()
+        fecha_hora = timezone.make_aware(
+            datetime.combine(_add_working_days(today, 10), time(9, 0))
+        )
+        sesion = SessionService.convocar_sesion(
+            organo=Sesion.Organo.JUNTA,
+            tipo=Sesion.Tipo.ORDINARIA,
+            fecha_hora=fecha_hora,
+            asunto="Conflicto test",
+            actor=None,
+        )
+        declarant = user_factory(role_codes=["R-JUNTA"])
+        voter_a = user_factory(role_codes=["R-JUNTA"])
+        voter_b = user_factory(role_codes=["R-JUNTA"])
+        SessionService.registrar_asistencia(
+            sesion_id=sesion.id,
+            member_records=[
+                {
+                    "user_id": declarant.id,
+                    "rol": "Miembro",
+                    "asistencia": MiembroSesion.Asistencia.PRESENTE,
+                    "es_miembro_cargo": False,
+                    "conflicto_declarado": False,
+                },
+                {
+                    "user_id": voter_a.id,
+                    "rol": "Miembro",
+                    "asistencia": MiembroSesion.Asistencia.PRESENTE,
+                    "es_miembro_cargo": False,
+                    "conflicto_declarado": False,
+                },
+                {
+                    "user_id": voter_b.id,
+                    "rol": "Miembro",
+                    "asistencia": MiembroSesion.Asistencia.PRESENTE,
+                    "es_miembro_cargo": False,
+                    "conflicto_declarado": False,
+                },
+            ],
+            actor=None,
+        )
+        return sesion, declarant, voter_a, voter_b
+
+    def test_votar_impedimento_sets_revisado_por(self, sesion_for_conflicto):
+        """votar_impedimento sets revisado_por to the actor who resolved it.
+
+        CHG-502: revisado_por must be populated when the impediment is
+        resolved, mirroring the pattern in approve_termination() and the
+        revisado_at field already being set.
+        """
+        sesion, declarant, voter_a, voter_b = sesion_for_conflicto
+        punto = SessionService.agregar_punto(sesion.id, numero=1, texto="Punto de conflicto")
+        sesion.refresh_from_db()
+        SessionService.abrir_sesion(sesion.id, actor=None)
+
+        declarant_miembro = MiembroSesion.objects.get(sesion=sesion, user=declarant)
+        voter_a_miembro = MiembroSesion.objects.get(sesion=sesion, user=voter_a)
+        voter_b_miembro = MiembroSesion.objects.get(sesion=sesion, user=voter_b)
+
+        # Declarant declares a conflict
+        declaracion = SessionService.declarar_conflicto(
+            sesion_id=sesion.id,
+            punto_id=punto.id,
+            miembro_sesion_id=declarant_miembro.id,
+            texto="Conflicto de interés declarado",
+            actor=declarant,
+        )
+
+        # Need majority=2, so cast two votes; voter_b's call triggers resolution
+        SessionService.votar_impedimento(
+            declaracion_id=declaracion.id,
+            miembro_sesion_id=voter_a_miembro.id,
+            a_favor=True,
+            actor=voter_a,
+        )
+        resolved = SessionService.votar_impedimento(
+            declaracion_id=declaracion.id,
+            miembro_sesion_id=voter_b_miembro.id,
+            a_favor=True,
+            actor=voter_b,
+        )
+
+        declaracion.refresh_from_db()
+        # revisado_por is set from the actor of the LAST call that triggers resolution
+        assert declaracion.revisado_por == voter_b, (
+            "revisado_por must be set to the actor from the call that triggers resolution"
+        )
+        assert declaracion.revisado_at is not None, "revisado_at must be set"
 
     def test_finalizar_emits_audit(self, user_factory):
         """finalizar_sesion emits SESSION_FINALIZAR."""
