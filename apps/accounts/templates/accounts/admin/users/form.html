@@ -1,12 +1,13 @@
 {% extends "accounts/admin/admin_base.html" %}
+{% load i18n %}
 
-{% block title %}{% if action == 'crear' %}Crear{% else %}Editar{% endif %} Usuario - FODEJAS{% endblock %}
+{% block title %}{% if action == 'crear' %}{% trans "Crear" %}{% else %}{% trans "Editar" %}{% endif %} {% trans "Usuario" %} - FODEJAS{% endblock %}
 
 {% block admin_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-person-plus me-2"></i>{% if action == 'crear' %}Crear{% else %}Editar{% endif %} Usuario</h2>
+    <h2><i class="bi bi-person-plus me-2"></i>{% if action == 'crear' %}{% trans "Crear" %}{% else %}{% trans "Editar" %}{% endif %} {% trans "Usuario" %}</h2>
     <a href="{% url 'accounts_admin:user_list' %}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-2"></i>Volver
+        <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
     </a>
 </div>
 
@@ -17,12 +18,12 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="email" class="form-label">Email *</label>
+                    <label for="email" class="form-label">{% trans "Email" %} *</label>
                     <input type="email" class="form-control" id="email" name="email"
                            value="{{ view_user.email|default:'' }}" required>
                 </div>
                 <div class="col-md-6">
-                    <label for="documento" class="form-label">Documento *</label>
+                    <label for="documento" class="form-label">{% trans "Documento" %} *</label>
                     <input type="text" class="form-control" id="documento" name="documento"
                            value="{{ view_user.documento|default:'' }}" required minlength="6">
                 </div>
@@ -30,12 +31,12 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="first_name" class="form-label">Nombres *</label>
+                    <label for="first_name" class="form-label">{% trans "Nombres" %} *</label>
                     <input type="text" class="form-control" id="first_name" name="first_name"
                            value="{{ view_user.first_name|default:'' }}" required>
                 </div>
                 <div class="col-md-6">
-                    <label for="last_name" class="form-label">Apellidos *</label>
+                    <label for="last_name" class="form-label">{% trans "Apellidos" %} *</label>
                     <input type="text" class="form-control" id="last_name" name="last_name"
                            value="{{ view_user.last_name|default:'' }}" required>
                 </div>
@@ -43,25 +44,25 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="telefono" class="form-label">Teléfono</label>
+                    <label for="telefono" class="form-label">{% trans "Teléfono" %}</label>
                     <input type="text" class="form-control" id="telefono" name="telefono"
                            value="{{ view_user.telefono|default:'' }}">
                 </div>
                 {% if action == 'crear' %}
                 <div class="col-md-6">
-                    <label class="form-label">Contraseña Temporal</label>
-                    <input type="text" class="form-control" value="Se generará automáticamente" disabled>
-                    <small class="text-muted">El usuario deberá cambiar su contraseña al primer inicio de sesión.</small>
+                    <label class="form-label">{% trans "Contraseña Temporal" %}</label>
+                    <input type="text" class="form-control" value="{% trans "Se generará automáticamente" %}" disabled>
+                    <small class="text-muted">{% trans "El usuario deberá cambiar su contraseña al primer inicio de sesión." %}</small>
                 </div>
                 {% endif %}
             </div>
 
             <div class="mt-4">
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-check-circle me-2"></i>{% if action == 'crear' %}Crear{% else %}Guardar Cambios{% endif %}
+                    <i class="bi bi-check-circle me-2"></i>{% if action == 'crear' %}{% trans "Crear" %}{% else %}{% trans "Guardar Cambios" %}{% endif %}
                 </button>
                 <a href="{% url 'accounts_admin:user_list' %}" class="btn btn-outline-secondary ms-2">
-                    Cancelar
+                    {% trans "Cancelar" %}
                 </a>
             </div>
         </form>

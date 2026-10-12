@@ -1,16 +1,17 @@
 {% extends "accounts/admin/admin_base.html" %}
+{% load i18n %}
 
-{% block title %}Detalle de Rol - FODEJAS{% endblock %}
+{% block title %}{% trans "Detalle de Rol" %} - FODEJAS{% endblock %}
 
 {% block admin_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-shield-check me-2"></i>{{ view_role.name }}</h2>
     <div>
         <a href="{% url 'accounts_admin:role_update' view_role.pk %}" class="btn btn-outline-secondary">
-            <i class="bi bi-pencil me-2"></i>Editar
+            <i class="bi bi-pencil me-2"></i>{% trans "Editar" %}
         </a>
         <a href="{% url 'accounts_admin:role_list' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Volver
+            <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
         </a>
     </div>
 </div>
@@ -20,12 +21,12 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <i class="bi bi-info-circle me-2"></i>Información del Rol
+                <i class="bi bi-info-circle me-2"></i>{% trans "Información del Rol" %}
             </div>
             <div class="card-body">
                 <table class="table table-borderless">
                     <tr>
-                        <th class="text-muted">Código:</th>
+                        <th class="text-muted">{% trans "Código:" %}</th>
                         <td>
                             <span class="badge bg-{% if view_role.type == 'interno' %}primary{% else %}success{% endif %}">
                                 {{ view_role.code }}
@@ -33,23 +34,23 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Nombre:</th>
+                        <th class="text-muted">{% trans "Nombre:" %}</th>
                         <td>{{ view_role.name }}</td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Tipo:</th>
+                        <th class="text-muted">{% trans "Tipo:" %}</th>
                         <td>
                             {% if view_role.type == 'interno' %}
-                            <span class="badge bg-info">Interno</span>
-                            <small class="text-muted">Personal de la Secretaría</small>
+                            <span class="badge bg-info">{% trans "Interno" %}</span>
+                            <small class="text-muted">{% trans "Personal de la Secretaría" %}</small>
                             {% else %}
-                            <span class="badge bg-warning text-dark">Externo</span>
-                            <small class="text-muted">Beneficiarios/Aspirantes</small>
+                            <span class="badge bg-warning text-dark">{% trans "Externo" %}</span>
+                            <small class="text-muted">{% trans "Beneficiarios/Aspirantes" %}</small>
                             {% endif %}
                         </td>
                     </tr>
                     <tr>
-                        <th class="text-muted">Descripción:</th>
+                        <th class="text-muted">{% trans "Descripción:" %}</th>
                         <td>{{ view_role.description|default:"—" }}</td>
                     </tr>
                 </table>
@@ -61,7 +62,7 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <i class="bi bi-people me-2"></i>Usuarios con este Rol ({{ user_count }})
+                <i class="bi bi-people me-2"></i>{% trans "Usuarios con este Rol" %} ({{ user_count }})
             </div>
             <div class="card-body">
                 {% if user_roles %}
@@ -81,7 +82,7 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <p class="text-muted text-center py-3">No hay usuarios con este rol</p>
+                <p class="text-muted text-center py-3">{% trans "No hay usuarios con este rol" %}</p>
                 {% endif %}
             </div>
         </div>

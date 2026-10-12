@@ -1,16 +1,17 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Tesorería · Conciliación de pagos{% endblock %}
+{% block title %}{% trans "Tesorería" %} · {% trans "Conciliación de pagos" %}{% endblock %}
 
 {% block content %}
 <section class="container py-4">
-  <h1 class="h3 mb-4">Conciliación de pagos a Tesorería</h1>
+  <h1 class="h3 mb-4">{% trans "Conciliación de pagos a Tesorería" %}</h1>
 
   {% if messages %}
     {% for message in messages %}
       <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
         {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans "Cerrar" %}"></button>
       </div>
     {% endfor %}
   {% endif %}
@@ -20,12 +21,12 @@
       <table class="table table-striped table-hover align-middle">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Monto</th>
-            <th>Orden</th>
-            <th>Radicada</th>
-            <th>Estado</th>
-            <th class="text-end">Acción</th>
+            <th>{% trans "ID" %}</th>
+            <th>{% trans "Monto" %}</th>
+            <th>{% trans "Orden" %}</th>
+            <th>{% trans "Radicada" %}</th>
+            <th>{% trans "Estado" %}</th>
+            <th class="text-end">{% trans "Acción" %}</th>
           </tr>
         </thead>
         <tbody>
@@ -41,7 +42,7 @@
                   {% csrf_token %}
                   <input type="hidden" name="auth_id" value="{{ auth.id }}" />
                   <input type="file" name="payment_proof" accept="application/pdf,image/*" class="form-control form-control-sm" />
-                  <button type="submit" class="btn btn-sm btn-primary">Confirmar pago</button>
+                  <button type="submit" class="btn btn-sm btn-primary">{% trans "Confirmar pago" %}</button>
                 </form>
               </td>
             </tr>
@@ -50,7 +51,7 @@
       </table>
     </div>
   {% else %}
-    <p class="text-muted">No hay órdenes pendientes de conciliación.</p>
+    <p class="text-muted">{% trans "No hay órdenes pendientes de conciliación." %}</p>
   {% endif %}
 </section>
 {% endblock %}

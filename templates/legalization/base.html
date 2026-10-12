@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}{% block legal_title %}Legalización{% endblock %} - FODEJAS{% endblock %}
+{% block title %}{% block legal_title %}{% trans "Legalización" %}{% endblock %} - FODEJAS{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -8,13 +9,13 @@
     <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-header">
-                <i class="bi bi-file-earmark-text me-2"></i>Legalización
+                <i class="bi bi-file-earmark-text me-2"></i>{% trans "Legalización" %}
             </div>
             <div class="list-group list-group-flush">
                 <a href="{% url 'legalization:list' %}"
                    class="list-group-item list-group-item-action
                           {% if request.resolver_match.url_name == 'list' %}active{% endif %}">
-                    <i class="bi bi-list-ul me-2"></i>Procesos
+                    <i class="bi bi-list-ul me-2"></i>{% trans "Procesos" %}
                 </a>
             </div>
         </div>

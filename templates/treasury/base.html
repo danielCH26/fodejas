@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}{% block treasury_title %}Tesorería{% endblock %} - FODEJAS{% endblock %}
+{% block title %}{% block treasury_title %}{% trans "Tesorería" %}{% endblock %} - FODEJAS{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -8,18 +9,18 @@
     <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-header">
-                <i class="bi bi-wallet2 me-2"></i>Tesorería
+                <i class="bi bi-wallet2 me-2"></i>{% trans "Tesorería" %}
             </div>
             <div class="list-group list-group-flush">
                 <a href="{% url 'treasury:disbursement_list' %}"
                    class="list-group-item list-group-item-action
                           {% if request.resolver_match.url_name == 'disbursement_list' %}active{% endif %}">
-                    <i class="bi bi-pen me-2"></i>Autorizaciones
+                    <i class="bi bi-pen me-2"></i>{% trans "Autorizaciones" %}
                 </a>
                 <a href="{% url 'treasury:reconciliation' %}"
                    class="list-group-item list-group-item-action
                           {% if request.resolver_match.url_name == 'reconciliation' %}active{% endif %}">
-                    <i class="bi bi-cash-stack me-2"></i>Conciliación
+                    <i class="bi bi-cash-stack me-2"></i>{% trans "Conciliación" %}
                 </a>
             </div>
         </div>

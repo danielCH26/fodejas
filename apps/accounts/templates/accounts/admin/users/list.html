@@ -1,12 +1,13 @@
 {% extends "accounts/admin/admin_base.html" %}
+{% load i18n %}
 
-{% block title %}Gestión de Usuarios - FODEJAS{% endblock %}
+{% block title %}{% trans "Gestión de Usuarios" %} - FODEJAS{% endblock %}
 
 {% block admin_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-people me-2"></i>Gestión de Usuarios</h2>
+    <h2><i class="bi bi-people me-2"></i>{% trans "Gestión de Usuarios" %}</h2>
     <a href="{% url 'accounts_admin:user_create' %}" class="btn btn-primary">
-        <i class="bi bi-plus-circle me-2"></i>Crear Usuario
+        <i class="bi bi-plus-circle me-2"></i>{% trans "Crear Usuario" %}
     </a>
 </div>
 
@@ -15,11 +16,11 @@
     <div class="card-body">
         <form method="get" class="row g-3">
             <div class="col-md-4">
-                <input type="text" name="search" class="form-control" placeholder="Buscar por email, documento, nombre..." value="{{ search }}">
+                <input type="text" name="search" class="form-control" placeholder="{% trans "Buscar por email, documento, nombre..." %}" value="{{ search }}">
             </div>
             <div class="col-md-3">
                 <select name="role" class="form-select">
-                    <option value="">Todos los roles</option>
+                    <option value="">{% trans "Todos los roles" %}</option>
                     {% for role in roles %}
                     <option value="{{ role.code }}" {% if role.code == role_filter %}selected{% endif %}>
                         {{ role.name }}
@@ -29,14 +30,14 @@
             </div>
             <div class="col-md-3">
                 <select name="status" class="form-select">
-                    <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Activos</option>
-                    <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactivos</option>
-                    <option value="" {% if status_filter == '' %}selected{% endif %}>Todos</option>
+                    <option value="active" {% if status_filter == 'active' %}selected{% endif %}>{% trans "Activos" %}</option>
+                    <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>{% trans "Inactivos" %}</option>
+                    <option value="" {% if status_filter == '' %}selected{% endif %}>{% trans "Todos" %}</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-outline-primary w-100">
-                    <i class="bi bi-search"></i> Filtrar
+                    <i class="bi bi-search"></i> {% trans "Filtrar" %}
                 </button>
             </div>
         </form>
@@ -50,13 +51,13 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Email</th>
-                        <th>Documento</th>
-                        <th>Nombre</th>
-                        <th>Roles</th>
-                        <th>Estado</th>
-                        <th>Fecha de Registro</th>
-                        <th>Acciones</th>
+                        <th>{% trans "Email" %}</th>
+                        <th>{% trans "Documento" %}</th>
+                        <th>{% trans "Nombre" %}</th>
+                        <th>{% trans "Roles" %}</th>
+                        <th>{% trans "Estado" %}</th>
+                        <th>{% trans "Fecha de Registro" %}</th>
+                        <th>{% trans "Acciones" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,14 +72,14 @@
                                 {{ ur.role.code }}
                             </span>
                             {% empty %}
-                            <span class="text-muted">Sin rol</span>
+                            <span class="text-muted">{% trans "Sin rol" %}</span>
                             {% endfor %}
                         </td>
                         <td>
                             {% if user.is_active %}
-                            <span class="badge bg-success">Activo</span>
+                            <span class="badge bg-success">{% trans "Activo" %}</span>
                             {% else %}
-                            <span class="badge bg-danger">Inactivo</span>
+                            <span class="badge bg-danger">{% trans "Inactivo" %}</span>
                             {% endif %}
                         </td>
                         <td>{{ user.date_joined|date:"d/m/Y" }}</td>
@@ -95,7 +96,7 @@
                     <tr>
                         <td colspan="7" class="text-center text-muted py-4">
                             <i class="bi bi-inbox" style="font-size: 2rem;"></i>
-                            <p class="mb-0">No se encontraron usuarios</p>
+                            <p class="mb-0">{% trans "No se encontraron usuarios" %}</p>
                         </td>
                     </tr>
                     {% endfor %}

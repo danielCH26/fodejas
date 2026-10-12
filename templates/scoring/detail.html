@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Evaluar Solicitud - {{ solicitud.radicado }}{% endblock %}
+{% block title %}{% trans "Evaluar Solicitud" %} - {{ solicitud.radicado }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -19,9 +20,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <a href="{% url 'scoring:list' %}" class="btn btn-outline-secondary mb-2">
-                <i class="bi bi-arrow-left me-2"></i>Volver a la Lista
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Volver a la Lista" %}
             </a>
-            <h2><i class="bi bi-clipboard-data me-2"></i>Evaluar Solicitud</h2>
+            <h2><i class="bi bi-clipboard-data me-2"></i>{% trans "Evaluar Solicitud" %}</h2>
         </div>
     </div>
 
@@ -37,24 +38,24 @@
     <!-- Solicitud Info -->
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="mb-0">Información de la Solicitud</h5>
+            <h5 class="mb-0">{% trans "Información de la Solicitud" %}</h5>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
-                    <strong>Radicado:</strong>
-                    <p>{{ solicitud.radicado|default:"Sin radicado" }}</p>
+                    <strong>{% trans "Radicado:" %}</strong>
+                    <p>{{ solicitud.radicado|default:"" }}</p>
                 </div>
                 <div class="col-md-3">
-                    <strong>Aspirante:</strong>
+                    <strong>{% trans "Aspirante:" %}</strong>
                     <p>{{ solicitud.aspirante.first_name }} {{ solicitud.aspirante.last_name }}</p>
                 </div>
                 <div class="col-md-3">
-                    <strong>Convocatoria:</strong>
+                    <strong>{% trans "Convocatoria:" %}</strong>
                     <p>{{ solicitud.convocatoria.nombre }}</p>
                 </div>
                 <div class="col-md-3">
-                    <strong>Municipio:</strong>
+                    <strong>{% trans "Municipio:" %}</strong>
                     <p>{{ solicitud.datos_personales.municipio|default:"-" }}</p>
                 </div>
             </div>
@@ -65,28 +66,28 @@
     {% if puntaje_total %}
     <div class="card mb-4">
         <div class="card-header bg-success text-white">
-            <h5 class="mb-0">Puntaje Total</h5>
+            <h5 class="mb-0">{% trans "Puntaje Total" %}</h5>
         </div>
         <div class="card-body">
             <div class="row text-center">
                 <div class="col-md-3">
                     <h3>{{ weights.socioeconomico|floatformat:0 }}%</h3>
-                    <p class="text-muted">Socioeconómico</p>
+                    <p class="text-muted">{% trans "Socioeconómico" %}</p>
                     <h4>{{ puntaje_total.puntaje_socioeconomico|default:"0" }}</h4>
                 </div>
                 <div class="col-md-3">
                     <h3>{{ weights.academico|floatformat:0 }}%</h3>
-                    <p class="text-muted">Académico</p>
+                    <p class="text-muted">{% trans "Académico" %}</p>
                     <h4>{{ puntaje_total.puntaje_academico|default:"0" }}</h4>
                 </div>
                 <div class="col-md-3">
                     <h3>{{ weights.excelencia|floatformat:0 }}%</h3>
-                    <p class="text-muted">Excelencia</p>
+                    <p class="text-muted">{% trans "Excelencia" %}</p>
                     <h4>{{ puntaje_total.puntaje_excelencia|default:"0" }}</h4>
                 </div>
                 <div class="col-md-3">
-                    <h3>Total</h3>
-                    <p class="text-muted">Puntaje Final</p>
+                    <h3>{% trans "Total" %}</h3>
+                    <p class="text-muted">{% trans "Puntaje Final" %}</p>
                     <h2 class="text-success">{{ puntaje_total.puntaje_total }}</h2>
                 </div>
             </div>
@@ -97,7 +98,7 @@
     <!-- Evaluation Criteria -->
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="mb-0">Criterios de Evaluación</h5>
+            <h5 class="mb-0">{% trans "Criterios de Evaluación" %}</h5>
         </div>
         <div class="card-body">
             {% for evaluacion in evaluaciones %}
@@ -108,29 +109,29 @@
                             <h5 class="mb-1">
                                 {{ evaluacion.criterio_nombre }}
                                 <span class="badge bg-{% if evaluacion.puntaje %}success{% else %}secondary{% endif %} ms-2">
-                                    {% if evaluacion.puntaje %}{{ evaluacion.puntaje }}{% else %}Pendiente{% endif %}
+                                    {% if evaluacion.puntaje %}{{ evaluacion.puntaje }}{% else %}{% trans "Pendiente" %}{% endif %}
                                 </span>
                             </h5>
                             <p class="text-muted mb-2">
                                 {% if evaluacion.criterio == 'socioeconomico' %}
-                                    Ponderación: {{ weights.socioeconomico|floatformat:0 }}%
+                                    {% blocktrans with w=weights.socioeconomico|floatformat:0 %}Ponderación: {{ w }}%{% endblocktrans %}
                                 {% elif evaluacion.criterio == 'academico' %}
-                                    Ponderación: {{ weights.academico|floatformat:0 }}%
+                                    {% blocktrans with w=weights.academico|floatformat:0 %}Ponderación: {{ w }}%{% endblocktrans %}
                                 {% else %}
-                                    Ponderación: {{ weights.excelencia|floatformat:0 }}%
+                                    {% blocktrans with w=weights.excelencia|floatformat:0 %}Ponderación: {{ w }}%{% endblocktrans %}
                                 {% endif %}
                             </p>
 
                             {% if evaluacion.observaciones %}
                             <div class="alert alert-info mb-2">
-                                <strong>Observaciones:</strong> {{ evaluacion.observaciones }}
+                                <strong>{% trans "Observaciones:" %}</strong> {{ evaluacion.observaciones }}
                             </div>
                             {% endif %}
 
                             {% if evaluacion.evaluado_por %}
                             <small class="text-muted">
-                                Evaluado por: {{ evaluacion.evaluado_por.first_name|default:evaluacion.evaluado_por.username }}
-                                el {{ evaluacion.updated_at|date:"d/m/Y H:i" }}
+                                {% trans "Evaluado por:" %} {{ evaluacion.evaluado_por.first_name|default:evaluacion.evaluado_por.username }}
+                                {% trans "el" %} {{ evaluacion.updated_at|date:"d/m/Y H:i" }}
                             </small>
                             {% endif %}
                         </div>
@@ -153,7 +154,7 @@
                                 </div>
                                 <textarea class="form-control form-control-sm mt-2"
                                           name="observaciones"
-                                          placeholder="Observaciones (opcional)"
+                                          placeholder="{% trans "Observaciones (opcional)" %}"
                                           rows="2">{{ evaluacion.observaciones }}</textarea>
                             </form>
                         </div>
@@ -169,13 +170,13 @@
         <div class="card-body">
             <div class="d-flex justify-content-between">
                 <a href="{% url 'scoring:list' %}" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Volver
+                    <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
                 </a>
 
                 <form method="post" action="{% url 'scoring:calculate' solicitud.uuid %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-success">
-                        <i class="bi bi-calculator me-2"></i>Calcular Puntaje Total
+                        <i class="bi bi-calculator me-2"></i>{% trans "Calcular Puntaje Total" %}
                     </button>
                 </form>
             </div>

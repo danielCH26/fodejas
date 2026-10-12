@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
 <div class="row">
@@ -6,17 +7,17 @@
     <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-header">
-                <i class="bi bi-gear me-2"></i>Administración
+                <i class="bi bi-gear me-2"></i>{% trans "Administración" %}
             </div>
             <div class="list-group list-group-flush">
                 <a href="{% url 'accounts_admin:user_list' %}" class="list-group-item list-group-item-action {% if admin_section == 'users' %}active{% endif %}">
-                    <i class="bi bi-people me-2"></i>Usuarios
+                    <i class="bi bi-people me-2"></i>{% trans "Usuarios" %}
                 </a>
                 <a href="{% url 'accounts_admin:role_list' %}" class="list-group-item list-group-item-action {% if admin_section == 'roles' %}active{% endif %}">
-                    <i class="bi bi-shield-check me-2"></i>Roles
+                    <i class="bi bi-shield-check me-2"></i>{% trans "Roles" %}
                 </a>
                 <a href="{% url 'accounts:dashboard' %}" class="list-group-item list-group-item-action">
-                    <i class="bi bi-arrow-left me-2"></i>Volver al Dashboard
+                    <i class="bi bi-arrow-left me-2"></i>{% trans "Volver al Dashboard" %}
                 </a>
             </div>
         </div>

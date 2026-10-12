@@ -1,12 +1,13 @@
 {% extends "accounts/admin/admin_base.html" %}
+{% load i18n %}
 
-{% block title %}Gestión de Roles - FODEJAS{% endblock %}
+{% block title %}{% trans "Gestión de Roles" %} - FODEJAS{% endblock %}
 
 {% block admin_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-shield-check me-2"></i>Gestión de Roles</h2>
+    <h2><i class="bi bi-shield-check me-2"></i>{% trans "Gestión de Roles" %}</h2>
     <a href="{% url 'accounts_admin:role_create' %}" class="btn btn-primary">
-        <i class="bi bi-plus-circle me-2"></i>Crear Rol
+        <i class="bi bi-plus-circle me-2"></i>{% trans "Crear Rol" %}
     </a>
 </div>
 
@@ -16,12 +17,12 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Código</th>
-                        <th>Nombre</th>
-                        <th>Tipo</th>
-                        <th>Usuarios</th>
-                        <th>Descripción</th>
-                        <th>Acciones</th>
+                        <th>{% trans "Código" %}</th>
+                        <th>{% trans "Nombre" %}</th>
+                        <th>{% trans "Tipo" %}</th>
+                        <th>{% trans "Usuarios" %}</th>
+                        <th>{% trans "Descripción" %}</th>
+                        <th>{% trans "Acciones" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,14 +36,14 @@
                         <td>{{ role.name }}</td>
                         <td>
                             {% if role.type == 'interno' %}
-                            <span class="badge bg-info">Interno</span>
+                            <span class="badge bg-info">{% trans "Interno" %}</span>
                             {% else %}
-                            <span class="badge bg-warning text-dark">Externo</span>
+                            <span class="badge bg-warning text-dark">{% trans "Externo" %}</span>
                             {% endif %}
                         </td>
                         <td>
                             {% with role.user_roles.count as count %}
-                            {{ count }} usuario{{ count|pluralize }}
+                            {{ count }} {% trans "usuario" %}{{ count|pluralize }}
                             {% endwith %}
                         </td>
                         <td>{{ role.description|truncatechars:50|default:"—" }}</td>
@@ -59,7 +60,7 @@
                     <tr>
                         <td colspan="6" class="text-center text-muted py-4">
                             <i class="bi bi-shield" style="font-size: 2rem;"></i>
-                            <p class="mb-0">No se encontraron roles</p>
+                            <p class="mb-0">{% trans "No se encontraron roles" %}</p>
                         </td>
                     </tr>
                     {% endfor %}

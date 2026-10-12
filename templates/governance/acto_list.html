@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Actos Administrativos - FODEJAS{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-file-earmark-text me-2"></i>Actos Administrativos</h2>
+        <h2><i class="bi bi-file-earmark-text me-2"></i>{% trans "Actos Administrativos" %}</h2>
         <a href="{% url 'governance:acto_create' %}" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-2"></i>Nuevo Acto
+            <i class="bi bi-plus-circle me-2"></i>{% trans "Nuevo Acto" %}
         </a>
     </div>
 
@@ -27,12 +28,12 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Número</th>
-                            <th>Tipo</th>
-                            <th>Asunto</th>
-                            <th>Fecha</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
+                            <th>{% trans "Número" %}</th>
+                            <th>{% trans "Tipo" %}</th>
+                            <th>{% trans "Asunto" %}</th>
+                            <th>{% trans "Fecha" %}</th>
+                            <th>{% trans "Estado" %}</th>
+                            <th>{% trans "Acciones" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,7 +50,7 @@
                             </td>
                             <td>
                                 <a href="{% url 'governance:acto_detail' acto.uuid %}" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye"></i> Ver
+                                    <i class="bi bi-eye"></i> {% trans "Ver" %}
                                 </a>
                             </td>
                         </tr>
@@ -59,7 +60,7 @@
             </div>
             {% else %}
             <p class="text-muted text-center py-4">
-                No hay actos administrativos registrados.
+                {% trans "No hay actos administrativos registrados." %}
             </p>
             {% endif %}
         </div>

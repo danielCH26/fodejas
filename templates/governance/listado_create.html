@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Generar Listado Definitivo - FODEJAS{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-list-check me-2"></i>Generar Listado Definitivo</h2>
+        <h2><i class="bi bi-list-check me-2"></i>{% trans "Generar Listado Definitivo" %}</h2>
         <a href="{% url 'governance:acto_list' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Volver
+            <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
         </a>
     </div>
 
@@ -22,16 +23,16 @@
 
     <div class="card">
         <div class="card-header">
-            <i class="bi bi-info-circle me-2"></i>Seleccionar Convocatoria
+            <i class="bi bi-info-circle me-2"></i>{% trans "Seleccionar Convocatoria" %}
         </div>
         <div class="card-body">
             <form method="post">
                 {% csrf_token %}
 
                 <div class="mb-3">
-                    <label for="convocatoria" class="form-label">Convocatoria en estado Definitiva</label>
+                    <label for="convocatoria" class="form-label">{% trans "Convocatoria en estado Definitiva" %}</label>
                     <select name="convocatoria" id="convocatoria" class="form-select" required>
-                        <option value="">Seleccionar...</option>
+                        <option value="">{% trans "Seleccionar..." %}</option>
                         {% for c in convocatorias %}
                         <option value="{{ c.pk }}">{{ c.nombre }} ({{ c.get_estado_display }})</option>
                         {% endfor %}
@@ -40,11 +41,11 @@
 
                 <div class="alert alert-info">
                     <i class="bi bi-info-circle me-2"></i>
-                    Esta acción generará el ranking final de beneficiarios basado en los puntajes calculados y creará el acto administrativo correspondiente.
+                    {% blocktrans %}Esta acción generará el ranking final de beneficiarios basado en los puntajes calculados y creará el acto administrativo correspondiente.{% endblocktrans %}
                 </div>
 
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-check-circle me-2"></i>Generar Listado Definitivo
+                    <i class="bi bi-check-circle me-2"></i>{% trans "Generar Listado Definitivo" %}
                 </button>
             </form>
         </div>

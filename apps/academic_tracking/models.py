@@ -3,16 +3,17 @@
 import uuid
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class AcademicRecord(models.Model):
     """Academic record for a legalized beneficiary."""
 
     class Status(models.TextChoices):
-        ACTIVO = "ACTIVO", "Activo"
-        ACADEMICO_BAJO = "ACADEMICO_BAJO", "Bajo Rendimiento"
-        SUSPENDIDO = "SUSPENDIDO", "Suspendido"
-        GRADUADO = "GRADUADO", "Graduado"
+        ACTIVO = "ACTIVO", _("Activo")
+        ACADEMICO_BAJO = "ACADEMICO_BAJO", _("Bajo Rendimiento")
+        SUSPENDIDO = "SUSPENDIDO", _("Suspendido")
+        GRADUADO = "GRADUADO", _("Graduado")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     legalization_process = models.OneToOneField(
@@ -81,15 +82,15 @@ class AcademicAlert(models.Model):
     """Alert for academic performance issues."""
 
     class AlertType(models.TextChoices):
-        BAJO_RENDIMIENTO = "BAJO_RENDIMIENTO", "Bajo Rendimiento"
-        PROBACION = "PROBACION", "Probación Académica"
-        SUSPENSION = "SUSPENSION", "Suspensión Automática"
-        GRADUACION = "GRADUACION", "Graduación"
+        BAJO_RENDIMIENTO = "BAJO_RENDIMIENTO", _("Bajo Rendimiento")
+        PROBACION = "PROBACION", _("Probación Académica")
+        SUSPENSION = "SUSPENSION", _("Suspensión Automática")
+        GRADUACION = "GRADUACION", _("Graduación")
 
     class Status(models.TextChoices):
-        PENDIENTE = "PENDIENTE", "Pendiente"
-        REVISADA = "REVISADA", "Revisada"
-        RESUELTA = "RESUELTA", "Resuelta"
+        PENDIENTE = "PENDIENTE", _("Pendiente")
+        REVISADA = "REVISADA", _("Revisada")
+        RESUELTA = "RESUELTA", _("Resuelta")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     academic_record = models.ForeignKey(

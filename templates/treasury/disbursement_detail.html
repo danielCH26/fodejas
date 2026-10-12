@@ -1,15 +1,16 @@
 {% extends "treasury/base.html" %}
+{% load i18n %}
 
-{% block treasury_title %}Detalle de autorización{% endblock %}
+{% block treasury_title %}{% trans "Detalle de autorización" %}{% endblock %}
 
 {% block treasury_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>
-        <i class="bi bi-wallet2 me-2"></i>Autorización de desembolso
+        <i class="bi bi-wallet2 me-2"></i>{% trans "Autorización de desembolso" %}
     </h2>
     <a href="{% url 'treasury:disbursement_list' %}"
        class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-arrow-left"></i> Volver
+        <i class="bi bi-arrow-left"></i> {% trans "Volver" %}
     </a>
 </div>
 
@@ -25,20 +26,20 @@
 <!-- Authorization info -->
 <div class="card mb-4">
     <div class="card-header">
-        <i class="bi bi-info-circle me-2"></i>Datos de la autorización
+        <i class="bi bi-info-circle me-2"></i>{% trans "Datos de la autorización" %}
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-3">
-                <strong>ID:</strong><br>
+                <strong>{% trans "ID:" %}</strong><br>
                 <code>{{ authorization.id }}</code>
             </div>
             <div class="col-md-3">
-                <strong>Monto:</strong><br>
+                <strong>{% trans "Monto:" %}</strong><br>
                 <span class="text-success fw-bold fs-5">${{ authorization.amount|floatformat:0 }}</span>
             </div>
             <div class="col-md-3">
-                <strong>Estado:</strong><br>
+                <strong>{% trans "Estado:" %}</strong><br>
                 <span class="badge
                     {% if authorization.status == 'AUTORIZADO' %}bg-success
                     {% elif authorization.status == 'PENDIENTE' %}bg-warning text-dark
@@ -48,7 +49,7 @@
                 </span>
             </div>
             <div class="col-md-3">
-                <strong>Creada:</strong><br>
+                <strong>{% trans "Creada:" %}</strong><br>
                 {{ authorization.created_at|date:"d/m/Y H:i" }}
             </div>
         </div>
@@ -58,7 +59,7 @@
 <!-- Double signature state -->
 <div class="card mb-4" id="signature-status">
     <div class="card-header">
-        <i class="bi bi-pen me-2"></i>Estado de doble firma
+        <i class="bi bi-pen me-2"></i>{% trans "Estado de doble firma" %}
     </div>
     <div class="card-body">
         <div class="row">
@@ -72,15 +73,15 @@
                         {% else %}
                             <i class="bi bi-clock text-warning me-1"></i>
                         {% endif %}
-                        Presidente (R-JUNTA)
+                        {% trans "Presidente (R-JUNTA)" %}
                     </h6>
                     {% if authorization.authorized_by_president %}
                         <p class="mb-0 small">
                             <strong>{{ authorization.authorized_by_president.email }}</strong>
-                            <br>Firmado: {{ authorization.authorized_at|date:"d/m/Y H:i" }}
+                            <br>{% trans "Firmado:" %} {{ authorization.authorized_at|date:"d/m/Y H:i" }}
                         </p>
                     {% else %}
-                        <p class="text-muted mb-0 small">Pendiente de firma</p>
+                        <p class="text-muted mb-0 small">{% trans "Pendiente de firma" %}</p>
                     {% endif %}
                 </div>
             </div>
@@ -94,15 +95,15 @@
                         {% else %}
                             <i class="bi bi-clock text-warning me-1"></i>
                         {% endif %}
-                        Secretario (R-COORDINADOR)
+                        {% trans "Secretario (R-COORDINADOR)" %}
                     </h6>
                     {% if authorization.authorized_by_secretary %}
                         <p class="mb-0 small">
                             <strong>{{ authorization.authorized_by_secretary.email }}</strong>
-                            <br>Firmado: {{ authorization.authorized_at|date:"d/m/Y H:i" }}
+                            <br>{% trans "Firmado:" %} {{ authorization.authorized_at|date:"d/m/Y H:i" }}
                         </p>
                     {% else %}
-                        <p class="text-muted mb-0 small">Pendiente de firma</p>
+                        <p class="text-muted mb-0 small">{% trans "Pendiente de firma" %}</p>
                     {% endif %}
                 </div>
             </div>
@@ -117,8 +118,8 @@
                 hx-swap="innerHTML"
                 class="btn btn-success">
                 <i class="bi bi-pen"></i>
-                Firmar como
-                {% if missing_role == 'president' %}Presidente{% else %}Secretario{% endif %}
+                {% trans "Firmar como" %}
+                {% if missing_role == 'president' %}{% trans "Presidente" %}{% else %}{% trans "Secretario" %}{% endif %}
             </button>
         </div>
         <div id="authorize-panel" class="mt-3"></div>
@@ -126,12 +127,12 @@
         <div class="mt-3">
             <span class="badge bg-success fs-6">
                 <i class="bi bi-check-circle me-1"></i>
-                ¡Desembolso autorizado! Ambas firmas completadas.
+                {% trans "¡Desembolso autorizado! Ambas firmas completadas." %}
             </span>
         </div>
         {% elif authorization.status != 'PENDIENTE' %}
         <div class="mt-3">
-            <span class="badge bg-secondary">No editable — estado: {{ authorization.get_status_display }}</span>
+            <span class="badge bg-secondary">{% trans "No editable — estado:" %} {{ authorization.get_status_display }}</span>
         </div>
         {% endif %}
     </div>
@@ -140,21 +141,21 @@
 <!-- Legalization process -->
 <div class="card mb-4">
     <div class="card-header">
-        <i class="bi bi-file-earmark-text me-2"></i>Proceso de legalización
+        <i class="bi bi-file-earmark-text me-2"></i>{% trans "Proceso de legalización" %}
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
-                <strong>Convocatoria:</strong><br>
+                <strong>{% trans "Convocatoria:" %}</strong><br>
                 {{ process.convocatoria.nombre }}
                 ({{ process.convocatoria.codigo }})
             </div>
             <div class="col-md-4">
-                <strong>Beneficiario:</strong><br>
+                <strong>{% trans "Beneficiario:" %}</strong><br>
                 {{ process.beneficiary.email }}
             </div>
             <div class="col-md-2">
-                <strong>Estado:</strong><br>
+                <strong>{% trans "Estado:" %}</strong><br>
                 <span class="badge
                     {% if process.status == 'LEGALIZADO' %}bg-success
                     {% else %}bg-secondary{% endif %}">
@@ -162,7 +163,7 @@
                 </span>
             </div>
             <div class="col-md-2">
-                <strong>Creado:</strong><br>
+                <strong>{% trans "Creado:" %}</strong><br>
                 {{ process.created_at|date:"d/m/Y" }}
             </div>
         </div>
@@ -173,17 +174,17 @@
 <div class="card mb-4">
     <div class="card-header">
         <i class="bi bi-paperclip me-2"></i>
-        Adjuntos normativos requeridos (4 documentos)
+        {% trans "Adjuntos normativos requeridos (4 documentos)" %}
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Tipo</th>
-                        <th>Estado</th>
-                        <th>Hash post-firma</th>
-                        <th>Acciones</th>
+                        <th>{% trans "Tipo" %}</th>
+                        <th>{% trans "Estado" %}</th>
+                        <th>{% trans "Hash post-firma" %}</th>
+                        <th>{% trans "Acciones" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -217,10 +218,10 @@
                             {% if doc.pdf %}
                             <a href="{{ doc.pdf.url }}" class="btn btn-sm btn-outline-secondary"
                                target="_blank" rel="noopener">
-                                <i class="bi bi-download"></i> Ver PDF
+                                <i class="bi bi-download"></i> {% trans "Ver PDF" %}
                             </a>
                             {% else %}
-                            <span class="text-muted small">Sin PDF</span>
+                            <span class="text-muted small">{% trans "Sin PDF" %}</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -235,41 +236,41 @@
 {% if authorization.treasury_order_number %}
 <div class="card mb-4">
     <div class="card-header">
-        <i class="bi bi-truck me-2"></i>Orden de Tesorería
+        <i class="bi bi-truck me-2"></i>{% trans "Orden de Tesorería" %}
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-3">
-                <strong>Orden No.:</strong><br>{{ authorization.treasury_order_number }}
+                <strong>{% trans "Orden No.:" %}</strong><br>{{ authorization.treasury_order_number }}
             </div>
             <div class="col-md-3">
-                <strong>Fecha orden:</strong><br>
+                <strong>{% trans "Fecha orden:" %}</strong><br>
                 {{ authorization.treasury_order_date|default:"-" }}
             </div>
             <div class="col-md-3">
-                <strong>Recibido por Tesorería:</strong><br>
+                <strong>{% trans "Recibido por Tesorería:" %}</strong><br>
                 {{ authorization.treasury_received_at|default:"-"|date:"d/m/Y H:i" }}
             </div>
             <div class="col-md-3">
-                <strong>Comprobante:</strong><br>
+                <strong>{% trans "Comprobante:" %}</strong><br>
                 {% if authorization.payment_proof %}
                     <a href="{{ authorization.payment_proof.url }}"
                        target="_blank" rel="noopener">
-                        <i class="bi bi-file-pdf"></i> Ver comprobante
+                        <i class="bi bi-file-pdf"></i> {% trans "Ver comprobante" %}
                     </a>
                 {% else %}
-                    <span class="text-muted">Sin comprobante</span>
+                    <span class="text-muted">{% trans "Sin comprobante" %}</span>
                 {% endif %}
             </div>
         </div>
         {% if authorization.treasury_order_attachments %}
         <div class="mt-3">
-            <strong>Documentos adjuntos a la orden:</strong>
+            <strong>{% trans "Documentos adjuntos a la orden:" %}</strong>
             <ul class="small mb-0">
                 {% for att in authorization.treasury_order_attachments %}
                 <li>{{ att.document_type }}
-                    — ID: <code>{{ att.document_id|truncatechars:8 }}</code>
-                    {% if att.post_sign_hash %}<br>Hash: <code>{{ att.post_sign_hash|truncatechars:16 }}</code>{% endif %}
+                    — {% trans "ID:" %} <code>{{ att.document_id|truncatechars:8 }}</code>
+                    {% if att.post_sign_hash %}<br>{% trans "Hash:" %} <code>{{ att.post_sign_hash|truncatechars:16 }}</code>{% endif %}
                 </li>
                 {% endfor %}
             </ul>

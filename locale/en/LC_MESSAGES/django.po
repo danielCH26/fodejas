@@ -1565,3 +1565,1213 @@ msgstr "Confirm (Accept)"
 
 msgid "Revocar (Rechazar)"
 msgstr "Revoke (Reject)"
+
+# ============================================================================
+# CHG-507-multilang Unit C — governance/, treasury/, scoring/, legalization/,
+#                            claims admin/, accounts admin/, treasury models
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# governance/acto_create.html
+# ----------------------------------------------------------------------------
+
+msgid "Crear Acto Administrativo"
+msgstr "Create Administrative Act"
+
+msgid "Tipo de Acto"
+msgstr "Act Type"
+
+msgid "Fecha de Expedición"
+msgstr "Issue Date"
+
+msgid "Convocatoria (opcional)"
+msgstr "Call for Applications (optional)"
+
+msgid "Resolutivo"
+msgstr "Resolutive"
+
+msgid "Crear Acto"
+msgstr "Create Act"
+
+# ----------------------------------------------------------------------------
+# governance/acto_detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Información del Acto"
+msgstr "Act Information"
+
+msgid "Fecha de Creación:"
+msgstr "Creation Date:"
+
+msgid "Asunto:"
+msgstr "Subject:"
+
+msgid "Convocatoria:"
+msgstr "Call for Applications:"
+
+msgid "Considerandos"
+msgstr "Whereas Clauses"
+
+msgid "Resolutivo"
+msgstr "Resolutive"
+
+msgid "Acciones"
+msgstr "Actions"
+
+msgid "Generar PDF"
+msgstr "Generate PDF"
+
+msgid "Descargar PDF"
+msgstr "Download PDF"
+
+msgid "Publicar"
+msgstr "Publish"
+
+# ----------------------------------------------------------------------------
+# governance/acto_list.html
+# ----------------------------------------------------------------------------
+
+msgid "Actos Administrativos"
+msgstr "Administrative Acts"
+
+msgid "Nuevo Acto"
+msgstr "New Act"
+
+msgid "Número"
+msgstr "Number"
+
+msgid "Tipo"
+msgstr "Type"
+
+msgid "Fecha"
+msgstr "Date"
+
+msgid "No hay actos administrativos registrados."
+msgstr "No administrative acts registered."
+
+# ----------------------------------------------------------------------------
+# governance/listado_create.html
+# ----------------------------------------------------------------------------
+
+msgid "Generar Listado Definitivo"
+msgstr "Generate Final List"
+
+msgid "Seleccionar Convocatoria"
+msgstr "Select Call for Applications"
+
+msgid "Convocatoria en estado Definitiva"
+msgstr "Call in Definitive status"
+
+msgid "Seleccionar..."
+msgstr "Select..."
+
+msgid "Esta acción generará el ranking final de beneficiarios basado en los puntajes calculados y creará el acto administrativo correspondiente."
+msgstr "This action will generate the final ranking of beneficiaries based on calculated scores and create the corresponding administrative act."
+
+# ----------------------------------------------------------------------------
+# governance/listado_detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Listado Definitivo"
+msgstr "Final List"
+
+msgid "Información"
+msgstr "Information"
+
+msgid "Acto Administrativo:"
+msgstr "Administrative Act:"
+
+msgid "Fecha de Publicación:"
+msgstr "Publication Date:"
+
+msgid "Total Beneficiarios:"
+msgstr "Total Beneficiaries:"
+
+msgid "Ranking de Beneficiarios"
+msgstr "Beneficiary Ranking"
+
+msgid "Rank"
+msgstr "Rank"
+
+msgid "Radicado"
+msgstr "Filing Number"
+
+msgid "Aspirante"
+msgstr "Applicant"
+
+msgid "Puntaje"
+msgstr "Score"
+
+# ----------------------------------------------------------------------------
+# governance/listado_publico.html
+# ----------------------------------------------------------------------------
+
+msgid "Resultados Definitivos"
+msgstr "Final Results"
+
+msgid "Listados definitivos de beneficiarios publicados"
+msgstr "Published final lists of beneficiaries"
+
+msgid "Fecha de publicación:"
+msgstr "Publication date:"
+
+msgid "Acto administrativo:"
+msgstr "Administrative act:"
+
+msgid "Total beneficiarios:"
+msgstr "Total beneficiaries:"
+
+msgid "Ranking completo disponible en la Coordinación Técnica"
+msgstr "Complete ranking available at Technical Coordination"
+
+msgid "No hay resultados publicados actualmente."
+msgstr "No results published currently."
+
+msgid "Volver al inicio"
+msgstr "Return to home"
+
+# ----------------------------------------------------------------------------
+# treasury/base.html
+# ----------------------------------------------------------------------------
+
+msgid "Tesorería"
+msgstr "Treasury"
+
+msgid "Autorizaciones"
+msgstr "Authorizations"
+
+msgid "Conciliación"
+msgstr "Reconciliation"
+
+# ----------------------------------------------------------------------------
+# treasury/disbursement_detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Detalle de autorización"
+msgstr "Authorization Detail"
+
+msgid "Autorización de desembolso"
+msgstr "Disbursement Authorization"
+
+msgid "Datos de la autorización"
+msgstr "Authorization Data"
+
+msgid "ID:"
+msgstr "ID:"
+
+msgid "Monto:"
+msgstr "Amount:"
+
+msgid "Creada:"
+msgstr "Created:"
+
+msgid "Estado de doble firma"
+msgstr "Dual Signature Status"
+
+msgid "Presidente (R-JUNTA)"
+msgstr "President (R-JUNTA)"
+
+msgid "Secretario (R-COORDINADOR)"
+msgstr "Secretary (R-COORDINADOR)"
+
+msgid "Firmado:"
+msgstr "Signed:"
+
+msgid "Pendiente de firma"
+msgstr "Pending signature"
+
+msgid "Firmar como"
+msgstr "Sign as"
+
+msgid "¡Desembolso autorizado! Ambas firmas completadas."
+msgstr "Disbursement authorized! Both signatures completed."
+
+msgid "No editable — estado:"
+msgstr "Not editable — status:"
+
+msgid "Proceso de legalización"
+msgstr "Legalization Process"
+
+msgid "Beneficiario:"
+msgstr "Beneficiary:"
+
+msgid "Creado:"
+msgstr "Created:"
+
+msgid "Adjuntos normativos requeridos (4 documentos)"
+msgstr "Required Normative Attachments (4 documents)"
+
+msgid "Hash post-firma"
+msgstr "Post-sign Hash"
+
+msgid "Ver PDF"
+msgstr "View PDF"
+
+msgid "Sin PDF"
+msgstr "No PDF"
+
+msgid "Orden de Tesorería"
+msgstr "Treasury Order"
+
+msgid "Orden No.:"
+msgstr "Order No.:"
+
+msgid "Fecha orden:"
+msgstr "Order Date:"
+
+msgid "Recibido por Tesorería:"
+msgstr "Received by Treasury:"
+
+msgid "Comprobante:"
+msgstr "Receipt:"
+
+msgid "Ver comprobante"
+msgstr "View Receipt"
+
+msgid "Sin comprobante"
+msgstr "No Receipt"
+
+msgid "Documentos adjuntos a la orden:"
+msgstr "Documents attached to the order:"
+
+# ----------------------------------------------------------------------------
+# treasury/disbursement_list.html
+# ----------------------------------------------------------------------------
+
+msgid "Autorizaciones de desembolso"
+msgstr "Disbursement Authorizations"
+
+msgid "Convocatoria"
+msgstr "Call for Applications"
+
+msgid "Beneficiario"
+msgstr "Beneficiary"
+
+msgid "Monto"
+msgstr "Amount"
+
+msgid "Estado firma"
+msgstr "Signature Status"
+
+msgid "Fecha creación"
+msgstr "Created Date"
+
+msgid "Ambas firmas"
+msgstr "Both signatures"
+
+msgid "Presid.✓"
+msgstr "Pres.✓"
+
+msgid "Presid.pend."
+msgstr "Pres.pend."
+
+msgid "Sec.✓"
+msgstr "Sec.✓"
+
+msgid "Sec.pend."
+msgstr "Sec.pend."
+
+msgid "No hay autorizaciones pendientes ni autorizadas en este momento."
+msgstr "No pending or authorized authorizations at this time."
+
+# ----------------------------------------------------------------------------
+# treasury/partials/authorize_error.html
+# ----------------------------------------------------------------------------
+
+msgid "Reintentar"
+msgstr "Retry"
+
+# ----------------------------------------------------------------------------
+# treasury/partials/authorize_form.html
+# ----------------------------------------------------------------------------
+
+msgid "Firmar autorización de desembolso"
+msgstr "Sign Disbursement Authorization"
+
+msgid "No tienes un rol disponible para firmar esta autorización."
+msgstr "You do not have an available role to sign this authorization."
+
+msgid "Al firmar, se registra tu usuario como autoridad firmante de esta autorización de desembolso. La segunda firma (de rol diferente) completará la autorización."
+msgstr "By signing, your user is registered as the signing authority for this disbursement authorization. The second signature (from a different role) will complete the authorization."
+
+msgid "Rol con el que firma:"
+msgstr "Role with which you sig
+
+
+# ============================================================================
+# CHG-507-multilang Unit C — governance/, treasury/, scoring/, legalization/,
+#                            claims admin/, accounts admin/, treasury models
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# governance/acto_create.html
+# ----------------------------------------------------------------------------
+
+msgid "Crear Acto Administrativo"
+msgstr "Create Administrative Act"
+
+msgid "Tipo de Acto"
+msgstr "Act Type"
+
+msgid "Fecha de Expedición"
+msgstr "Issue Date"
+
+msgid "Convocatoria (opcional)"
+msgstr "Call for Applications (optional)"
+
+msgid "Resolutivo"
+msgstr "Resolutive"
+
+msgid "Crear Acto"
+msgstr "Create Act"
+
+# ----------------------------------------------------------------------------
+# governance/acto_detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Información del Acto"
+msgstr "Act Information"
+
+msgid "Fecha de Creación:"
+msgstr "Creation Date:"
+
+msgid "Asunto:"
+msgstr "Subject:"
+
+msgid "Convocatoria:"
+msgstr "Call for Applications:"
+
+msgid "Considerandos"
+msgstr "Whereas Clauses"
+
+msgid "Acciones"
+msgstr "Actions"
+
+msgid "Generar PDF"
+msgstr "Generate PDF"
+
+msgid "Descargar PDF"
+msgstr "Download PDF"
+
+msgid "Publicar"
+msgstr "Publish"
+
+# ----------------------------------------------------------------------------
+# governance/acto_list.html
+# ----------------------------------------------------------------------------
+
+msgid "Actos Administrativos"
+msgstr "Administrative Acts"
+
+msgid "Nuevo Acto"
+msgstr "New Act"
+
+msgid "Número"
+msgstr "Number"
+
+msgid "Tipo"
+msgstr "Type"
+
+msgid "Fecha"
+msgstr "Date"
+
+msgid "No hay actos administrativos registrados."
+msgstr "No administrative acts registered."
+
+# ----------------------------------------------------------------------------
+# governance/listado_create.html
+# ----------------------------------------------------------------------------
+
+msgid "Generar Listado Definitivo"
+msgstr "Generate Final List"
+
+msgid "Seleccionar Convocatoria"
+msgstr "Select Call for Applications"
+
+msgid "Convocatoria en estado Definitiva"
+msgstr "Call in Definitive status"
+
+msgid "Seleccionar..."
+msgstr "Select..."
+
+msgid "Esta acción generará el ranking final de beneficiarios basado en los puntajes calculados y creará el acto administrativo correspondiente."
+msgstr "This action will generate the final ranking of beneficiaries based on calculated scores and create the corresponding administrative act."
+
+# ----------------------------------------------------------------------------
+# governance/listado_detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Listado Definitivo"
+msgstr "Final List"
+
+msgid "Información"
+msgstr "Information"
+
+msgid "Acto Administrativo:"
+msgstr "Administrative Act:"
+
+msgid "Fecha de Publicación:"
+msgstr "Publication Date:"
+
+msgid "Total Beneficiarios:"
+msgstr "Total Beneficiaries:"
+
+msgid "Ranking de Beneficiarios"
+msgstr "Beneficiary Ranking"
+
+msgid "Rank"
+msgstr "Rank"
+
+msgid "Radicado"
+msgstr "Filing Number"
+
+msgid "Aspirante"
+msgstr "Applicant"
+
+msgid "Puntaje"
+msgstr "Score"
+
+# ----------------------------------------------------------------------------
+# governance/listado_publico.html
+# ----------------------------------------------------------------------------
+
+msgid "Resultados Definitivos"
+msgstr "Final Results"
+
+msgid "Listados definitivos de beneficiarios publicados"
+msgstr "Published final lists of beneficiaries"
+
+msgid "Fecha de publicación:"
+msgstr "Publication date:"
+
+msgid "Acto administrativo:"
+msgstr "Administrative act:"
+
+msgid "Total beneficiarios:"
+msgstr "Total beneficiaries:"
+
+msgid "Ranking completo disponible en la Coordinación Técnica"
+msgstr "Complete ranking available at Technical Coordination"
+
+msgid "No hay resultados publicados actualmente."
+msgstr "No results published currently."
+
+msgid "Volver al inicio"
+msgstr "Return to home"
+
+# ----------------------------------------------------------------------------
+# treasury/base.html
+# ----------------------------------------------------------------------------
+
+msgid "Tesorería"
+msgstr "Treasury"
+
+msgid "Autorizaciones"
+msgstr "Authorizations"
+
+msgid "Conciliación"
+msgstr "Reconciliation"
+
+# ----------------------------------------------------------------------------
+# treasury/disbursement_detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Detalle de autorización"
+msgstr "Authorization Detail"
+
+msgid "Autorización de desembolso"
+msgstr "Disbursement Authorization"
+
+msgid "Datos de la autorización"
+msgstr "Authorization Data"
+
+msgid "ID:"
+msgstr "ID:"
+
+msgid "Monto:"
+msgstr "Amount:"
+
+msgid "Creada:"
+msgstr "Created:"
+
+msgid "Estado de doble firma"
+msgstr "Dual Signature Status"
+
+msgid "Presidente (R-JUNTA)"
+msgstr "President (R-JUNTA)"
+
+msgid "Secretario (R-COORDINADOR)"
+msgstr "Secretary (R-COORDINADOR)"
+
+msgid "Firmado:"
+msgstr "Signed:"
+
+msgid "Pendiente de firma"
+msgstr "Pending signature"
+
+msgid "Firmar como"
+msgstr "Sign as"
+
+msgid "¡Desembolso autorizado! Ambas firmas completadas."
+msgstr "Disbursement authorized! Both signatures completed."
+
+msgid "No editable — estado:"
+msgstr "Not editable — status:"
+
+msgid "Proceso de legalización"
+msgstr "Legalization Process"
+
+msgid "Beneficiario:"
+msgstr "Beneficiary:"
+
+msgid "Creado:"
+msgstr "Created:"
+
+msgid "Adjuntos normativos requeridos (4 documentos)"
+msgstr "Required Normative Attachments (4 documents)"
+
+msgid "Hash post-firma"
+msgstr "Post-sign Hash"
+
+msgid "Ver PDF"
+msgstr "View PDF"
+
+msgid "Sin PDF"
+msgstr "No PDF"
+
+msgid "Orden de Tesorería"
+msgstr "Treasury Order"
+
+msgid "Orden No.:"
+msgstr "Order No.:"
+
+msgid "Fecha orden:"
+msgstr "Order Date:"
+
+msgid "Recibido por Tesorería:"
+msgstr "Received by Treasury:"
+
+msgid "Comprobante:"
+msgstr "Receipt:"
+
+msgid "Ver comprobante"
+msgstr "View Receipt"
+
+msgid "Sin comprobante"
+msgstr "No Receipt"
+
+msgid "Documentos adjuntos a la orden:"
+msgstr "Documents attached to the order:"
+
+# ----------------------------------------------------------------------------
+# treasury/disbursement_list.html
+# ----------------------------------------------------------------------------
+
+msgid "Autorizaciones de desembolso"
+msgstr "Disbursement Authorizations"
+
+msgid "Convocatoria"
+msgstr "Call for Applications"
+
+msgid "Beneficiario"
+msgstr "Beneficiary"
+
+msgid "Monto"
+msgstr "Amount"
+
+msgid "Estado firma"
+msgstr "Signature Status"
+
+msgid "Fecha creación"
+msgstr "Created Date"
+
+msgid "Ambas firmas"
+msgstr "Both signatures"
+
+msgid "Presid.✓"
+msgstr "Pres.✓"
+
+msgid "Presid.pend."
+msgstr "Pres.pend."
+
+msgid "Sec.✓"
+msgstr "Sec.✓"
+
+msgid "Sec.pend."
+msgstr "Sec.pend."
+
+msgid "No hay autorizaciones pendientes ni autorizadas en este momento."
+msgstr "No pending or authorized authorizations at this time."
+
+# ----------------------------------------------------------------------------
+# treasury/partials/authorize_error.html
+# ----------------------------------------------------------------------------
+
+msgid "Reintentar"
+msgstr "Retry"
+
+# ----------------------------------------------------------------------------
+# treasury/partials/authorize_form.html
+# ----------------------------------------------------------------------------
+
+msgid "Firmar autorización de desembolso"
+msgstr "Sign Disbursement Authorization"
+
+msgid "No tienes un rol disponible para firmar esta autorización."
+msgstr "You do not have an available role to sign this authorization."
+
+msgid "Al firmar, se registra tu usuario como autoridad firmante de esta autorización de desembolso. La segunda firma (de rol diferente) completará la autorización."
+msgstr "By signing, your user is registered as the signing authority for this disbursement authorization. The second signature (from a different role) will complete the authorization."
+
+msgid "Rol con el que firma:"
+msgstr "Role with which you sign:"
+
+msgid "Seleccione"
+msgstr "Select"
+
+msgid "Confirmar Firma"
+msgstr "Confirm Signature"
+
+# ----------------------------------------------------------------------------
+# treasury/partials/signature_status.html
+# ----------------------------------------------------------------------------
+
+msgid "Firmado: falta la otra autoridad"
+msgstr "Signed: the other authority is missing"
+
+# ----------------------------------------------------------------------------
+# treasury/reconciliation.html
+# ----------------------------------------------------------------------------
+
+msgid "Conciliación de pagos"
+msgstr "Payment Reconciliation"
+
+msgid "Conciliación de pagos a Tesorería"
+msgstr "Treasury Payment Reconciliation"
+
+msgid "Radicada"
+msgstr "Filed"
+
+msgid "Orden"
+msgstr "Order"
+
+msgid "Acción"
+msgstr "Action"
+
+msgid "Confirmar pago"
+msgstr "Confirm Payment"
+
+msgid "No hay órdenes pendientes de conciliación."
+msgstr "No orders pending reconciliation."
+
+# ----------------------------------------------------------------------------
+# scoring/detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Evaluar Solicitud"
+msgstr "Evaluate Application"
+
+msgid "Volver a la Lista"
+msgstr "Back to List"
+
+msgid "Información de la Solicitud"
+msgstr "Application Information"
+
+msgid "Radicado:"
+msgstr "Filing Number:"
+
+msgid "Aspirante:"
+msgstr "Applicant:"
+
+msgid "Convocatoria:"
+msgstr "Call for Applications:"
+
+msgid "Municipio:"
+msgstr "Municipality:"
+
+msgid "Puntaje Total"
+msgstr "Total Score"
+
+msgid "Socioeconómico"
+msgstr "Socioeconomic"
+
+msgid "Académico"
+msgstr "Academic"
+
+msgid "Excelencia"
+msgstr "Excellence"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Puntaje Final"
+msgstr "Final Score"
+
+msgid "Criterios de Evaluación"
+msgstr "Evaluation Criteria"
+
+msgid "Ponderación: %(w)s%%"
+msgstr "Weight: %(w)s%%"
+
+msgid "Evaluado por:"
+msgstr "Evaluated by:"
+
+msgid "Calcular Puntaje Total"
+msgstr "Calculate Total Score"
+
+# ----------------------------------------------------------------------------
+# scoring/list.html
+# ----------------------------------------------------------------------------
+
+msgid "Evaluación de Solicitudes"
+msgstr "Application Evaluation"
+
+msgid "Ver Rankings"
+msgstr "View Rankings"
+
+msgid "Solicitudes Verificadas Pendientes de Evaluación"
+msgstr "Verified Applications Pending Evaluation"
+
+msgid "Radicado"
+msgstr "Filing Number"
+
+msgid "Aspirante"
+msgstr "Applicant"
+
+msgid "Municipio"
+msgstr "Municipality"
+
+msgid "Sin calificar"
+msgstr "Not graded"
+
+msgid "Evaluar"
+msgstr "Evaluate"
+
+# ----------------------------------------------------------------------------
+# scoring/ranking.html
+# ----------------------------------------------------------------------------
+
+msgid "Ranking de Resultados"
+msgstr "Results Ranking"
+
+msgid "Volver a Evaluaciones"
+msgstr "Back to Evaluations"
+
+msgid "Exportar CSV"
+msgstr "Export CSV"
+
+msgid "Posición"
+msgstr "Position"
+
+msgid "Puntaje Total"
+msgstr "Total Score"
+
+msgid "No hay resultados"
+msgstr "No results"
+
+msgid "No hay puntajes calculados aún."
+msgstr "No scores calculated yet."
+
+msgid "Ranking Municipal"
+msgstr "Municipal Ranking"
+
+# ----------------------------------------------------------------------------
+# legalization/base.html
+# ----------------------------------------------------------------------------
+
+msgid "Procesos"
+msgstr "Processes"
+
+# ----------------------------------------------------------------------------
+# legalization/detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Detalle de Legalización"
+msgstr "Legalization Detail"
+
+msgid "Proceso de Legalización"
+msgstr "Legalization Process"
+
+msgid "Datos del Proceso"
+msgstr "Process Data"
+
+msgid "Documentos Legales"
+msgstr "Legal Documents"
+
+msgid "Hash Pre-firma"
+msgstr "Pre-sign Hash"
+
+msgid "Hash Post-firma"
+msgstr "Post-sign Hash"
+
+msgid "Firmado el"
+msgstr "Signed on"
+
+msgid "Proveedor"
+msgstr "Provider"
+
+# ----------------------------------------------------------------------------
+# legalization/list.html
+# ----------------------------------------------------------------------------
+
+msgid "Mis Procesos de Legalización"
+msgstr "My Legalization Processes"
+
+msgid "Procesos de Legalización"
+msgstr "Legalization Processes"
+
+msgid "No tienes procesos de legalización aún."
+msgstr "You don't have any legalization processes yet."
+
+# ----------------------------------------------------------------------------
+# legalization/partials/document_row.html + sign_form.html
+# ----------------------------------------------------------------------------
+
+msgid "Firmar"
+msgstr "Sign"
+
+msgid "Firmado"
+msgstr "Signed"
+
+msgid "Confirmar Firma"
+msgstr "Confirm Signature"
+
+msgid "Cancelar"
+msgstr "Cancel"
+
+msgid "Al firmar, se generará un hash SHA-256 del documento que garantiza su integridad. Esta acción es irreversible y genera un evento de auditoría."
+msgstr "By signing, a SHA-256 hash of the document will be generated to guarantee its integrity. This action is irreversible and generates an audit event."
+
+# ----------------------------------------------------------------------------
+# claims/admin/list.html
+# ----------------------------------------------------------------------------
+
+msgid "Panel de Reclamaciones"
+msgstr "Claims Panel"
+
+msgid "No hay reclamaciones pendientes."
+msgstr "No pending claims."
+
+# ----------------------------------------------------------------------------
+# claims/apelacion_admin_list.html
+# ----------------------------------------------------------------------------
+
+msgid "Apelaciones"
+msgstr "Appeals"
+
+msgid "Reclamaciones"
+msgstr "Claims"
+
+msgid "Todas las Apelaciones"
+msgstr "All Appeals"
+
+msgid "No hay apelaciones pendientes de revisión."
+msgstr "No appeals pending review."
+
+msgid "Revisar"
+msgstr "Review"
+
+# ----------------------------------------------------------------------------
+# accounts/admin/base.html
+# ----------------------------------------------------------------------------
+
+msgid "Administración"
+msgstr "Administration"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Gestión de Usuarios"
+msgstr "User Management"
+
+msgid "Gestión de Roles"
+msgstr "Role Management"
+
+msgid "Cerrar Sesión"
+msgstr "Log Out"
+
+# ----------------------------------------------------------------------------
+# accounts/admin/roles/list.html
+# ----------------------------------------------------------------------------
+
+msgid "Gestión de Roles"
+msgstr "Role Management"
+
+msgid "Crear Rol"
+msgstr "Create Role"
+
+msgid "Código"
+msgstr "Code"
+
+msgid "Nombre"
+msgstr "Name"
+
+msgid "Tipo"
+msgstr "Type"
+
+msgid "Usuarios"
+msgstr "Users"
+
+msgid "usuario"
+msgstr "user"
+
+msgid "No se encontraron roles"
+msgstr "No roles found"
+
+# ----------------------------------------------------------------------------
+# accounts/admin/roles/detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Detalle de Rol"
+msgstr "Role Detail"
+
+msgid "Editar"
+msgstr "Edit"
+
+msgid "Información del Rol"
+msgstr "Role Information"
+
+msgid "Nombre:"
+msgstr "Name:"
+
+msgid "Tipo:"
+msgstr "Type:"
+
+msgid "Interno"
+msgstr "Internal"
+
+msgid "Externo"
+msgstr "External"
+
+msgid "Personal de la Secretaría"
+msgstr "Secretariat Staff"
+
+msgid "Beneficiarios/Aspirantes"
+msgstr "Beneficiaries/Applicants"
+
+msgid "Usuarios con este Rol"
+msgstr "Users with this Role"
+
+msgid "No hay usuarios con este rol"
+msgstr "No users have this role"
+
+# ----------------------------------------------------------------------------
+# accounts/admin/roles/form.html
+# ----------------------------------------------------------------------------
+
+msgid "Rol"
+msgstr "Role"
+
+msgid "Código del Rol"
+msgstr "Role Code"
+
+msgid "Tipo de Rol"
+msgstr "Role Type"
+
+msgid "Nombre del Rol"
+msgstr "Role Name"
+
+msgid "Descripción"
+msgstr "Description"
+
+msgid "Interno (Personal de la Secretaría)"
+msgstr "Internal (Secretariat Staff)"
+
+msgid "Externo (Beneficiarios/Aspirantes)"
+msgstr "External (Beneficiaries/Applicants)"
+
+msgid "Ej: R-ADMIN, R-COORD"
+msgstr "E.g.: R-ADMIN, R-COORD"
+
+msgid "Código único. Use el prefijo R-"
+msgstr "Unique code. Use the prefix R-"
+
+msgid "Guardar Cambios"
+msgstr "Save Changes"
+
+# ----------------------------------------------------------------------------
+# accounts/admin/users/list.html
+# ----------------------------------------------------------------------------
+
+msgid "Gestión de Usuarios"
+msgstr "User Management"
+
+msgid "Crear Usuario"
+msgstr "Create User"
+
+msgid "Buscar por email, documento, nombre..."
+msgstr "Search by email, document, name..."
+
+msgid "Todos los roles"
+msgstr "All roles"
+
+msgid "Activos"
+msgstr "Active"
+
+msgid "Inactivos"
+msgstr "Inactive"
+
+msgid "Todos"
+msgstr "All"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Documento"
+msgstr "Document"
+
+msgid "Nombre"
+msgstr "Name"
+
+msgid "Roles"
+msgstr "Roles"
+
+msgid "Estado"
+msgstr "Status"
+
+msgid "Fecha de Registro"
+msgstr "Registration Date"
+
+msgid "Sin rol"
+msgstr "No role"
+
+msgid "No se encontraron usuarios"
+msgstr "No users found"
+
+# ----------------------------------------------------------------------------
+# accounts/admin/users/detail.html
+# ----------------------------------------------------------------------------
+
+msgid "Detalle de Usuario"
+msgstr "User Detail"
+
+msgid "Desactivar"
+msgstr "Deactivate"
+
+msgid "Activar"
+msgstr "Activate"
+
+msgid "Email:"
+msgstr "Email:"
+
+msgid "Teléfono:"
+msgstr "Phone:"
+
+msgid "Estado:"
+msgstr "Status:"
+
+msgid "Activo"
+msgstr "Active"
+
+msgid "Inactivo"
+msgstr "Inactive"
+
+msgid "Último Ingreso:"
+msgstr "Last Login:"
+
+msgid "Roles Asignados"
+msgstr "Assigned Roles"
+
+msgid "Convocatoria:"
+msgstr "Call for Applications:"
+
+msgid "No tiene roles asignados"
+msgstr "Has no assigned roles"
+
+msgid "¿Estás seguro de quitar este rol?"
+msgstr "Are you sure you want to remove this role?"
+
+msgid "Actividad Reciente"
+msgstr "Recent Activity"
+
+msgid "No hay actividad registrada"
+msgstr "No activity recorded"
+
+# ----------------------------------------------------------------------------
+# accounts/admin/users/form.html
+# ----------------------------------------------------------------------------
+
+msgid "Usuario"
+msgstr "User"
+
+msgid "Nombres"
+msgstr "First Names"
+
+msgid "Apellidos"
+msgstr "Last Names"
+
+msgid "Teléfono"
+msgstr "Phone"
+
+msgid "Contraseña Temporal"
+msgstr "Temporary Password"
+
+msgid "Se generará automáticamente"
+msgstr "Will be generated automatically"
+
+msgid "El usuario deberá cambiar su contraseña al primer inicio de sesión."
+msgstr "The user must change their password on first login."
+
+# ----------------------------------------------------------------------------
+# accounts/admin/users/assign_role.html + roles.html
+# ----------------------------------------------------------------------------
+
+msgid "Asignar Roles"
+msgstr "Assign Roles"
+
+msgid "Asignación de Roles"
+msgstr "Role Assignment"
+
+msgid "Asignar Nuevo Rol"
+msgstr "Assign New Role"
+
+msgid "Seleccionar rol"
+msgstr "Select role"
+
+msgid "Asignar Rol"
+msgstr "Assign Role"
+
+msgid "Roles Actuales"
+msgstr "Current Roles"
+
+msgid "Global"
+msgstr "Global"
+
+msgid "Ver Detalle"
+msgstr "View Detail"
+
+msgid "Editar Usuario"
+msgstr "Edit User"
+
+msgid "Roles Disponibles"
+msgstr "Available Roles"
+
+msgid "El usuario ya tiene asignados todos los roles disponibles."
+msgstr "The user already has all available roles assigned."
+
+msgid "Total de roles:"
+msgstr "Total roles:"
+
+msgid "Este usuario no tiene roles asignados."
+msgstr "This user has no assigned roles."
+
+msgid "Scope de Convocatoria"
+msgstr "Call for Applications Scope"
+
+msgid "opcional"
+msgstr "optional"
+
+msgid "ID de convocatoria para rol específico"
+msgstr "Call for Applications ID for specific role"
+
+msgid "Dejar vacío para rol global"
+msgstr "Leave empty for global role"
+
+msgid "No hay roles disponibles para asignar"
+msgstr "No roles available to assign"
+
+msgid "Seleccionar"
+msgstr "Select"
+
+msgid "Revocar Rol"
+msgstr "Revoke Role"

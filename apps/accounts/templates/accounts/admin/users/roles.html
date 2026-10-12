@@ -1,12 +1,13 @@
 {% extends "accounts/admin/admin_base.html" %}
+{% load i18n %}
 
-{% block title %}Asignar Roles - FODEJAS{% endblock %}
+{% block title %}{% trans "Asignar Roles" %} - FODEJAS{% endblock %}
 
 {% block admin_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-shield-plus me-2"></i>Asignar Roles a {{ view_user.email }}</h2>
+    <h2><i class="bi bi-shield-plus me-2"></i>{% trans "Asignar Roles a" %} {{ view_user.email }}</h2>
     <a href="{% url 'accounts_admin:user_detail' view_user.pk %}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-2"></i>Volver
+        <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
     </a>
 </div>
 
@@ -15,7 +16,7 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <i class="bi bi-shield-check me-2"></i>Roles Actuales
+                <i class="bi bi-shield-check me-2"></i>{% trans "Roles Actuales" %}
             </div>
             <div class="card-body">
                 {% if current_roles %}
@@ -35,7 +36,7 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <p class="text-muted">No tiene roles asignados</p>
+                <p class="text-muted">{% trans "No tiene roles asignados" %}</p>
                 {% endif %}
             </div>
         </div>
@@ -45,16 +46,16 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <i class="bi bi-shield-plus me-2"></i>Roles Disponibles
+                <i class="bi bi-shield-plus me-2"></i>{% trans "Roles Disponibles" %}
             </div>
             <div class="card-body">
                 {% if available_roles %}
                 <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="role_id" class="form-label">Seleccionar Rol</label>
+                        <label for="role_id" class="form-label">{% trans "Seleccionar Rol" %}</label>
                         <select class="form-select" id="role_id" name="role_id" required>
-                            <option value="">-- Seleccionar --</option>
+                            <option value="">-- {% trans "Seleccionar" %} --</option>
                             {% for role in available_roles %}
                             <option value="{{ role.pk }}">
                                 {{ role.code }} - {{ role.name }} ({{ role.type }})
@@ -63,17 +64,17 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="convocation_scope" class="form-label">Scope de Convocatoria (opcional)</label>
+                        <label for="convocation_scope" class="form-label">{% trans "Scope de Convocatoria" %} ({% trans "opcional" %})</label>
                         <input type="text" class="form-control" id="convocation_scope" name="convocation_scope"
-                               placeholder="ID de convocatoria para rol específico">
-                        <small class="text-muted">Dejar vacío para rol global</small>
+                               placeholder="{% trans "ID de convocatoria para rol específico" %}">
+                        <small class="text-muted">{% trans "Dejar vacío para rol global" %}</small>
                     </div>
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-2"></i>Asignar Rol
+                        <i class="bi bi-plus-circle me-2"></i>{% trans "Asignar Rol" %}
                     </button>
                 </form>
                 {% else %}
-                <p class="text-muted">No hay roles disponibles para asignar</p>
+                <p class="text-muted">{% trans "No hay roles disponibles para asignar" %}</p>
                 {% endif %}
             </div>
         </div>

@@ -1,15 +1,16 @@
 {% extends "legalization/base.html" %}
+{% load i18n %}
 
-{% block legal_title %}Detalle de Legalización{% endblock %}
+{% block legal_title %}{% trans "Detalle de Legalización" %}{% endblock %}
 
 {% block legal_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>
         <i class="bi bi-file-earmark-text me-2"></i>
-        Proceso de Legalización
+        {% trans "Proceso de Legalización" %}
     </h2>
     <a href="{% url 'legalization:list' %}" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-arrow-left"></i> Volver
+        <i class="bi bi-arrow-left"></i> {% trans "Volver" %}
     </a>
 </div>
 
@@ -25,20 +26,20 @@
 <!-- Process Info -->
 <div class="card mb-4">
     <div class="card-header">
-        <i class="bi bi-info-circle me-2"></i>Datos del Proceso
+        <i class="bi bi-info-circle me-2"></i>{% trans "Datos del Proceso" %}
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
-                <strong>Convocatoria:</strong><br>
+                <strong>{% trans "Convocatoria:" %}</strong><br>
                 {{ process.convocatoria.nombre }} ({{ process.convocatoria.codigo }})
             </div>
             <div class="col-md-4">
-                <strong>Beneficiario:</strong><br>
+                <strong>{% trans "Beneficiario:" %}</strong><br>
                 {{ process.beneficiary.email }}
             </div>
             <div class="col-md-2">
-                <strong>Estado:</strong><br>
+                <strong>{% trans "Estado:" %}</strong><br>
                 <span class="badge
                     {% if process.status == 'LEGALIZADO' %}bg-success
                     {% elif process.status == 'EN_PROCESO' %}bg-primary
@@ -48,7 +49,7 @@
                 </span>
             </div>
             <div class="col-md-2">
-                <strong>Creado:</strong><br>
+                <strong>{% trans "Creado:" %}</strong><br>
                 {{ process.created_at|date:"d/m/Y" }}
             </div>
         </div>
@@ -58,20 +59,20 @@
 <!-- Documents -->
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-files me-2"></i>Documentos Legales
+        <i class="bi bi-files me-2"></i>{% trans "Documentos Legales" %}
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Tipo</th>
-                        <th>Estado</th>
-                        <th>Hash Pre-firma</th>
-                        <th>Hash Post-firma</th>
-                        <th>Firmado el</th>
-                        <th>Proveedor</th>
-                        <th>Acciones</th>
+                        <th>{% trans "Tipo" %}</th>
+                        <th>{% trans "Estado" %}</th>
+                        <th>{% trans "Hash Pre-firma" %}</th>
+                        <th>{% trans "Hash Post-firma" %}</th>
+                        <th>{% trans "Firmado el" %}</th>
+                        <th>{% trans "Proveedor" %}</th>
+                        <th>{% trans "Acciones" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -114,12 +115,12 @@
                                 hx-target="#doc-row-{{ document.id }}"
                                 hx-swap="innerHTML"
                                 class="btn btn-sm btn-success">
-                                <i class="bi bi-pen"></i> Firmar
+                                <i class="bi bi-pen"></i> {% trans "Firmar" %}
                             </button>
                             {% elif document.status == 'PENDIENTE' and not document.pdf %}
-                            <span class="text-muted small">Sin PDF</span>
+                            <span class="text-muted small">{% trans "Sin PDF" %}</span>
                             {% else %}
-                            <span class="text-success small"><i class="bi bi-check-circle"></i> Firmado</span>
+                            <span class="text-success small"><i class="bi bi-check-circle"></i> {% trans "Firmado" %}</span>
                             {% endif %}
                         </td>
                     </tr>

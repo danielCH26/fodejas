@@ -1,10 +1,11 @@
 {# HTMX authorize confirmation form — swapped into #authorize-panel on GET #}
-{# On POST success/error, the response HX-Retarget replaces #signature-status #}
+{# On POST success/error, the response HX-Retarget replaces this with signature_status.html #}
+{% load i18n %}
 
 <div class="p-3 border rounded bg-light">
     <h6 class="mb-3">
         <i class="bi bi-pen me-2"></i>
-        Firmar autorización de desembolso
+        {% trans "Firmar autorización de desembolso" %}
     </h6>
 
     {% if messages %}
@@ -15,13 +16,11 @@
 
     {% if can_sign_as|length == 0 %}
         <div class="alert alert-warning py-2">
-            No tienes un rol disponible para firmar esta autorización.
+            {% trans "No tienes un rol disponible para firmar esta autorización." %}
         </div>
     {% else %}
     <p class="small text-muted mb-3">
-        Al firmar, se registra tu usuario como autoridad firmante de esta
-        autorización de desembolso. La segunda firma (de rol diferente)
-        completará la autorización.
+        {% trans "Al firmar, se registra tu usuario como autoridad firmante de esta autorización de desembolso. La segunda firma (de rol diferente) completará la autorización." %}
     </p>
 
     <form method="post"
@@ -30,27 +29,27 @@
           hx-swap="innerHTML">
         {% csrf_token %}
         <div class="mb-3">
-            <label class="form-label small" for="id_role">Rol con el que firma:</label>
+            <label class="form-label small" for="id_role">{% trans "Rol con el que firma:" %}</label>
             <select name="role" id="id_role" class="form-select form-select-sm" required>
-                <option value="">— Seleccione —</option>
+                <option value="">— {% trans "Seleccione" %} —</option>
                 {% if 'president' in can_sign_as %}
-                <option value="president">Presidente (R-JUNTA)</option>
+                <option value="president">{% trans "Presidente (R-JUNTA)" %}</option>
                 {% endif %}
                 {% if 'secretary' in can_sign_as %}
-                <option value="secretary">Secretario (R-COORDINADOR)</option>
+                <option value="secretary">{% trans "Secretario (R-COORDINADOR)" %}</option>
                 {% endif %}
             </select>
         </div>
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-success btn-sm">
-                <i class="bi bi-pen"></i> Confirmar Firma
+                <i class="bi bi-pen"></i> {% trans "Confirmar Firma" %}
             </button>
             <button type="button"
                     class="btn btn-outline-secondary btn-sm"
                     hx-get="{{ request.path }}"
                     hx-target="#authorize-panel"
                     hx-swap="innerHTML">
-                Cancelar
+                {% trans "Cancelar" %}
             </button>
         </div>
     </form>

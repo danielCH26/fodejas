@@ -1,11 +1,12 @@
 {% extends "treasury/base.html" %}
+{% load i18n %}
 
-{% block treasury_title %}Autorizaciones de desembolso{% endblock %}
+{% block treasury_title %}{% trans "Autorizaciones de desembolso" %}{% endblock %}
 
 {% block treasury_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>
-        <i class="bi bi-pen me-2"></i>Autorizaciones de desembolso
+        <i class="bi bi-pen me-2"></i>{% trans "Autorizaciones de desembolso" %}
     </h2>
 </div>
 
@@ -25,14 +26,14 @@
             <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Convocatoria</th>
-                        <th>Beneficiario</th>
-                        <th>Monto</th>
-                        <th>Estado firma</th>
-                        <th>Estado</th>
-                        <th>Fecha creación</th>
-                        <th>Acciones</th>
+                        <th>{% trans "ID" %}</th>
+                        <th>{% trans "Convocatoria" %}</th>
+                        <th>{% trans "Beneficiario" %}</th>
+                        <th>{% trans "Monto" %}</th>
+                        <th>{% trans "Estado firma" %}</th>
+                        <th>{% trans "Estado" %}</th>
+                        <th>{% trans "Fecha creación" %}</th>
+                        <th>{% trans "Acciones" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,13 +49,13 @@
                         <td>
                             {% if auth.is_fully_authorized %}
                                 <span class="badge bg-success">
-                                    <i class="bi bi-check-circle"></i> Ambas firmas
+                                    <i class="bi bi-check-circle"></i> {% trans "Ambas firmas" %}
                                 </span>
                             {% else %}
                                 <span class="badge bg-warning text-dark">
-                                    {% if auth.authorized_by_president %}Presid.✓{% else %}Presid.pend.{% endif %}
+                                    {% if auth.authorized_by_president %}{% trans "Presid.✓" %}{% else %}{% trans "Presid.pend." %}{% endif %}
                                     /
-                                    {% if auth.authorized_by_secretary %}Sec.✓{% else %}Sec.pend.{% endif %}
+                                    {% if auth.authorized_by_secretary %}{% trans "Sec.✓" %}{% else %}{% trans "Sec.pend." %}{% endif %}
                                 </span>
                             {% endif %}
                         </td>
@@ -71,7 +72,7 @@
                         <td>
                             <a href="{% url 'treasury:disbursement_detail' auth.pk %}"
                                class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye"></i> Ver
+                                <i class="bi bi-eye"></i> {% trans "Ver" %}
                             </a>
                         </td>
                     </tr>
@@ -84,7 +85,7 @@
 {% else %}
 <div class="alert alert-info">
     <i class="bi bi-info-circle me-2"></i>
-    No hay autorizaciones pendientes ni autorizadas en este momento.
+    {% trans "No hay autorizaciones pendientes ni autorizadas en este momento." %}
 </div>
 {% endif %}
 {% endblock %}
