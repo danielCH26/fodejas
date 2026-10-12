@@ -9,7 +9,12 @@ register = template.Library()
 
 @register.filter
 def pretty_json(value):
-    """Format a dict/object as pretty JSON."""
+    """Format a dict/object as pretty JSON.
+
+    Defensive: non-JSON-serializable objects (e.g. model instances) are
+    stringified via ``default=str`` instead of raising a 500 — the audit
+    detail page used to crash on ``{{ event|pretty_json }}``.
+    """
     if value is None:
         return ""
     if isinstance(value, str):
@@ -17,4 +22,7 @@ def pretty_json(value):
             value = json.loads(value)
         except (json.JSONDecodeError, ValueError):
             return value
-    return json.dumps(value, indent=2, ensure_ascii=False)
+    try:
+        return json.dumps(value, indent=2, ensure_ascii=False)
+    except TypeError:
+        return json.dumps(value, indent=2, ensure_ascii=False, default=str)
