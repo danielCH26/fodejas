@@ -234,3 +234,30 @@ class IsAuditAdmin(permissions.BasePermission):
         if request.user.is_superuser:
             return True
         return request.user.user_roles.filter(role__code="R-ADMIN").exists()
+
+
+# CHG-505 CAP-028 — Export permission for external audit ente.
+# DRF re-instantiates permission classes per request, so role lists
+# MUST be class-level attributes (not captured in __init__ closures).
+
+
+class IsAuditExporter(permissions.BasePermission):
+    """
+    Permission that allows R-ADMIN, R-CONTROL, or R-AUDITOR to export
+    the full audit log to CSV / JSONL (CAP-028).
+
+    Usage:
+        permission_classes = [IsAuditExporter]
+    """
+
+    AUDIT_EXPORT_ROLES = ["R-ADMIN", "R-CONTROL", "R-AUDITOR"]
+
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+        # Superusers and staff have full access
+        if request.user.is_superuser or request.user.is_staff:
+            return True
+        return request.user.user_roles.filter(
+            role__code__in=self.AUDIT_EXPORT_ROLES
+        ).exists()
