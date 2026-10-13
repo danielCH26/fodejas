@@ -3,6 +3,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import Role
 
@@ -55,7 +56,7 @@ class UserAdminForm(forms.ModelForm):
     def clean_documento(self):
         documento = self.cleaned_data.get("documento")
         if documento and len(documento) < 6:
-            raise ValidationError("El documento debe tener al menos 6 caracteres.")
+            raise ValidationError(_("El documento debe tener al menos 6 caracteres."))
         return documento
 
 
@@ -88,7 +89,7 @@ class RoleAdminForm(forms.ModelForm):
 
         # Validate code format
         if not code.startswith("R-"):
-            raise ValidationError('El código debe comenzar con "R-" (ej: R-ADMIN).')
+            raise ValidationError(_('El código debe comenzar con "R-" (ej: R-ADMIN).'))
 
         # Check if code already exists (excluding current instance)
         existing = Role.objects.filter(code=code)
@@ -96,7 +97,7 @@ class RoleAdminForm(forms.ModelForm):
             existing = existing.exclude(pk=self.instance.pk)
 
         if existing.exists():
-            raise ValidationError("Este código de rol ya existe.")
+            raise ValidationError(_("Este código de rol ya existe."))
 
         return code
 

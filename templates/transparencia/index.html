@@ -1,18 +1,19 @@
 {% extends "transparencia/base.html" %}
+{% load i18n %}
 
-{% block title %}Inicio - Portal de Transparencia - FODEJAS{% endblock %}
+{% block title %}{% trans "Inicio" %} - {% trans "Portal de Transparencia" %} - FODEJAS{% endblock %}
 
 {% block transparencia_content %}
 <div class="text-center mb-5">
     <h1 class="display-6">
         <i class="bi bi-shield-check text-fodejas me-2"></i>
-        Portal de Transparencia
+        {% trans "Portal de Transparencia" %}
     </h1>
     <p class="lead text-muted">
-        Fondo para el Desarrollo Educativo de los Jóvenes del Archipiélago — FODEJAS
+        {% trans "Fondo para el Desarrollo Educativo de los Jóvenes del Archipiélago — FODEJAS" %}
     </p>
     <p class="small text-muted">
-        Acceso público a información sobre convocatorias, beneficiarios y ejecución presupuestal
+        {% trans "Acceso público a información sobre convocatorias, beneficiarios y ejecución presupuestal" %}
     </p>
 </div>
 
@@ -23,7 +24,7 @@
             <div class="card-body">
                 <h2 class="display-5 text-primary">{{ kpis.total_convocatorias|default:0 }}</h2>
                 <p class="card-text text-muted mb-0">
-                    <i class="bi bi-calendar-event me-1"></i>Convocatorias
+                    <i class="bi bi-calendar-event me-1"></i>{% trans "Convocatorias" %}
                 </p>
             </div>
         </div>
@@ -33,7 +34,7 @@
             <div class="card-body">
                 <h2 class="display-5 text-success">{{ kpis.total_postulaciones|default:0 }}</h2>
                 <p class="card-text text-muted mb-0">
-                    <i class="bi bi-pencil-square me-1"></i>Postulaciones
+                    <i class="bi bi-pencil-square me-1"></i>{% trans "Postulaciones" %}
                 </p>
             </div>
         </div>
@@ -43,7 +44,7 @@
             <div class="card-body">
                 <h2 class="display-5 text-info">{{ kpis.total_beneficiarios|default:0 }}</h2>
                 <p class="card-text text-muted mb-0">
-                    <i class="bi bi-people me-1"></i>Beneficiarios
+                    <i class="bi bi-people me-1"></i>{% trans "Beneficiarios" %}
                 </p>
             </div>
         </div>
@@ -53,7 +54,7 @@
             <div class="card-body">
                 <h2 class="display-6 text-warning">${{ kpis.monto_pagado|default:"0"|stringformat:".0f" }}</h2>
                 <p class="card-text text-muted mb-0">
-                    <i class="bi bi-cash-stack me-1"></i>Pagado (COP)
+                    <i class="bi bi-cash-stack me-1"></i>{% trans "Pagado (COP)" %}
                 </p>
             </div>
         </div>
@@ -65,7 +66,7 @@
     <div class="col-md-6 mx-auto">
         <div class="card border-secondary">
             <div class="card-body text-center">
-                <p class="mb-1 text-muted small">Monto ordenado (por ejecutar)</p>
+                <p class="mb-1 text-muted small">{% trans "Monto ordenado (por ejecutar)" %}</p>
                 <h4 class="text-secondary">${{ kpis.monto_ordenado|default:"0"|stringformat:".0f" }} COP</h4>
             </div>
         </div>
@@ -79,9 +80,9 @@
             <div class="card h-100 border-primary hover-shadow">
                 <div class="card-body text-center">
                     <i class="bi bi-file-earmark-text text-primary fs-1 mb-3 d-block"></i>
-                    <h5 class="card-title text-primary">Actos Administrativos</h5>
+                    <h5 class="card-title text-primary">{% trans "Actos Administrativos" %}</h5>
                     <p class="card-text text-muted small">
-                        Resoluciones y actas publicadas con soporte PDF oficial
+                        {% trans "Resoluciones y actas publicadas con soporte PDF oficial" %}
                     </p>
                 </div>
             </div>
@@ -92,9 +93,9 @@
             <div class="card h-100 border-success hover-shadow">
                 <div class="card-body text-center">
                     <i class="bi bi-calendar-event text-success fs-1 mb-3 d-block"></i>
-                    <h5 class="card-title text-success">Convocatorias</h5>
+                    <h5 class="card-title text-success">{% trans "Convocatorias" %}</h5>
                     <p class="card-text text-muted small">
-                        Convocatorias abiertas y cerradas con estados y fechas
+                        {% trans "Convocatorias abiertas y cerradas con estados y fechas" %}
                     </p>
                 </div>
             </div>
@@ -105,9 +106,9 @@
             <div class="card h-100 border-info hover-shadow">
                 <div class="card-body text-center">
                     <i class="bi bi-bar-chart text-info fs-1 mb-3 d-block"></i>
-                    <h5 class="card-title text-info">Estadísticas</h5>
+                    <h5 class="card-title text-info">{% trans "Estadísticas" %}</h5>
                     <p class="card-text text-muted small">
-                        Agregados de beneficiarios, ejecución presupuestal y seguimiento académico
+                        {% trans "Agregados de beneficiarios, ejecución presupuestal y seguimiento académico" %}
                     </p>
                 </div>
             </div>

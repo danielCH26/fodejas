@@ -1,13 +1,14 @@
 {% extends "transparencia/base.html" %}
+{% load i18n %}
 
-{% block title %}Estadísticas - Portal de Transparencia - FODEJAS{% endblock %}
+{% block title %}{% trans "Estadísticas" %} - {% trans "Portal de Transparencia" %} - FODEJAS{% endblock %}
 
 {% block transparencia_content %}
 <div class="mb-4">
     <h2>
-        <i class="bi bi-bar-chart me-2"></i>Estadísticas Agregadas
+        <i class="bi bi-bar-chart me-2"></i>{% trans "Estadísticas Agregadas" %}
     </h2>
-    <p class="text-muted">Datos agregados del programa FODEJAS</p>
+    <p class="text-muted">{% trans "Datos agregados del programa FODEJAS" %}</p>
 </div>
 
 {# Year selector #}
@@ -15,13 +16,13 @@
     <div class="row g-2 align-items-end">
         <div class="col-auto">
             <label for="anioInput" class="form-label mb-1 small text-muted">
-                Filtrar por año (ejecución presupuestal)
+                {% trans "Filtrar por año (ejecución presupuestal)" %}
             </label>
             <input type="number"
                    class="form-control"
                    id="anioInput"
                    name="anio"
-                   placeholder="Ej: 2026"
+                   placeholder="{% trans "Ej: 2026" %}"
                    min="1000"
                    max="9999"
                    value="{{ anio|default:'' }}">
@@ -63,10 +64,10 @@
             <table class="table table-striped table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col">Convocatoria</th>
-                        <th scope="col" class="text-end">Postulaciones</th>
-                        <th scope="col" class="text-end">Beneficiarios</th>
-                        <th scope="col" class="text-end">Monto asignado</th>
+                        <th scope="col">{% trans "Convocatoria" %}</th>
+                        <th scope="col" class="text-end">{% trans "Postulaciones" %}</th>
+                        <th scope="col" class="text-end">{% trans "Beneficiarios" %}</th>
+                        <th scope="col" class="text-end">{% trans "Monto asignado" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -106,8 +107,8 @@
             <table class="table table-striped table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col">Convocatoria</th>
-                        <th scope="col" class="text-end">Beneficiarios</th>
+                        <th scope="col">{% trans "Convocatoria" %}</th>
+                        <th scope="col" class="text-end">{% trans "Beneficiarios" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,7 +121,7 @@
                 </tbody>
                 <tfoot>
                     <tr class="table-secondary fw-bold">
-                        <td>Total</td>
+                        <td>{% trans "Total" %}</td>
                         <td class="text-end">
                             {{ stats.beneficiarios|length }}
                         </td>

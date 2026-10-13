@@ -1,4 +1,5 @@
 {% extends "accounts/admin/admin_base.html" %}
+{% load i18n %}
 
 {% block admin_title %}Asignar Roles - {{ view_user.get_full_name|default:view_user.email }}{% endblock %}
 
@@ -74,9 +75,9 @@
             </div>
 
             <div class="mb-3">
-                <label for="convocation_scope" class="form-label">Scope de Convocatoria (opcional)</label>
-                <input type="text" name="convocation_scope" id="convocation_scope" class="form-control" placeholder="ID de convocatoria si es específico">
-                <div class="form-text">Dejar vacío para acceso global.</div>
+                <label for="convocation_scope" class="form-label">{% trans "Scope de Convocatoria (opcional)" %}</label>
+                <input type="text" name="convocation_scope" id="convocation_scope" class="form-control" placeholder="{% trans "ID de convocatoria si es específico" %}">
+                <div class="form-text">{% trans "Dejar vacío para acceso global." %}</div>
             </div>
 
             <button type="submit" class="btn btn-primary">

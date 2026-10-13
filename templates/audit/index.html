@@ -36,7 +36,7 @@
             <div class="col-md-3">
                 <label for="module" class="form-label">{% trans "Módulo" %}</label>
                 <select class="form-select" id="module" name="module">
-                    <option value="">Todos</option>
+                    <option value="">{% trans "Todos" %}</option>
                     {% for mod in modules %}
                     <option value="{{ mod }}" {% if filters.module == mod %}selected{% endif %}>{{ mod }}</option>
                     {% endfor %}
@@ -131,7 +131,7 @@
 
         <!-- Pagination -->
         {% if page_obj.has_other_pages %}
-        <nav aria-label="Paginación de auditoría">
+        <nav aria-label="{% trans "Paginación de auditoría" %}">
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                 <li class="page-item">

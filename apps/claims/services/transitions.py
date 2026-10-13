@@ -2,6 +2,7 @@
 
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.claims.domain.transitions import (
     get_transition_label,
@@ -82,7 +83,7 @@ def confirmar(apelacion, respuesta, actor):
 
     # 2. Validate respuesta is not empty
     if not respuesta or not respuesta.strip():
-        raise ValidationError("La respuesta no puede estar vacía.")
+        raise ValidationError(_("La respuesta no puede estar vacía."))
 
     # 3. Validate transition
     nuevo_estado = Apelacion.Estado.CONFIRMADA
@@ -136,7 +137,7 @@ def revocar(apelacion, respuesta, actor):
 
     # 2. Validate respuesta is not empty
     if not respuesta or not respuesta.strip():
-        raise ValidationError("La respuesta no puede estar vacía.")
+        raise ValidationError(_("La respuesta no puede estar vacía."))
 
     # 3. Validate transition
     nuevo_estado = Apelacion.Estado.REVOCADA
@@ -203,7 +204,7 @@ def cambiar_estado_apelacion(apelacion, nuevo_estado, respuesta="", actor=None):
     # Validate respuesta for terminal states
     if nuevo_estado in [Apelacion.Estado.CONFIRMADA, Apelacion.Estado.REVOCADA]:
         if not respuesta or not respuesta.strip():
-            raise ValidationError("La respuesta no puede estar vacía para estados terminales.")
+            raise ValidationError(_("La respuesta no puede estar vacía para estados terminales."))
         apelacion.respuesta = respuesta.strip()
         apelacion.resuelto_por = actor
         apelacion.fecha_resolucion = timezone.now()

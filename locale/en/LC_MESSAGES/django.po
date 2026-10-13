@@ -2815,3 +2815,197 @@ msgstr "Transition not allowed: %(estado_origen)s → %(estado_destino)s"
 
 msgid "El motivo es requerido para cancelar"
 msgstr "The reason is required to cancel"
+
+# ============================================================================
+# CHG-507-multilang Unit D — Coverage fixes (forms, transparency, claims)
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# apps/accounts/forms.py — form placeholders
+# ----------------------------------------------------------------------------
+
+msgid "Ingrese su contraseña"
+msgstr "Enter your password"
+
+msgid "Número de documento de identidad"
+msgstr "ID document number"
+
+msgid "Número de teléfono"
+msgstr "Phone number"
+
+msgid "Nombres completos"
+msgstr "Full first names"
+
+msgid "Apellidos completos"
+msgstr "Full last names"
+
+msgid "Ya existe una cuenta con este correo electrónico."
+msgstr "An account with this email already exists."
+
+msgid "Ya existe una cuenta con este número de documento."
+msgstr "An account with this document number already exists."
+
+msgid "Nueva contraseña"
+msgstr "New password"
+
+msgid "Confirmar contraseña"
+msgstr "Confirm password"
+
+msgid "ID de convocatoria"
+msgstr "Call for applications ID"
+
+# ----------------------------------------------------------------------------
+# apps/accounts/forms/admin.py — ValidationError messages
+# ----------------------------------------------------------------------------
+
+msgid "El documento debe tener al menos 6 caracteres."
+msgstr "The document must have at least 6 characters."
+
+msgid "El código debe comenzar con \"R-\" (ej: R-ADMIN)."
+msgstr "Code must start with \"R-\" (e.g., R-ADMIN)."
+
+msgid "Este código de rol ya existe."
+msgstr "This role code already exists."
+
+# ----------------------------------------------------------------------------
+# apps/claims/services/transitions.py — ValidationError messages
+# ----------------------------------------------------------------------------
+
+msgid "La respuesta no puede estar vacía."
+msgstr "The response cannot be empty."
+
+msgid "La respuesta no puede estar vacía para estados terminales."
+msgstr "The response cannot be empty for terminal states."
+
+# ----------------------------------------------------------------------------
+# templates/transparencia/base.html — navbar brand and nav links
+# ----------------------------------------------------------------------------
+
+msgid "Portal de Transparencia"
+msgstr "Transparency Portal"
+
+msgid "Navegación principal"
+msgstr "Main navigation"
+
+msgid "Inicio"
+msgstr "Home"
+
+msgid "Actos Administrativos"
+msgstr "Administrative Acts"
+
+msgid "Convocatorias"
+msgstr "Calls for Applications"
+
+msgid "Estadísticas"
+msgstr "Statistics"
+
+# ----------------------------------------------------------------------------
+# templates/transparencia/index.html — portal home strings
+# ----------------------------------------------------------------------------
+
+msgid "Fondo para el Desarrollo Educativo de los Jóvenes del Archipiélago — FODEJAS"
+msgstr "Fund for the Educational Development of the Youth of the Archipelago — FODEJAS"
+
+msgid "Acceso público a información sobre convocatorias, beneficiarios y ejecución presupuestal"
+msgstr "Public access to information about calls for applications, beneficiaries, and budget execution"
+
+msgid "Postulaciones"
+msgstr "Applications"
+
+msgid "Pagado (COP)"
+msgstr "Paid (COP)"
+
+msgid "Monto ordenado (por ejecutar)"
+msgstr "Ordered amount (pending execution)"
+
+msgid "Actos Administrativos"
+msgstr "Administrative Acts"
+
+msgid "Resoluciones y actas publicadas con soporte PDF oficial"
+msgstr "Resolutions and acts published with official PDF support"
+
+msgid "Convocatorias abiertas y cerradas con estados y fechas"
+msgstr "Open and closed calls for applications with statuses and dates"
+
+msgid "Agregados de beneficiarios, ejecución presupuestal y seguimiento académico"
+msgstr "Aggregates of beneficiaries, budget execution, and academic tracking"
+
+# ----------------------------------------------------------------------------
+# templates/transparencia/estadisticas.html — statistics page strings
+# ----------------------------------------------------------------------------
+
+msgid "Estadísticas Agregadas"
+msgstr "Aggregated Statistics"
+
+msgid "Datos agregados del programa FODEJAS"
+msgstr "Aggregated data from the FODEJAS program"
+
+msgid "Filtrar por año (ejecución presupuestal)"
+msgstr "Filter by year (budget execution)"
+
+msgid "Ej: 2026"
+msgstr "E.g.: 2026"
+
+msgid "Convocatoria"
+msgstr "Call for Applications"
+
+msgid "Postulaciones"
+msgstr "Applications"
+
+msgid "Beneficiarios"
+msgstr "Beneficiaries"
+
+msgid "Monto asignado"
+msgstr "Assigned amount"
+
+msgid "Total"
+msgstr "Total"
+
+# ----------------------------------------------------------------------------
+# templates/audit/index.html — audit pagination
+# ----------------------------------------------------------------------------
+
+msgid "Paginación de auditoría"
+msgstr "Audit pagination"
+
+# ----------------------------------------------------------------------------
+# templates/claims/create.html — claim type options
+# ----------------------------------------------------------------------------
+
+msgid "Puntaje incorrecto"
+msgstr "Incorrect score"
+
+msgid "Requisito mal validado"
+msgstr "Incorrectly validated requirement"
+
+msgid "Otro"
+msgstr "Other"
+
+# ----------------------------------------------------------------------------
+# templates/accounts/admin/users/roles.html — role scope fields
+# ----------------------------------------------------------------------------
+
+msgid "Scope de Convocatoria (opcional)"
+msgstr "Call for Applications Scope (optional)"
+
+msgid "ID de convocatoria si es específico"
+msgstr "Call for applications ID if specific"
+
+msgid "Dejar vacío para acceso global."
+msgstr "Leave empty for global access."
+
+# ----------------------------------------------------------------------------
+# Nav/sidebar strings (referenced in base.html and dashboard)
+# ----------------------------------------------------------------------------
+
+msgid "Transparencia"
+msgstr "Transparency"
+
+msgid "Menú móvil"
+msgstr "Mobile menu"
+
+msgid "Abrir menú"
+msgstr "Open menu"
+
+msgid "Cerrar menú"
+msgstr "Close menu"

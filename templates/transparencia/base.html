@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Portal de Transparencia - FODEJAS{% endblock %}
+{% block title %}{% trans "Portal de Transparencia" %} - FODEJAS{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -8,11 +9,11 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-4 border">
         <div class="container-fluid">
             <span class="navbar-brand mb-0 h5 text-fodejas">
-                <i class="bi bi-shield-check me-2"></i>Portal de Transparencia
+                <i class="bi bi-shield-check me-2"></i>{% trans "Portal de Transparencia" %}
             </span>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#transparenciaNav" aria-controls="transparenciaNav"
-                    aria-expanded="false" aria-label="Toggle navigation">
+                    aria-expanded="false" aria-label="{% trans "Navegación principal" %}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="transparenciaNav">
@@ -20,25 +21,25 @@
                     <li class="nav-item">
                         <a class="nav-link{% if request.resolver_match.url_name == 'index' %} active{% endif %}"
                            href="{% url 'transparencia:index' %}">
-                            <i class="bi bi-house me-1"></i>Inicio
+                            <i class="bi bi-house me-1"></i>{% trans "Inicio" %}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if request.resolver_match.url_name == 'actos' %} active{% endif %}"
                            href="{% url 'transparencia:actos' %}">
-                            <i class="bi bi-file-earmark-text me-1"></i>Actos Administrativos
+                            <i class="bi bi-file-earmark-text me-1"></i>{% trans "Actos Administrativos" %}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if request.resolver_match.url_name == 'convocatorias' %} active{% endif %}"
                            href="{% url 'transparencia:convocatorias' %}">
-                            <i class="bi bi-calendar-event me-1"></i>Convocatorias
+                            <i class="bi bi-calendar-event me-1"></i>{% trans "Convocatorias" %}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if request.resolver_match.url_name == 'estadisticas' %} active{% endif %}"
                            href="{% url 'transparencia:estadisticas' %}">
-                            <i class="bi bi-bar-chart me-1"></i>Estadísticas
+                            <i class="bi bi-bar-chart me-1"></i>{% trans "Estadísticas" %}
                         </a>
                     </li>
                 </ul>
