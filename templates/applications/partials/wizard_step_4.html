@@ -7,7 +7,7 @@
         <strong>{% trans "Atención:" %}</strong> {% trans "Todos los documentos deben estar legibles y en formato PDF, JPG o PNG. Tamaño máximo por archivo: 10MB." %}
     </div>
 
-    <form id="step-4-form" enctype="multipart/form-data">
+    <form id="step-4-form" method="post" enctype="multipart/form-data" action="{% url 'applications:wizard' application.uuid %}">{% csrf_token %}
         <div class="mb-4">
             <h6>{% trans "Documentos Obligatorios" %}</h6>
 

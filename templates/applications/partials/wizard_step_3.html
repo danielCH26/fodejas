@@ -2,7 +2,7 @@
 <div id="wizard-step-3">
     <p class="text-muted mb-4">{% trans "Información sobre tu contexto familiar y económico." %}</p>
 
-    <form id="step-3-form">
+    <form id="step-3-form" method="post" action="{% url 'applications:wizard' application.uuid %}">{% csrf_token %}
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="estrato" class="form-label">{% trans "Estrato Socioeconómico" %} *</label>
