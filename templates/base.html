@@ -192,11 +192,13 @@
 
     {% block extra_css %}{% endblock %}
 </head>
+{# Auth pages render a clean centered layout without app chrome #}
 <body>
 
     <!-- ════════════════════════════════════════════════════════════
-         DESKTOP SIDEBAR (always present in DOM; hidden < lg via CSS)
+         DESKTOP SIDEBAR — absent on auth pages
          ════════════════════════════════════════════════════════════ -->
+{% if request.resolver_match.url_name not in "login,register,password_reset,password_reset_done,password_reset_confirm,password_reset_complete" %}
     <nav id="sidebar" class="sidebar" aria-label="{% trans 'Navegación principal' %}">
 
         <!-- Brand -->
@@ -209,10 +211,12 @@
         </div><!-- /.sidebar-nav -->
 
     </nav><!-- /#sidebar -->
+{% endif %}
 
     <!-- ════════════════════════════════════════════════════════════
-         MOBILE TOP BAR (< lg only)
+         MOBILE TOP BAR — absent on auth pages
          ════════════════════════════════════════════════════════════ -->
+{% if request.resolver_match.url_name not in "login,register,password_reset,password_reset_done,password_reset_confirm,password_reset_complete" %}
     <nav class="mobile-topbar bg-fodejas align-items-center px-3" aria-label="{% trans 'Menú móvil' %}">
         <button class="btn btn-sm btn-outline-light" type="button"
                 data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"
@@ -225,8 +229,7 @@
     </nav>
 
     <!-- ════════════════════════════════════════════════════════════
-         MOBILE OFF-CANVAS SIDEBAR (< lg only)
-         Shares the same nav markup via sidebar_nav.html partial.
+         MOBILE OFF-CANVAS SIDEBAR — absent on auth pages
          ════════════════════════════════════════════════════════════ -->
     <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1"
          id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
@@ -241,11 +244,16 @@
             {% include "partials/sidebar_nav.html" with instance="mobile" %}
         </div>
     </div>
+{% endif %}
 
     <!-- ════════════════════════════════════════════════════════════
          PAGE CONTENT
          ════════════════════════════════════════════════════════════ -->
+{% if request.resolver_match.url_name not in "login,register,password_reset,password_reset_done,password_reset_confirm,password_reset_complete" %}
     <div class="main-shifted">
+{% else %}
+    <div>
+{% endif %}
         <!-- Messages -->
         {% if messages %}
         <div class="container mt-3">
