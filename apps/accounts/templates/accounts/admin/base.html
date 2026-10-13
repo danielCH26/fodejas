@@ -64,14 +64,14 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link {% if admin_section == 'users' %}active{% endif %}" href="{% url 'accounts_admin:user_list' %}">
+                            <a class="nav-link {% if admin_section == 'users' %}active{% endif %}" href="{% url 'accounts:accounts_admin:user_list' %}">
                                 <i class="bi bi-people"></i>
                                 {% trans "Gestión de Usuarios" %}
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link {% if admin_section == 'roles' %}active{% endif %}" href="{% url 'accounts_admin:role_list' %}">
+                            <a class="nav-link {% if admin_section == 'roles' %}active{% endif %}" href="{% url 'accounts:accounts_admin:role_list' %}">
                                 <i class="bi bi-shield-check"></i>
                                 {% trans "Gestión de Roles" %}
                             </a>

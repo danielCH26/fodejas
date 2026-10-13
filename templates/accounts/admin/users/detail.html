@@ -5,7 +5,7 @@
 {% block admin_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-person me-2"></i>Usuario: {{ view_user.get_full_name|default:view_user.email }}</h2>
-    <a href="{% url 'accounts_admin:user_list' %}" class="btn btn-outline-secondary">
+    <a href="{% url 'accounts:accounts_admin:user_list' %}" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-2"></i>Volver a la lista
     </a>
 </div>
@@ -15,10 +15,10 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <span><i class="bi bi-person me-2"></i>Información del Usuario</span>
         <div>
-            <a href="{% url 'accounts_admin:user_edit' pk=view_user.pk %}" class="btn btn-sm btn-primary">
+            <a href="{% url 'accounts:accounts_admin:user_edit' pk=view_user.pk %}" class="btn btn-sm btn-primary">
                 <i class="bi bi-pencil me-1"></i>Editar
             </a>
-            <form method="post" action="{% url 'accounts_admin:user_toggle' pk=view_user.pk %}" style="display: inline;">
+            <form method="post" action="{% url 'accounts:accounts_admin:user_toggle' pk=view_user.pk %}" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-sm {% if view_user.is_active %}btn-outline-danger{% else %}btn-success{% endif %}">
                     {% if view_user.is_active %}<i class="bi bi-person-dash me-1"></i>Desactivar{% else %}<i class="bi bi-person-check me-1"></i>Activar{% endif %}
@@ -53,10 +53,10 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <span><i class="bi bi-shield me-2"></i>Roles Asignados</span>
         <div>
-            <a href="{% url 'accounts_admin:user_roles' pk=view_user.pk %}" class="btn btn-sm btn-primary">
+            <a href="{% url 'accounts:accounts_admin:user_roles' pk=view_user.pk %}" class="btn btn-sm btn-primary">
                 <i class="bi bi-plus-circle me-1"></i>Asignar Rol
             </a>
-            <a href="{% url 'accounts_admin:user_role_history' pk=view_user.pk %}" class="btn btn-sm btn-outline-secondary">
+            <a href="{% url 'accounts:accounts_admin:user_role_history' pk=view_user.pk %}" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-clock-history me-1"></i>Historial
             </a>
         </div>
@@ -88,7 +88,7 @@
                         <td>{{ ur.convocation_scope_id|default:"Global" }}</td>
                         <td>{{ ur.created_at|date:"d/m/Y H:i" }}</td>
                         <td>
-                            <form method="post" action="{% url 'accounts_admin:user_role_revoke' pk=view_user.pk role_id=ur.role.id %}" style="display: inline;">
+                            <form method="post" action="{% url 'accounts:accounts_admin:user_role_revoke' pk=view_user.pk role_id=ur.role.id %}" style="display: inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de revocar este rol?')">
                                     <i class="bi bi-x-circle"></i> Revocar

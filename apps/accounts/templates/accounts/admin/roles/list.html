@@ -6,7 +6,7 @@
 {% block admin_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-shield-check me-2"></i>{% trans "Gestión de Roles" %}</h2>
-    <a href="{% url 'accounts_admin:role_create' %}" class="btn btn-primary">
+    <a href="{% url 'accounts:accounts_admin:role_create' %}" class="btn btn-primary">
         <i class="bi bi-plus-circle me-2"></i>{% trans "Crear Rol" %}
     </a>
 </div>
@@ -48,10 +48,10 @@
                         </td>
                         <td>{{ role.description|truncatechars:50|default:"—" }}</td>
                         <td>
-                            <a href="{% url 'accounts_admin:role_detail' role.pk %}" class="btn btn-sm btn-outline-primary">
+                            <a href="{% url 'accounts:accounts_admin:role_detail' role.pk %}" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            <a href="{% url 'accounts_admin:role_update' role.pk %}" class="btn btn-sm btn-outline-secondary">
+                            <a href="{% url 'accounts:accounts_admin:role_update' role.pk %}" class="btn btn-sm btn-outline-secondary">
                                 <i class="bi bi-pencil"></i>
                             </a>
                         </td>

@@ -8,8 +8,8 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">{% trans "Dashboard" %}</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'accounts_admin:user_list' %}">{% trans "Usuarios" %}</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'accounts_admin:user_detail' user.pk %}">{{ user.email }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'accounts:accounts_admin:user_list' %}">{% trans "Usuarios" %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'accounts:accounts_admin:user_detail' user.pk %}">{{ user.email }}</a></li>
         <li class="breadcrumb-item active" aria-current="page">{% trans "Roles" %}</li>
     </ol>
 </nav>
@@ -72,7 +72,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end">
-                        <a href="{% url 'accounts_admin:user_detail' user.pk %}" class="btn btn-outline-secondary me-2">
+                        <a href="{% url 'accounts:accounts_admin:user_detail' user.pk %}" class="btn btn-outline-secondary me-2">
                             <i class="bi bi-arrow-left"></i> {% trans "Volver" %}
                         </a>
                         <button type="submit" class="btn btn-primary">
@@ -124,7 +124,7 @@
                                 </td>
                                 <td>{{ user_role.created_at|date:"d/m/Y" }}</td>
                                 <td>
-                                    <form method="post" action="{% url 'accounts_admin:user_role_revoke' user.pk user_role.role.pk %}"
+                                    <form method="post" action="{% url 'accounts:accounts_admin:user_role_revoke' user.pk user_role.role.pk %}"
                                           class="d-inline"
                                           onsubmit="return confirm('¿Está seguro de revocar el rol {{ user_role.role.code }}?');">
                                         {% csrf_token %}
@@ -186,10 +186,10 @@
                 <hr>
 
                 <div class="d-grid gap-2">
-                    <a href="{% url 'accounts_admin:user_detail' user.pk %}" class="btn btn-outline-info">
+                    <a href="{% url 'accounts:accounts_admin:user_detail' user.pk %}" class="btn btn-outline-info">
                         <i class="bi bi-eye"></i> {% trans "Ver Detalle" %}
                     </a>
-                    <a href="{% url 'accounts_admin:user_update' user.pk %}" class="btn btn-outline-primary">
+                    <a href="{% url 'accounts:accounts_admin:user_update' user.pk %}" class="btn btn-outline-primary">
                         <i class="bi bi-pencil"></i> {% trans "Editar Usuario" %}
                     </a>
                 </div>

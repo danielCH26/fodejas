@@ -5,7 +5,7 @@
 {% block admin_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-shield-plus me-2"></i>Asignar Roles</h2>
-    <a href="{% url 'accounts_admin:user_detail' pk=view_user.pk %}" class="btn btn-outline-secondary">
+    <a href="{% url 'accounts:accounts_admin:user_detail' pk=view_user.pk %}" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-2"></i>Volver al usuario
     </a>
 </div>
@@ -38,7 +38,7 @@
                     <span class="badge bg-info ms-2">{{ ur.convocation_scope_id }}</span>
                     {% endif %}
                 </div>
-                <form method="post" action="{% url 'accounts_admin:user_role_revoke' pk=view_user.pk role_id=ur.role.id %}">
+                <form method="post" action="{% url 'accounts:accounts_admin:user_role_revoke' pk=view_user.pk role_id=ur.role.id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Revocar este rol?')">
                         <i class="bi bi-x-circle"></i>
