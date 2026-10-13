@@ -1,10 +1,13 @@
 """Integration tests for accounts views."""
 
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.accounts.models import Role, UserRole
+from apps.accounts.models import Notification, Role, UserRole
+from apps.audit.services import log_audit_event
 
 User = get_user_model()
 
@@ -192,6 +195,91 @@ class DashboardViewTests(TestCase):
         response = self.client.get(self.url)
         self.assertContains(response, "Convocatorias")
         self.assertContains(response, "Postulaciones")
+
+    def test_dashboard_shows_user_notifications(self):
+        """Test that the dashboard renders the user's notifications."""
+        Notification.objects.create(
+            recipient=self.user,
+            event="application.approved",
+            tipo="success",
+            titulo="Postulación aprobada",
+            mensaje="¡Felicidades! Su postulación ha sido aprobada.",
+        )
+        self.client.login(username="dashboard@test.com", password="Dash123!")
+        response = self.client.get(self.url)
+        self.assertContains(response, "Postulación aprobada")
+        self.assertIn("notifications", response.context)
+        self.assertEqual(len(response.context["notifications"]), 1)
+
+    def test_dashboard_excludes_other_users_notifications(self):
+        """Test that other users' notifications never leak into the dashboard."""
+        other = User.objects.create_user(
+            email="other@test.com",
+            password="Other123!",
+            documento="55555555",
+            first_name="Other",
+            last_name="User",
+        )
+        Notification.objects.create(
+            recipient=other,
+            event="application.rejected",
+            tipo="error",
+            titulo="Notificación privada",
+            mensaje="Solo para other@test.com",
+        )
+        self.client.login(username="dashboard@test.com", password="Dash123!")
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "Notificación privada")
+
+    def test_dashboard_shows_unread_count(self):
+        """Test that unread notifications are counted in context."""
+        Notification.objects.create(
+            recipient=self.user,
+            event="habeas.resolved",
+            tipo="info",
+            titulo="Sin leer",
+            mensaje="Notificación sin leer",
+        )
+        self.client.login(username="dashboard@test.com", password="Dash123!")
+        response = self.client.get(self.url)
+        self.assertEqual(response.context["unread_count"], 1)
+
+    def test_dashboard_shows_recent_activity(self):
+        """Test that the dashboard renders the user's recent audit events."""
+        log_audit_event(
+            actor=self.user,
+            action="CREATE",
+            entity="Application",
+            entity_id=uuid.uuid4(),
+            changes={},
+            module="accounts",
+        )
+        self.client.login(username="dashboard@test.com", password="Dash123!")
+        response = self.client.get(self.url)
+        self.assertIn("recent_events", response.context)
+        self.assertEqual(len(response.context["recent_events"]), 1)
+        self.assertContains(response, "Application")
+
+    def test_dashboard_excludes_other_users_activity(self):
+        """Test that other users' audit events never leak into the dashboard."""
+        other = User.objects.create_user(
+            email="actor2@test.com",
+            password="Actor123!",
+            documento="66666666",
+            first_name="Other",
+            last_name="Actor",
+        )
+        log_audit_event(
+            actor=other,
+            action="LOGIN",
+            entity="User",
+            entity_id=uuid.uuid4(),
+            changes={},
+            module="accounts",
+        )
+        self.client.login(username="dashboard@test.com", password="Dash123!")
+        response = self.client.get(self.url)
+        self.assertEqual(len(response.context["recent_events"]), 0)
 
 
 class ProfileViewTests(TestCase):

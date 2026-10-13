@@ -25,13 +25,15 @@ from django.views.generic import TemplateView
 from rest_framework import permissions
 from rest_framework.views import APIView
 
+from apps.audit.models import AuditEvent
+
 from .forms import (
     FodejasLoginForm,
     FodejasPasswordResetForm,
     FodejasRegistrationForm,
     FodejasSetPasswordForm,
 )
-from .models import Role, UserRole
+from .models import Notification, Role, UserRole
 from .permissions_mixin import PermissionMixin
 
 User = get_user_model()
@@ -204,6 +206,16 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
 
         # Get role-specific navigation items
         context["nav_items"] = self._get_navigation_items(roles_data)
+
+        # In-app notifications for this user (latest 10) + unread badge count
+        user_notifications = Notification.objects.filter(recipient=user)[:10]
+        context["notifications"] = user_notifications
+        context["unread_count"] = Notification.objects.filter(
+            recipient=user, read_at__isnull=True
+        ).count()
+
+        # Recent activity: this user's own audit events (latest 10)
+        context["recent_events"] = AuditEvent.objects.filter(actor=user)[:10]
 
         return context
 
