@@ -3009,3 +3009,154 @@ msgstr "Open menu"
 
 msgid "Cerrar menú"
 msgstr "Close menu"
+
+# ============================================================================
+# CHG-507-multilang Unit E — accounts_views nav labels + transparency pages
+# (Gap A: view-injected labels; Gap B: transparencia sub-pages)
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# apps/accounts/views/accounts_views.py — nav item labels
+# ----------------------------------------------------------------------------
+
+msgid "Estado de Selección"
+msgstr "Selection Status"
+
+msgid "Convocatorias Abiertas"
+msgstr "Open Calls"
+
+msgid "Revisar Requisitos"
+msgstr "Verify Requirements"
+
+msgid "Resultados"
+msgstr "Results"
+
+msgid "Gestión de Pagos"
+msgstr "Payment Management"
+
+msgid "Mis Convocatorias"
+msgstr "My Calls for Applications"
+
+msgid "Mis Notificaciones"
+msgstr "My Notifications"
+
+msgid "Roles y Permisos"
+msgstr "Roles and Permissions"
+
+# ----------------------------------------------------------------------------
+# templates/transparencia/actos.html — actos page strings
+# ----------------------------------------------------------------------------
+
+msgid "Actos Administrativos Publicados"
+msgstr "Published Administrative Acts"
+
+msgid "Resoluciones y actos administrativos publicados por FODEJAS"
+msgstr "Resolutions and administrative acts published by FODEJAS"
+
+msgid "General"
+msgstr "General"
+
+msgid "Paginación de actos"
+msgstr "Acts pagination"
+
+msgid "No hay actos administrativos publicados actualmente."
+msgstr "No administrative acts published currently."
+
+msgid "Fecha de publicación"
+msgstr "Publication date"
+
+# ----------------------------------------------------------------------------
+# templates/transparencia/convocatorias.html — convocatorias page strings
+# ----------------------------------------------------------------------------
+
+msgid "Convocatorias abiertas y cerradas disponibles"
+msgstr "Open and closed calls available"
+
+msgid "Paginación de convocatorias"
+msgstr "Calls pagination"
+
+msgid "No hay convocatorias abiertas o cerradas actualmente."
+msgstr "No open or closed calls currently available."
+
+msgid "Fecha de apertura"
+msgstr "Opening date"
+
+msgid "Fecha de cierre"
+msgstr "Closing date"
+
+msgid "En inscripción"
+msgstr "Enrolling"
+
+msgid "Cerrada"
+msgstr "Closed"
+
+# ----------------------------------------------------------------------------
+# templates/transparencia/index.html — data protection and contact notices
+# ----------------------------------------------------------------------------
+
+msgid "Este portal expone información agregada y pública de conformidad con la Ley 1581 de 2012 (protección de datos) y los principios de datos abiertos."
+msgstr "This portal exposes aggregate and public information in compliance with Law 1581 of 2012 (data protection) and open data principles."
+
+msgid "Para información detallada contacte a la Secretaría de Educación Departamental."
+msgstr "For detailed information, contact the Departmental Education Secretariat."
+
+# ----------------------------------------------------------------------------
+# templates/transparencia/estadisticas.html — statistics page strings
+# ----------------------------------------------------------------------------
+
+msgid "Resumen de Convocatorias"
+msgstr "Call for Applications Summary"
+
+msgid "Filtrar"
+msgstr "Filter"
+
+msgid "Limpiar"
+msgstr "Clear"
+
+msgid "Año"
+msgstr "Year"
+
+msgid "No hay datos de convocatorias disponibles."
+msgstr "No call data available."
+
+msgid "No hay datos de beneficiarios disponibles."
+msgstr "No beneficiary data available."
+
+msgid "Ejecución Presupuestal"
+msgstr "Budget Execution"
+
+msgid "Ordenado"
+msgstr "Ordered"
+
+msgid "Pagado"
+msgstr "Paid"
+
+msgid "Total comprometido"
+msgstr "Total committed"
+
+msgid "No hay datos de ejecución presupuestal disponibles."
+msgstr "No budget execution data available."
+
+msgid "Seguimiento Académico"
+msgstr "Academic Tracking"
+
+msgid "Total expedientes"
+msgstr "Total records"
+
+msgid "Tasa de graduación"
+msgstr "Graduation rate"
+
+msgid "En curso"
+msgstr "In progress"
+
+msgid "No hay datos de seguimiento académico disponibles."
+msgstr "No academic tracking data available."
+
+msgid "Total acumulado"
+msgstr "Accumulated total"
+
+msgid "COP — Pendiente de pago"
+msgstr "COP — Pending payment"
+
+msgid "COP — Ejecutado"
+msgstr "COP — Executed"

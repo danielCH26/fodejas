@@ -29,18 +29,18 @@
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-primary">
-                <i class="bi bi-filter me-1"></i>Filtrar
+                <i class="bi bi-filter me-1"></i>{% trans "Filtrar" %}
             </button>
         </div>
         <div class="col-auto">
             <a href="{% url 'transparencia:estadisticas' %}" class="btn btn-outline-secondary">
-                Limpiar
+                {% trans "Limpiar" %}
             </a>
         </div>
         {% if anio %}
         <div class="col-auto">
             <span class="badge bg-info">
-                <i class="bi bi-calendar3 me-1"></i>Año {{ anio }}
+                <i class="bi bi-calendar3 me-1"></i>{% trans "Año" %} {{ anio }}
             </span>
         </div>
         {% endif %}
@@ -55,7 +55,7 @@
 <div class="card mb-4">
     <div class="card-header bg-primary text-white">
         <h5 class="mb-0">
-            <i class="bi bi-calendar-event me-2"></i>Resumen de Convocatorias
+            <i class="bi bi-calendar-event me-2"></i>{% trans "Resumen de Convocatorias" %}
         </h5>
     </div>
     <div class="card-body p-0">
@@ -86,7 +86,7 @@
         </div>
         {% else %}
         <div class="p-3 text-center text-muted">
-            No hay datos de convocatorias disponibles.
+            {% trans "No hay datos de convocatorias disponibles." %}
         </div>
         {% endif %}
     </div>
@@ -98,7 +98,7 @@
 <div class="card mb-4">
     <div class="card-header bg-success text-white">
         <h5 class="mb-0">
-            <i class="bi bi-people me-2"></i>Beneficiarios
+            <i class="bi bi-people me-2"></i>{% trans "Beneficiarios" %}
         </h5>
     </div>
     <div class="card-body p-0">
@@ -131,7 +131,7 @@
         </div>
         {% else %}
         <div class="p-3 text-center text-muted">
-            No hay datos de beneficiarios disponibles.
+            {% trans "No hay datos de beneficiarios disponibles." %}
         </div>
         {% endif %}
     </div>
@@ -143,11 +143,11 @@
 <div class="card mb-4">
     <div class="card-header bg-warning text-dark">
         <h5 class="mb-0">
-            <i class="bi bi-cash-stack me-2"></i>Ejecución Presupuestal
+            <i class="bi bi-cash-stack me-2"></i>{% trans "Ejecución Presupuestal" %}
             {% if anio %}
                 <span class="badge bg-dark ms-2">{{ anio }}</span>
             {% else %}
-                <span class="badge bg-light text-dark ms-2">Total acumulado</span>
+                <span class="badge bg-light text-dark ms-2">{% trans "Total acumulado" %}</span>
             {% endif %}
         </h5>
     </div>
@@ -157,29 +157,29 @@
             <div class="col-md-4">
                 <div class="card bg-light border-warning">
                     <div class="card-body text-center">
-                        <h6 class="text-muted mb-1">Ordenado</h6>
+                        <h6 class="text-muted mb-1">{% trans "Ordenado" %}</h6>
                         <h4 class="text-warning mb-0">
                             ${{ stats.ejecucion_presupuestal.ordenados|default:"0"|floatformat:0 }}
                         </h4>
-                        <small class="text-muted">COP — Pendiente de pago</small>
+                        <small class="text-muted">{% trans "COP — Pendiente de pago" %}</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card bg-light border-success">
                     <div class="card-body text-center">
-                        <h6 class="text-muted mb-1">Pagado</h6>
+                        <h6 class="text-muted mb-1">{% trans "Pagado" %}</h6>
                         <h4 class="text-success mb-0">
                             ${{ stats.ejecucion_presupuestal.pagados|default:"0"|floatformat:0 }}
                         </h4>
-                        <small class="text-muted">COP — Ejecutado</small>
+                        <small class="text-muted">{% trans "COP — Ejecutado" %}</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card bg-light border-secondary">
                     <div class="card-body text-center">
-                        <h6 class="text-muted mb-1">Total comprometido</h6>
+                        <h6 class="text-muted mb-1">{% trans "Total comprometido" %}</h6>
                         <h4 class="text-secondary mb-0">
                             ${{ stats.ejecucion_presupuestal.total|default:"0"|floatformat:0 }}
                         </h4>
@@ -191,7 +191,7 @@
         {% else %}
         <div class="alert alert-info mb-0">
             <i class="bi bi-info-circle me-2"></i>
-            No hay datos de ejecución presupuestal disponibles.
+            {% trans "No hay datos de ejecución presupuestal disponibles." %}
         </div>
         {% endif %}
     </div>
@@ -203,7 +203,7 @@
 <div class="card mb-4">
     <div class="card-header bg-info text-white">
         <h5 class="mb-0">
-            <i class="bi bi-mortarboard me-2"></i>Seguimiento Académico
+            <i class="bi bi-mortarboard me-2"></i>{% trans "Seguimiento Académico" %}
         </h5>
     </div>
     <div class="card-body">
@@ -212,7 +212,7 @@
             <div class="col-md-4">
                 <div class="card bg-light border-info">
                     <div class="card-body text-center">
-                        <h6 class="text-muted mb-1">Total expedientes</h6>
+                        <h6 class="text-muted mb-1">{% trans "Total expedientes" %}</h6>
                         <h4 class="text-info mb-0">
                             {{ stats.seguimiento_academico.total_expedientes|default:0 }}
                         </h4>
@@ -222,7 +222,7 @@
             <div class="col-md-4">
                 <div class="card bg-light border-success">
                     <div class="card-body text-center">
-                        <h6 class="text-muted mb-1">Tasa de graduación</h6>
+                        <h6 class="text-muted mb-1">{% trans "Tasa de graduación" %}</h6>
                         <h4 class="text-success mb-0">
                             {{ stats.seguimiento_academico.tasa_graduacion|default:"N/D" }}
                         </h4>
@@ -232,7 +232,7 @@
             <div class="col-md-4">
                 <div class="card bg-light border-warning">
                     <div class="card-body text-center">
-                        <h6 class="text-muted mb-1">En curso</h6>
+                        <h6 class="text-muted mb-1">{% trans "En curso" %}</h6>
                         <h4 class="text-warning mb-0">
                             {{ stats.seguimiento_academico.en_curso|default:0 }}
                         </h4>
@@ -243,7 +243,7 @@
         {% else %}
         <div class="alert alert-info mb-0">
             <i class="bi bi-info-circle me-2"></i>
-            No hay datos de seguimiento académico disponibles.
+            {% trans "No hay datos de seguimiento académico disponibles." %}
         </div>
         {% endif %}
     </div>
@@ -253,7 +253,7 @@
 
 <div class="text-center mt-3">
     <a href="{% url 'transparencia:index' %}" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-arrow-left me-1"></i>Volver al inicio
+        <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al inicio" %}
     </a>
 </div>
 {% endblock %}

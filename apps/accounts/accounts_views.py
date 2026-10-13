@@ -19,6 +19,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import TemplateView
 from rest_framework import permissions
@@ -215,17 +216,17 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
                 nav_items.extend(
                     [
                         {
-                            "label": "Mis Postulaciones",
+                            "label": _("Mis Postulaciones"),
                             "icon": "bi-file-earmark-text",
                             "url": "/applications/",
                         },
                         {
-                            "label": "Estado de Selección",
+                            "label": _("Estado de Selección"),
                             "icon": "bi-graph-up",
                             "url": "/applications/",
                         },
                         {
-                            "label": "Convocatorias Abiertas",
+                            "label": _("Convocatorias Abiertas"),
                             "icon": "bi-megaphone",
                             "url": "/convocatorias/",
                         },
@@ -235,12 +236,12 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
                 nav_items.extend(
                     [
                         {
-                            "label": "Revisar Requisitos",
+                            "label": _("Revisar Requisitos"),
                             "icon": "bi-clipboard-check",
                             "url": "/applications/",
                         },
                         {
-                            "label": "Convocatorias",
+                            "label": _("Convocatorias"),
                             "icon": "bi-megaphone",
                             "url": "/convocatorias/",
                         },
@@ -250,23 +251,23 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
                 nav_items.extend(
                     [
                         {
-                            "label": "Evaluaciones",
+                            "label": _("Evaluaciones"),
                             "icon": "bi-clipboard-data",
                             "url": "/applications/",
                         },
-                        {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
+                        {"label": _("Resultados"), "icon": "bi-trophy", "url": "/convocatorias/"},
                     ]
                 )
             elif role["code"] == "R-TESOR":
                 nav_items.extend(
                     [
                         {
-                            "label": "Gestión de Pagos",
+                            "label": _("Gestión de Pagos"),
                             "icon": "bi-currency-dollar",
                             "url": "/convocatorias/",
                         },
                         {
-                            "label": "Convocatorias",
+                            "label": _("Convocatorias"),
                             "icon": "bi-megaphone",
                             "url": "/convocatorias/",
                         },
@@ -276,43 +277,43 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
                 nav_items.extend(
                     [
                         {
-                            "label": "Mis Convocatorias",
+                            "label": _("Mis Convocatorias"),
                             "icon": "bi-megaphone",
                             "url": "/convocatorias/",
                         },
                         {
-                            "label": "Postulaciones",
+                            "label": _("Postulaciones"),
                             "icon": "bi-file-earmark-text",
                             "url": "/applications/",
                         },
-                        {"label": "Resultados", "icon": "bi-trophy", "url": "/convocatorias/"},
+                        {"label": _("Resultados"), "icon": "bi-trophy", "url": "/convocatorias/"},
                     ]
                 )
             elif role["code"] == "R-ADMIN":
                 nav_items.extend(
                     [
                         {
-                            "label": "Gestión de Usuarios",
+                            "label": _("Gestión de Usuarios"),
                             "icon": "bi-people",
                             "url": "/accounts/admin/users/",
                         },
                         {
-                            "label": "Roles y Permisos",
+                            "label": _("Roles y Permisos"),
                             "icon": "bi-shield-check",
                             "url": "/accounts/admin/roles/",
                         },
                         {
-                            "label": "Convocatorias",
+                            "label": _("Convocatorias"),
                             "icon": "bi-megaphone",
                             "url": "/convocatorias/",
                         },
                         {
-                            "label": "Postulaciones",
+                            "label": _("Postulaciones"),
                             "icon": "bi-file-earmark-text",
                             "url": "/applications/",
                         },
                         {
-                            "label": "Auditoría",
+                            "label": _("Auditoría"),
                             "icon": "bi-journal-text",
                             "url": "/accounts/audit/",
                         },
@@ -320,12 +321,12 @@ class DashboardView(LoginRequiredMixin, PermissionMixin, TemplateView):
                 )
 
         # Add common items for all users
-        nav_items.append({"label": "Mi Perfil", "icon": "bi-person", "url": "/accounts/profile/"})
+        nav_items.append({"label": _("Mi Perfil"), "icon": "bi-person", "url": "/accounts/profile/"})
         nav_items.append(
-            {"label": "Mis Notificaciones", "icon": "bi-bell", "url": "/accounts/notifications/"}
+            {"label": _("Mis Notificaciones"), "icon": "bi-bell", "url": "/accounts/notifications/"}
         )
         nav_items.append(
-            {"label": "Cerrar Sesión", "icon": "bi-box-arrow-right", "url": "/accounts/logout/"}
+            {"label": _("Cerrar Sesión"), "icon": "bi-box-arrow-right", "url": "/accounts/logout/"}
         )
 
         return nav_items

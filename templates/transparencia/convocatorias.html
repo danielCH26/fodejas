@@ -1,13 +1,14 @@
 {% extends "transparencia/base.html" %}
+{% load i18n %}
 
-{% block title %}Convocatorias - Portal de Transparencia - FODEJAS{% endblock %}
+{% block title %}{% trans "Convocatorias" %} - {% trans "Portal de Transparencia" %} - FODEJAS{% endblock %}
 
 {% block transparencia_content %}
 <div class="mb-4">
     <h2>
-        <i class="bi bi-calendar-event me-2"></i>Convocatorias
+        <i class="bi bi-calendar-event me-2"></i>{% trans "Convocatorias" %}
     </h2>
-    <p class="text-muted">Convocatorias abiertas y cerradas disponibles</p>
+    <p class="text-muted">{% trans "Convocatorias abiertas y cerradas disponibles" %}</p>
 </div>
 
 {% if convocatorias %}
@@ -15,11 +16,11 @@
     <table class="table table-striped table-hover border rounded bg-white">
         <thead class="table-primary">
             <tr>
-                <th scope="col">Código</th>
-                <th scope="col">Nombre</th>
-                <th scope="col" class="text-center">Estado</th>
-                <th scope="col">Fecha de apertura</th>
-                <th scope="col">Fecha de cierre</th>
+                <th scope="col">{% trans "Código" %}</th>
+                <th scope="col">{% trans "Nombre" %}</th>
+                <th scope="col" class="text-center">{% trans "Estado" %}</th>
+                <th scope="col">{% trans "Fecha de apertura" %}</th>
+                <th scope="col">{% trans "Fecha de cierre" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -29,9 +30,9 @@
                 <td>{{ conv.nombre }}</td>
                 <td class="text-center">
                     {% if conv.estado == 'en_inscripcion' %}
-                        <span class="badge bg-success">En inscripción</span>
+                        <span class="badge bg-success">{% trans "En inscripción" %}</span>
                     {% elif conv.estado == 'cerrada' %}
-                        <span class="badge bg-secondary">Cerrada</span>
+                        <span class="badge bg-secondary">{% trans "Cerrada" %}</span>
                     {% else %}
                         <span class="badge bg-light text-dark border">{{ conv.estado }}</span>
                     {% endif %}
@@ -58,16 +59,16 @@
 
 {# Pagination #}
 {% if page_obj.has_other_pages %}
-<nav aria-label="Paginación de convocatorias">
+<nav aria-label="{% trans "Paginación de convocatorias" %}">
     <ul class="pagination justify-content-center flex-wrap">
         {% if page_obj.has_previous %}
         <li class="page-item">
             <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
-                Anterior
+                {% trans "Anterior" %}
             </a>
         </li>
         {% else %}
-        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+        <li class="page-item disabled"><span class="page-link">{% trans "Anterior" %}</span></li>
         {% endif %}
 
         {% for num in page_obj.paginator.page_range %}
@@ -85,11 +86,11 @@
         {% if page_obj.has_next %}
         <li class="page-item">
             <a class="page-link" href="?page={{ page_obj.next_page_number }}">
-                Siguiente
+                {% trans "Siguiente" %}
             </a>
         </li>
         {% else %}
-        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+        <li class="page-item disabled"><span class="page-link">{% trans "Siguiente" %}</span></li>
         {% endif %}
     </ul>
 </nav>
@@ -98,13 +99,13 @@
 {% else %}
 <div class="alert alert-info text-center">
     <i class="bi bi-info-circle me-2"></i>
-    No hay convocatorias abiertas o cerradas actualmente.
+    {% trans "No hay convocatorias abiertas o cerradas actualmente." %}
 </div>
 {% endif %}
 
 <div class="text-center mt-4">
     <a href="{% url 'transparencia:index' %}" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-arrow-left me-1"></i>Volver al inicio
+        <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al inicio" %}
     </a>
 </div>
 {% endblock %}
