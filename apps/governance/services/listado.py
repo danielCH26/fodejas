@@ -87,11 +87,11 @@ def obtener_ranking_final(convocatoria):
                     "solicitud_id": str(sol.uuid),
                     "radicado": sol.radicado,
                     "aspirante": sol.aspirante.get_full_name() or sol.aspirante.email,
-                    "puntaje": puntaje.puntaje_total,
+                    "puntaje": float(puntaje.puntaje_total),
                     "puntaje_detallado": {
-                        "excelencia": puntaje.puntaje_excelencia,
-                        "academico": puntaje.puntaje_academico,
-                        "socioeconomico": puntaje.puntaje_socioeconomico,
+                        "excelencia": float(puntaje.puntaje_excelencia),
+                        "academico": float(puntaje.puntaje_academico),
+                        "socioeconomico": float(puntaje.puntaje_socioeconomico),
                     },
                 }
             )
