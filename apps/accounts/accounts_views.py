@@ -21,7 +21,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import ListView, TemplateView
 from rest_framework import permissions
 from rest_framework.views import APIView
 
@@ -362,6 +362,27 @@ class ProfileView(LoginRequiredMixin, PermissionMixin, TemplateView):
         context["user"] = user
         context["roles"] = roles
 
+        return context
+
+
+class NotificationListView(LoginRequiredMixin, PermissionMixin, ListView):
+    """In-app notification inbox for the current user (CAP-019)."""
+
+    template_name = "accounts/notifications.html"
+    context_object_name = "notifications"
+    paginate_by = 20
+    login_url = "accounts:login"
+
+    def get_queryset(self):
+        """Return only the current user's notifications, newest first."""
+        return Notification.objects.filter(recipient=self.request.user).order_by("-created_at")
+
+    def get_context_data(self, **kwargs):
+        """Add unread badge count."""
+        context = super().get_context_data(**kwargs)
+        context["unread_count"] = Notification.objects.filter(
+            recipient=self.request.user, read_at__isnull=True
+        ).count()
         return context
 
 

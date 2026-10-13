@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Mis Notificaciones - FODEJAS" %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">
+                <i class="bi bi-bell me-2 text-fodejas"></i>{% trans "Mis Notificaciones" %}
+                {% if unread_count %}
+                <span class="badge bg-danger ms-1">{{ unread_count }}</span>
+                {% endif %}
+            </h3>
+            <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al panel" %}
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                {% if notifications %}
+                <div class="list-group list-group-flush">
+                    {% for notification in notifications %}
+                    <div class="list-group-item px-0 {% if not notification.read_at %}bg-light{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                {% if notification.tipo == 'success' %}
+                                <span class="badge bg-success me-2">{% trans "Éxito" %}</span>
+                                {% elif notification.tipo == 'error' %}
+                                <span class="badge bg-danger me-2">{% trans "Error" %}</span>
+                                {% elif notification.tipo == 'warning' %}
+                                <span class="badge bg-warning text-dark me-2">{% trans "Advertencia" %}</span>
+                                {% else %}
+                                <span class="badge bg-info me-2">{% trans "Info" %}</span>
+                                {% endif %}
+                                <strong>{{ notification.titulo }}</strong>
+                                {% if not notification.read_at %}
+                                <span class="badge bg-primary ms-1">{% trans "Nueva" %}</span>
+                                {% endif %}
+                                <p class="mb-1 small">{{ notification.mensaje|linebreaksbr }}</p>
+                            </div>
+                            <small class="text-muted text-nowrap ms-2">
+                                {{ notification.created_at|date:"d/m/Y H:i" }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if is_paginated %}
+                <nav aria-label="{% trans 'Paginación de notificaciones' %}" class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                {% trans "Anterior" %}
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">{% trans "Anterior" %}</span></li>
+                        {% endif %}
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                {% blocktrans with num=page_obj.number total=page_obj.paginator.num_pages %}
+                                Página {{ num }} de {{ total }}
+                                {% endblocktrans %}
+                            </span>
+                        </li>
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                {% trans "Siguiente" %}
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">{% trans "Siguiente" %}</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-bell-slash" style="font-size: 2rem;"></i>
+                    <p class="mb-0">{% trans "No tiene notificaciones" %}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

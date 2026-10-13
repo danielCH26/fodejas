@@ -42,6 +42,7 @@ urlpatterns = [
     # App views
     path("dashboard/", views.DashboardView.as_view(), name="dashboard"),
     path("profile/", views.ProfileView.as_view(), name="profile"),
+    path("notifications/", views.NotificationListView.as_view(), name="notifications"),
     # Admin views (accounts/admin/)
     path("admin/", include("apps.accounts.admin_urls", namespace="accounts_admin")),
     # Audit views (accounts/audit/)

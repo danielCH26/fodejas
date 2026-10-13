@@ -36,6 +36,14 @@
 4. **Verificación y commit**
    - [x] 4.1 suite de apps/accounts + apps/audit en verde
    - [x] 4.2 work-unit commit en rama `fix/dashboard-notifications`
+5. **Página Mis Notificaciones** (decisión del usuario: opción 1 — crear
+   la página, no quitar el ítem):
+   - [x] 5.1 tests RED: login requerido, lista propia, excluye ajenas,
+     paginación
+   - [x] 5.2 `NotificationListView` (ListView, paginate_by 20,
+     recipient=request.user) + ruta `accounts:notifications` + template
+     `accounts/notifications.html` (mismos badges que el dashboard)
+   - [x] 5.3 suite verde + commit
 
 ## Hallazgos adicionales
 

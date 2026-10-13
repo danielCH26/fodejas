@@ -282,6 +282,81 @@ class DashboardViewTests(TestCase):
         self.assertEqual(len(response.context["recent_events"]), 0)
 
 
+class NotificationListViewTests(TestCase):
+    """Test the /accounts/notifications/ list page."""
+
+    def setUp(self):
+        """Set up test user and URL."""
+        self.user = User.objects.create_user(
+            email="notif@test.com",
+            password="Notif123!",
+            documento="77777777",
+            first_name="Notif",
+            last_name="Test",
+        )
+        self.other = User.objects.create_user(
+            email="other-notif@test.com",
+            password="Other123!",
+            documento="88888888",
+            first_name="Other",
+            last_name="User",
+        )
+        self.url = reverse("accounts:notifications")
+
+    def test_notifications_page_requires_login(self):
+        """Test that the notifications page requires authentication."""
+        response = self.client.get(self.url)
+        self.assertRedirects(response, f"{reverse('accounts:login')}?next={self.url}")
+
+    def test_notifications_page_lists_user_notifications(self):
+        """Test that the page lists the current user's notifications."""
+        Notification.objects.create(
+            recipient=self.user,
+            event="application.submitted",
+            tipo="success",
+            titulo="Postulación enviada",
+            mensaje="Su postulación ha sido enviada exitosamente.",
+        )
+        self.client.login(username="notif@test.com", password="Notif123!")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/notifications.html")
+        self.assertContains(response, "Postulación enviada")
+        self.assertIn("page_obj", response.context)
+        self.assertEqual(len(response.context["page_obj"].object_list), 1)
+
+    def test_notifications_page_excludes_other_users_notifications(self):
+        """Test that other users' notifications never leak into the page."""
+        Notification.objects.create(
+            recipient=self.other,
+            event="application.rejected",
+            tipo="error",
+            titulo="Notificación privada de otro",
+            mensaje="Solo para other-notif@test.com",
+        )
+        self.client.login(username="notif@test.com", password="Notif123!")
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "Notificación privada de otro")
+        self.assertEqual(len(response.context["page_obj"].object_list), 0)
+
+    def test_notifications_page_paginates(self):
+        """Test that the list paginates at 20 items per page."""
+        for i in range(25):
+            Notification.objects.create(
+                recipient=self.user,
+                event=f"event.{i}",
+                tipo="info",
+                titulo=f"Notificación {i}",
+                mensaje=f"Mensaje {i}",
+            )
+        self.client.login(username="notif@test.com", password="Notif123!")
+        response = self.client.get(self.url)
+        self.assertEqual(response.context["page_obj"].paginator.count, 25)
+        self.assertEqual(len(response.context["page_obj"].object_list), 20)
+        response_page2 = self.client.get(self.url + "?page=2")
+        self.assertEqual(len(response_page2.context["page_obj"].object_list), 5)
+
+
 class ProfileViewTests(TestCase):
     """Test profile view."""
 
