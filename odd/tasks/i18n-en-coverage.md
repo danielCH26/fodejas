@@ -33,17 +33,30 @@
 
 ## Tareas
 
-- [ ] T1: Tests i18n RED (nav + placeholders + transparencia + errors).
-- [ ] T2: Envolver textos (transparencia, audit, claims, roles.html),
+- [x] T1: Tests i18n RED (nav + placeholders + transparencia + errors).
+- [x] T2: Envolver textos (transparencia, audit, claims, roles.html),
       placeholders con gettext_lazy en forms, `_()` en ValidationErrors;
       opciones de claims → `get_tipo_display`.
-- [ ] T3: Actualizar catálogo en (makemessages + msgstr manuales) y
-      compilar .mo; tests GREEN.
-- [ ] T4: Verificación en vivo: switch a EN en el browser (nav + una
-      página transparencia), screenshot.
-- [ ] T5: Work-unit commit + evidencia.
+- [x] T3: Actualizar catálogo en (57 + 50 pares) y compilar .mo (polib);
+      tests GREEN (27).
+- [x] T4: Verificación en vivo: switch EN vía cookie django_language
+      (click de form-submit tiene limitación en el runtime de Orca).
+      Ronda 2 tras hallazgos del verify: labels inyectados por
+      accounts_views.py con gettext_lazy, subpáginas actos/convocatorias,
+      párrafos index, estadisticas. Fix final: blocktrans multi-línea
+      extraía msgid con \n → unificado a una línea; render check
+      "Welcome, <name>" en vivo PASS. ES restaurado. 0 errores consola.
+      Datos de DB (nombre de usuario, role.name) quedan en español por
+      diseño — no son alcanzables por catálogo i18n.
+- [x] T5: Work-unit commits `82633c3`, `1070c44`, `4b00398` en
+      `feat/ui-sidebar-nav` + revisión nativa del rango.
 
 ## Evidencia
 
-- Commit: _pendiente_
-- Verificación: _pendiente_
+- Tests: 27 i18n RED→GREEN; accounts 116 passed; manage.py check clean.
+- Verificación browser: en-dashboard/en-transparencia/en-actos/
+  en-convocatorias PASS; saludo PASS tras fix final; ES restaurado.
+- Commits: `82633c3`, `1070c44`, `4b00398`.
+- Desviación anotada: `scripts/compile_mo.py` creado por el worker
+  (fuera de superficies); se conserva por necesidad (sin msgfmt en
+  Windows), documentado y determinista.

@@ -4,9 +4,7 @@
 {% block title %}{% trans "Panel Principal - FODEJAS" %}{% endblock %}
 
 {% block content %}
-{% blocktrans with first_name=user.first_name|default:"" context "dashboard welcome" asvar welcome_text %}
-Bienvenido, {{ first_name }}
-{% endblocktrans %}
+{% blocktrans with first_name=user.first_name|default:"" context "dashboard welcome" asvar welcome_text %}Bienvenido, {{ first_name }}{% endblocktrans %}
 <div class="row">
     <!-- Sidebar -->
     <div class="col-md-3 mb-4">
