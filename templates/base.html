@@ -26,6 +26,7 @@
             --fodejas-background: #FAFBFC;
             --fodejas-text: #212529;
             --fodejas-muted: #6C757D;
+            --fodejas-sidebar-width: 260px;
         }
 
         body {
@@ -34,6 +35,127 @@
             font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         }
 
+        /* ── Sidebar (desktop: lg+) ─────────────────────────────── */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--fodejas-sidebar-width);
+            height: 100vh;
+            background-color: var(--fodejas-primary);
+            display: flex;
+            flex-direction: column;
+            z-index: 1040;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 1rem 0.75rem;
+            color: white;
+            text-decoration: none;
+            font-size: 1.15rem;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .sidebar-brand:hover {
+            color: #c8d8e8;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 0.5rem 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.55rem 1rem 0.55rem 1.25rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.15s, color 0.15s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .sidebar-link.active {
+            background-color: rgba(40, 167, 69, 0.18);
+            color: #8fd49a;
+            border-left-color: var(--fodejas-accent);
+        }
+
+        /* Collapsible admin group */
+        .sidebar-admin-toggle {
+            cursor: pointer;
+        }
+
+        .sidebar-admin-children {
+            padding-left: 0.5rem;
+        }
+
+        .sidebar-admin-children .sidebar-link {
+            padding-left: 2.5rem;
+            font-size: 0.85rem;
+        }
+
+        /* Bottom bar: language + user */
+        .sidebar-bottom {
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 0.75rem 1rem;
+        }
+
+        .sidebar-user-email {
+            display: block;
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 0.78rem;
+            margin-bottom: 0.4rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── Responsive: mobile off-canvas vs desktop fixed ─────── */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                display: none;
+            }
+
+            .mobile-topbar {
+                display: flex !important;
+            }
+
+            .main-shifted {
+                margin-left: 0 !important;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .mobile-topbar {
+                display: none !important;
+            }
+
+            .main-shifted {
+                margin-left: var(--fodejas-sidebar-width);
+            }
+        }
+
+        /* ── Utilities ─────────────────────────────────────────── */
         .btn-fodejas {
             background-color: var(--fodejas-primary);
             border-color: var(--fodejas-primary);
@@ -66,11 +188,6 @@
             background-color: var(--fodejas-primary) !important;
         }
 
-        .navbar-brand {
-            font-weight: 600;
-            color: white !important;
-        }
-
         .card {
             border: none;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -86,192 +203,83 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-fodejas mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'accounts:dashboard' %}">
-                <i class="bi bi-mortarboard-fill me-2"></i>
-                FODEJAS
-            </a>
 
-            {# Public links — visible to all users #}
-            <div class="navbar-nav me-auto d-none d-lg-flex flex-row">
-                <a class="nav-link me-3 text-white-50" href="{% url 'transparencia:index' %}">
-                    <i class="bi bi-shield-check me-1"></i>Transparencia
-                </a>
-            </div>
+    <!-- ════════════════════════════════════════════════════════════
+         DESKTOP SIDEBAR (always present in DOM; hidden < lg via CSS)
+         ════════════════════════════════════════════════════════════ -->
+    <nav id="sidebar" class="sidebar" aria-label="{% trans 'Navegación principal' %}">
 
-            {% if user.is_authenticated %}
-            {% with user_roles=user.user_roles.all %}
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav" aria-controls="navbarNav"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <!-- Brand -->
+        <a class="sidebar-brand" href="{% url 'accounts:dashboard' %}">
+            <i class="bi bi-mortarboard-fill me-2"></i>FODEJAS
+        </a>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    {% if user.is_authenticated and user_roles %}
-                    <!-- Convocatorias - visible para todos los usuarios con rol -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'convocatories:list' %}">
-                            <i class="bi bi-calendar-event me-1"></i>{% trans "Convocatorias" %}
-                        </a>
-                    </li>
+        <div class="sidebar-nav">
+            {% include "partials/sidebar_nav.html" with instance="desktop" %}
+        </div><!-- /.sidebar-nav -->
 
-                    <!-- Scoring/Ranking - visible para roles internos (R-ADMIN, R-COORDINADOR, R-REVISOR, R-COMITE, R-TESORERO) -->
-                    {% if user.is_staff or user_roles.0.role.type == 'interno' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'scoring:list' %}">
-                            <i class="bi bi-graph-up me-1"></i>{% trans "Scoring" %}
-                        </a>
-                    </li>
+    </nav><!-- /#sidebar -->
 
-                    <!-- Governance/Actos Admin - visible para R-JUNTA -->
-                    {% for ur in user_roles %}{% if ur.role.code == 'R-JUNTA' or ur.role.code == 'R-ADMIN' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'governance:acto_list' %}">
-                            <i class="bi bi-file-earmark-text me-1"></i>{% trans "Actos Admin" %}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'governance:listado_create' %}">
-                            <i class="bi bi-list-check me-1"></i>{% trans "Listado Definitivo" %}
-                        </a>
-                    </li>
-                    {% endif %}{% endfor %}
-                    {% endif %}
-
-                    <!-- Claims/Reclamaciones - visible para todos con rol -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'claims:list' %}">
-                            <i class="bi bi-chat-square-text me-1"></i>{% trans "Reclamaciones" %}
-                        </a>
-                    </li>
-
-                    <!-- Administración Junta (Reclamaciones) - solo R-JUNTA -->
-                    {% for ur in user_roles %}{% if ur.role.code == 'R-JUNTA' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'claims:admin_list' %}">
-                            <i class="bi bi-gavel me-1"></i>{% trans "Gestionar Reclamaciones" %}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'legalization:list' %}">
-                            <i class="bi bi-file-earmark-text me-1"></i>{% trans "Legalización" %}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'treasury:disbursement_list' %}">
-                            <i class="bi bi-wallet2 me-1"></i>{% trans "Autorizaciones" %}
-                        </a>
-                    </li>
-                    {% endif %}{% endfor %}
-
-                    <!-- Administración OFIJUR (Apelaciones) - solo R-OFIJUR -->
-                    {% for ur in user_roles %}{% if ur.role.code == 'R-OFIJUR' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'claims:apelacion_admin_list' %}">
-                            <i class="bi bi-balance-scale me-1"></i>{% trans "Gestionar Apelaciones" %}
-                        </a>
-                    </li>
-                    {% endif %}{% endfor %}
-
-                    <!-- Administración - solo R-ADMIN -->
-                    {% for ur in user_roles %}{% if ur.role.code == 'R-ADMIN' %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-gear me-1"></i>{% trans "Administración" %}
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'accounts:accounts_admin:user_list' %}">
-                                <i class="bi bi-people me-2"></i>{% trans "Usuarios" %}
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:accounts_admin:role_list' %}">
-                                <i class="bi bi-shield me-2"></i>{% trans "Roles" %}
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:audit_dashboard' %}">
-                                <i class="bi bi-journal-text me-2"></i>{% trans "Auditoría" %}
-                            </a></li>
-                        </ul>
-                    </li>
-                    {% endif %}{% endfor %}
-                    {% endif %}
-                </ul>
-                </ul>
-                {# CHG-507 — Language switcher: visible to ALL users (anonymous + authenticated). #}
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <form action="{% url 'set_language' %}" method="post" class="d-flex align-items-center">
-                            {% csrf_token %}
-                            <input type="hidden" name="next" value="{{ request.path }}">
-                            {% get_current_language as LANGUAGE_CODE %}
-                            {% if LANGUAGE_CODE == 'en' %}
-                                <button type="submit" name="language" value="es-CO"
-                                        class="btn btn-sm btn-outline-light me-1">ES</button>
-                                <button type="button" class="btn btn-sm btn-light disabled">EN</button>
-                            {% else %}
-                                <button type="button" class="btn btn-sm btn-light disabled">ES</button>
-                                <button type="submit" name="language" value="en"
-                                        class="btn btn-sm btn-outline-light ms-1">EN</button>
-                            {% endif %}
-                        </form>
-                    </li>
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-1"></i>
-                            {{ user.email }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
-                                <i class="bi bi-person me-2"></i>{% trans "Perfil" %}
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="bi bi-box-arrow-right me-2"></i>{% trans "Cerrar sesión" %}
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-            {% endwith %}
-            {% endif %}
-        </div>
+    <!-- ════════════════════════════════════════════════════════════
+         MOBILE TOP BAR (< lg only)
+         ════════════════════════════════════════════════════════════ -->
+    <nav class="mobile-topbar bg-fodejas align-items-center px-3" aria-label="{% trans 'Menú móvil' %}">
+        <button class="btn btn-sm btn-outline-light" type="button"
+                data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"
+                aria-controls="mobileSidebar" aria-label="{% trans 'Abrir menú' %}">
+            <i class="bi bi-list"></i>
+        </button>
+        <a class="navbar-brand mx-auto me-0" href="{% url 'accounts:dashboard' %}">
+            <i class="bi bi-mortarboard-fill me-1"></i>FODEJAS
+        </a>
     </nav>
 
-    <!-- Messages -->
-    {% if messages %}
-    <div class="container mb-4">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <!-- ════════════════════════════════════════════════════════════
+         MOBILE OFF-CANVAS SIDEBAR (< lg only)
+         Shares the same nav markup via sidebar_nav.html partial.
+         ════════════════════════════════════════════════════════════ -->
+    <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1"
+         id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+        <div class="offcanvas-header border-bottom border-dark">
+            <h5 class="offcanvas-title" id="mobileSidebarLabel">
+                <i class="bi bi-mortarboard-fill me-2"></i>FODEJAS
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                    aria-label="{% trans 'Cerrar menú' %}"></button>
         </div>
-        {% endfor %}
+        <div class="offcanvas-body p-0">
+            {% include "partials/sidebar_nav.html" with instance="mobile" %}
+        </div>
     </div>
-    {% endif %}
 
-    <!-- Main Content -->
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Footer -->
-    <footer class="mt-5 py-4 bg-light border-top">
-        <div class="container text-center text-muted">
-            <small>{% trans "© 2026 FODEJAS - Fondo para el Desarrollo Educativo de los Jóvenes" %}</small>
+    <!-- ════════════════════════════════════════════════════════════
+         PAGE CONTENT
+         ════════════════════════════════════════════════════════════ -->
+    <div class="main-shifted">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
         </div>
-    </footer>
+        {% endif %}
+
+        <!-- Main Content -->
+        <main class="container py-4">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-4 py-4 bg-light border-top">
+            <div class="container text-center text-muted">
+                <small>{% trans "© 2026 FODEJAS - Fondo para el Desarrollo Educativo de los Jóvenes" %}</small>
+            </div>
+        </footer>
+    </div><!-- /.main-shifted -->
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
