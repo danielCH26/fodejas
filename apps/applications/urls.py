@@ -35,7 +35,7 @@ urlpatterns = [
     # Review views (CHG-203)
     path("revision/", RequirementReviewListView.as_view(), name="review_list"),
     path("revision/<uuid:pk>/", RequirementReviewDetailView.as_view(), name="review_detail"),
-    path("revision/<uuid:pk>/verificar/", RequirementVerifyView.as_view(), name="review_verify"),
+    path("revision/verificar/<int:pk>/", RequirementVerifyView.as_view(), name="review_verify"),
     path("revision/<uuid:pk>/aprobar/", RequirementApproveView.as_view(), name="review_approve"),
     path("revision/<uuid:pk>/rechazar/", RequirementRejectView.as_view(), name="review_reject"),
     path("revision/<uuid:pk>/historial/", RequirementHistoryView.as_view(), name="review_history"),

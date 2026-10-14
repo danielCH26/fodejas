@@ -146,7 +146,8 @@
                         </div>
 
                         <div class="ms-3">
-                            <form method="post" action="{% url 'applications:review_verify' solicitud.uuid validacion.id %}" enctype="multipart/form-data" class="d-inline">
+                            <form method="post" action="{% url 'applications:review_verify' validacion.id %}" enctype="multipart/form-data" class="d-inline">
+                                <input type="hidden" name="validacion_id" value="{{ validacion.id }}">
                                 {% csrf_token %}
                                 <input type="hidden" name="observaciones" id="obs_{{ validacion.id }}">
                                 <div class="btn-group" role="group">
@@ -225,17 +226,21 @@
     function verifyRequirement(validacionId, estado) {
         const observaciones = document.getElementById('observaciones_' + validacionId).value;
 
-        // Create form data
-        const formData = new FormData();
-        formData.append('estado', estado);
-        formData.append('observaciones', observaciones);
+        // El form de cada validación ya lleva su action (review_verify por pk)
+        const form = Array.from(document.querySelectorAll('form')).find(
+            f => f.querySelector('[name=validacion_id]') &&
+                f.querySelector('[name=validacion_id]').value === String(validacionId)
+        );
+        if (!form) { console.error('form no encontrado para validacion', validacionId); return; }
+        form.querySelector('[name=estado]')?.remove();
+        const estadoInput = document.createElement('input');
+        estadoInput.type = 'hidden'; estadoInput.name = 'estado'; estadoInput.value = estado;
+        form.appendChild(estadoInput);
+        form.querySelector('[name=observaciones]').value = observaciones;
 
-        // Get the form action URL
-        const url = document.querySelector(`form[action*="review_verify"]`).action.replace(/\/\d+\/$/, '/' + validacionId + '/');
-
-        fetch(url, {
+        fetch(form.action, {
             method: 'POST',
-            body: formData,
+            body: new FormData(form),
             headers: {
                 'X-CSRFToken': '{{ csrf_token }}'
             }
