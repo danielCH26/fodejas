@@ -268,7 +268,7 @@ class ListadoDefinitivoDetailView(LoginRequiredMixin, PermissionMixin, DetailVie
     model = ListadoDefinitivo
     template_name = "governance/listado_detail.html"
     context_object_name = "listado"
-    pk_url_kwarg = "pk"
+    pk_url_kwarg = "uuid"
 
 
 class ListadoPublicoView(TemplateView):
