@@ -71,7 +71,11 @@ class ActoDetailView(LoginRequiredMixin, PermissionMixin, DetailView):
     model = ActoAdministrativo
     template_name = "governance/acto_detail.html"
     context_object_name = "acto"
-    pk_url_kwarg = "pk"
+
+    def get_object(self, queryset=None):
+        """Lookup by uuid (the URL pattern uses <uuid:pk> but pk is an int field)."""
+        from django.shortcuts import get_object_or_404
+        return get_object_or_404(ActoAdministrativo, uuid=self.kwargs.get("pk"))
 
 
 class ActoGeneratePdfView(JuntaPermissionMixin, View):
