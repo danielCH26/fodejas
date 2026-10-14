@@ -268,8 +268,11 @@ class ListadoDefinitivoDetailView(LoginRequiredMixin, PermissionMixin, DetailVie
     model = ListadoDefinitivo
     template_name = "governance/listado_detail.html"
     context_object_name = "listado"
-    slug_field = "uuid"
-    slug_url_kwarg = "pk"
+
+    def get_object(self, queryset=None):
+        """Lookup by uuid (the URL pattern uses <uuid:pk> but pk is an int field)."""
+        from django.shortcuts import get_object_or_404
+        return get_object_or_404(ListadoDefinitivo, uuid=self.kwargs.get("pk"))
 
 
 class ListadoPublicoView(TemplateView):
