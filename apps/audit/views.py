@@ -114,7 +114,7 @@ class BaseAuditView(LoginRequiredMixin, AuditPermissionMixin, TemplateView):
             messages.error(request, "No tienes permiso para acceder a la auditoría.")
             from django.shortcuts import redirect
 
-            return redirect("dashboard")
+            return redirect("accounts:dashboard")
         return super().get(request, *args, **kwargs)
 
     def has_permission(self, request, view):
@@ -202,7 +202,7 @@ class AuditEventHtmlDetailView(LoginRequiredMixin, DetailView):
             messages.error(request, "No tienes permiso para ver detalles de auditoría.")
             from django.shortcuts import redirect
 
-            return redirect("dashboard")
+            return redirect("accounts:dashboard")
         return super().get(request, *args, **kwargs)
 
     def has_permission(self, request):
@@ -256,7 +256,7 @@ class AuditChainVerifyHtmlView(LoginRequiredMixin, TemplateView):
             )
             from django.shortcuts import redirect
 
-            return redirect("dashboard")
+            return redirect("accounts:dashboard")
         return super().get(request, *args, **kwargs)
 
     def has_permission(self, request):

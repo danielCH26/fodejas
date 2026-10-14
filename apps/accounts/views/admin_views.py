@@ -35,7 +35,7 @@ class BaseAdminView(LoginRequiredMixin, TemplateView):
 
         if not (has_admin_role or is_superuser):
             messages.error(request, "No tienes permisos de administrador.")
-            return redirect("dashboard")
+            return redirect("accounts:dashboard")
 
         return super().dispatch(request, *args, **kwargs)
 
